@@ -1,5 +1,5 @@
 import React from 'react';
-import { Database, Upload, BarChart3, RefreshCw } from 'lucide-react';
+import { Database, Upload, BarChart3 } from 'lucide-react';
 
 interface NavbarProps {
   currentView: 'directory' | 'table' | 'standards';
@@ -8,10 +8,6 @@ interface NavbarProps {
   onOpenCompare: () => void;
   compareCount: number;
   totalMachines: number;
-  neonConnected?: boolean;
-  neonCount?: number;
-  onSyncToNeon?: () => void;
-  isSyncing?: boolean;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -21,10 +17,6 @@ export const Navbar: React.FC<NavbarProps> = ({
   onOpenCompare,
   compareCount,
   totalMachines,
-  neonConnected,
-  neonCount,
-  onSyncToNeon,
-  isSyncing,
 }) => {
   return (
     <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200">
@@ -92,33 +84,17 @@ export const Navbar: React.FC<NavbarProps> = ({
           </button>
         </nav>
 
-        {/* Zone 3: Primary Action & Neon Database Status */}
+        {/* Zone 3: Actions & Dataset Status */}
         <div className="flex items-center gap-3 shrink-0">
-          {neonConnected && (
+          {totalMachines > 0 && (
             <div className="hidden sm:flex items-center gap-1.5 text-xs text-slate-600 bg-slate-100/80 px-2.5 py-1.5 rounded-lg border border-slate-200">
               <Database className="w-3.5 h-3.5 text-blue-600" />
-              <span className="font-semibold text-slate-800">Neon PostgreSQL</span>
-              {neonCount !== undefined && neonCount > 0 && (
-                <>
-                  <span aria-hidden="true" className="text-slate-400">·</span>
-                  <span className="font-mono text-[11px] text-slate-500 tabular-nums font-semibold">
-                    {neonCount} saved
-                  </span>
-                </>
-              )}
+              <span className="font-semibold text-slate-800">ENERGY STAR®</span>
+              <span aria-hidden="true" className="text-slate-400">·</span>
+              <span className="font-mono text-[11px] text-slate-600 tabular-nums font-semibold">
+                {totalMachines} models
+              </span>
             </div>
-          )}
-
-          {onSyncToNeon && totalMachines > (neonCount || 0) && (
-            <button
-              onClick={onSyncToNeon}
-              disabled={isSyncing}
-              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-blue-700 bg-blue-50 hover:bg-blue-100 border border-blue-200 rounded-lg transition-colors whitespace-nowrap shadow-2xs"
-              title="Push machines to Neon PostgreSQL database"
-            >
-              <RefreshCw className={`w-3.5 h-3.5 ${isSyncing ? 'animate-spin' : ''}`} />
-              <span>{isSyncing ? 'Syncing...' : `Push to Neon (${totalMachines})`}</span>
-            </button>
           )}
 
           <button

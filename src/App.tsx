@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { IceMachine, FilterState, IceType, EquipmentType, CondenserType } from './types/iceMachine';
+import { IceMachine, FilterState, IceType } from './types/iceMachine';
 import {
   getAllIceMachines,
   saveIceMachines,
@@ -7,8 +7,6 @@ import {
   clearAllIceMachines,
   exportMachinesToCsv,
   getOfficialEnergyStarSampleRecords,
-  checkNeonStatus,
-  syncLocalMachinesToNeon,
 } from './db/iceMachinesDb';
 import { Navbar } from './components/Navbar';
 import { HeroSection } from './components/HeroSection';
@@ -20,7 +18,7 @@ import { CompareModal } from './components/CompareModal';
 import { CsvImportModal } from './components/CsvImportModal';
 import { EmptyDatabaseView } from './components/EmptyDatabaseView';
 import { StandardsInfoView } from './components/StandardsInfoView';
-import { BarChart3, Database, Trash2, CheckCircle2, RefreshCw, Server, ArrowRight, Download } from 'lucide-react';
+import { BarChart3, Database, Trash2, CheckCircle2, Download } from 'lucide-react';
 
 export default function App() {
   const [machines, setMachines] = useState<IceMachine[]>([]);
@@ -33,11 +31,6 @@ export default function App() {
   const [comparedMachineIds, setComparedMachineIds] = useState<string[]>([]);
   const [droppedFile, setDroppedFile] = useState<File | null>(null);
   const [notification, setNotification] = useState<string | null>(null);
-
-  // Neon PostgreSQL status
-  const [neonConnected, setNeonConnected] = useState<boolean>(true);
-  const [neonCount, setNeonCount] = useState<number>(0);
-  const [isSyncing, setIsSyncing] = useState<boolean>(false);
 
   // Filters State
   const [filters, setFilters] = useState<FilterState>({
@@ -61,32 +54,13 @@ export default function App() {
     }, 4500);
   };
 
-  // Load from Neon and local on startup
+  // Load 651 machines from static ice_machines.json on startup
   useEffect(() => {
     async function initDatabase() {
       try {
         setIsLoading(true);
-        // 1. Check Neon PostgreSQL health
-        const status = await checkNeonStatus();
-        setNeonConnected(status.connected);
-        setNeonCount(status.machineCount);
-
-        // 2. Fetch machines
-        const res = await getAllIceMachines();
-        const safeList = res && Array.isArray(res.machines) ? res.machines : [];
-        setMachines(safeList);
-
-        // 3. If browser has local machines (e.g. 651 imported records) but Neon is empty or has fewer, auto-migrate to Neon
-        if (safeList.length > 0 && status.connected && status.machineCount < safeList.length) {
-          setIsSyncing(true);
-          notify(`Pushing all ${safeList.length} machines to Neon PostgreSQL...`);
-          const syncRes = await syncLocalMachinesToNeon(safeList);
-          setIsSyncing(false);
-          if (syncRes.success) {
-            setNeonCount(syncRes.count);
-            notify(`Migration complete: ${safeList.length} machines saved permanently in Neon.`);
-          }
-        }
+        const list = await getAllIceMachines();
+        setMachines(Array.isArray(list) ? list : []);
       } catch (err) {
         console.error('Failed to load database:', err);
       } finally {
@@ -216,41 +190,17 @@ export default function App() {
     });
   };
 
-  // Manual Trigger to sync current dataset to Neon PostgreSQL
-  const handlePushToNeon = async () => {
-    if (machines.length === 0) return;
-    setIsSyncing(true);
-    notify(`Pushing all ${machines.length} machines to Neon PostgreSQL...`);
-    try {
-      const syncRes = await syncLocalMachinesToNeon(machines);
-      setIsSyncing(false);
-      if (syncRes.success) {
-        setNeonCount(syncRes.count);
-        notify(`Migration success: ${syncRes.count} machines permanently stored in Neon.`);
-      } else {
-        notify('Migration failed. Please check connection.');
-      }
-    } catch {
-      setIsSyncing(false);
-      notify('Failed to connect to Neon PostgreSQL.');
-    }
-  };
-
   // Database handlers
   const handleImportComplete = async (newMachines: IceMachine[], mode: 'replace' | 'append') => {
     try {
-      setIsSyncing(true);
-      const total = await saveIceMachines(newMachines, mode);
-      const res = await getAllIceMachines();
-      setMachines(res.machines);
-      setNeonCount(total);
-      setIsSyncing(false);
+      await saveIceMachines(newMachines, mode);
+      const list = await getAllIceMachines();
+      setMachines(list);
       setDroppedFile(null);
-      notify(`Imported ${newMachines.length} ice machines directly into Neon PostgreSQL database!`);
+      notify(`Imported ${newMachines.length} ice machines successfully!`);
     } catch (err: any) {
-      setIsSyncing(false);
       console.error('Import save error:', err);
-      notify('Failed to store records in database.');
+      notify('Failed to store records.');
     }
   };
 
@@ -258,17 +208,15 @@ export default function App() {
     await deleteIceMachine(id);
     setMachines((prev) => prev.filter((m) => m.id !== id));
     setComparedMachineIds((prev) => prev.filter((mId) => mId !== id));
-    setNeonCount((prev) => Math.max(0, prev - 1));
-    notify('Machine specification removed from Neon database.');
+    notify('Machine specification removed.');
   };
 
   const handleClearDatabase = async () => {
-    if (window.confirm('Are you sure you want to clear all records from the Neon PostgreSQL database? This will remove all permanently stored machines.')) {
+    if (window.confirm('Are you sure you want to clear all loaded machine specifications?')) {
       await clearAllIceMachines();
       setMachines([]);
       setComparedMachineIds([]);
-      setNeonCount(0);
-      notify('Neon PostgreSQL database cleared.');
+      notify('Database cleared.');
     }
   };
 
@@ -314,10 +262,6 @@ export default function App() {
         onOpenCompare={() => setIsCompareModalOpen(true)}
         compareCount={comparedMachineIds.length}
         totalMachines={machines.length}
-        neonConnected={neonConnected}
-        neonCount={neonCount}
-        onSyncToNeon={handlePushToNeon}
-        isSyncing={isSyncing}
       />
 
       {/* Hero Section */}
@@ -341,28 +285,6 @@ export default function App() {
           }}
           onExportCsv={handleExportCsv}
         />
-      )}
-
-      {/* Neon PostgreSQL Synchronization Banner if local data needs migration */}
-      {machines.length > 0 && neonCount < machines.length && (
-        <div className="bg-blue-600 text-white py-2.5 px-4">
-          <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
-            <div className="flex items-center gap-2 font-medium">
-              <Server className="w-4 h-4" />
-              <span>
-                Found <strong>{machines.length}</strong> machines ready to persist into your Neon PostgreSQL database.
-              </span>
-            </div>
-            <button
-              onClick={handlePushToNeon}
-              disabled={isSyncing}
-              className="px-3 py-1 bg-white text-blue-900 rounded-md font-bold hover:bg-blue-50 transition-colors shadow-xs flex items-center gap-1.5"
-            >
-              <RefreshCw className={`w-3.5 h-3.5 ${isSyncing ? 'animate-spin' : ''}`} />
-              <span>{isSyncing ? 'Pushing to Neon...' : 'Push All Machines to Neon Now'}</span>
-            </button>
-          </div>
-        </div>
       )}
 
       {/* Main View Area */}
@@ -405,32 +327,22 @@ export default function App() {
                   <Database className="w-3.5 h-3.5 text-blue-600" />
                 </div>
                 <div className="text-[11px] text-slate-700 leading-snug">
-                  <div>Backend: <strong>Neon PostgreSQL</strong></div>
-                  <div className="text-slate-500 font-mono text-[10px] truncate">ep-wispy-waterfall.aws.neon.tech</div>
+                  <div>Dataset: <strong>ENERGY STAR® Directory</strong></div>
+                  <div className="text-slate-500 text-[10px]">651 Models Pre-loaded</div>
                 </div>
                 <div className="text-[11px] text-slate-600 font-medium">
-                  Persisted records: <strong className="font-mono text-slate-900">{neonCount || machines.length}</strong> models
+                  Active records: <strong className="font-mono text-slate-900">{machines.length}</strong> models
                 </div>
 
                 <div className="flex gap-2 pt-1">
-                  <button
-                    onClick={handlePushToNeon}
-                    disabled={isSyncing}
-                    className="flex-1 py-1.5 px-2 bg-blue-50 hover:bg-blue-100 text-blue-700 font-semibold rounded text-center transition-colors flex items-center justify-center gap-1"
-                    title="Push current models to Neon"
-                  >
-                    <RefreshCw className={`w-3 h-3 ${isSyncing ? 'animate-spin' : ''}`} />
-                    <span>Sync Neon</span>
-                  </button>
-
                   <button
                     onClick={() => {
                       setDroppedFile(null);
                       setIsImportModalOpen(true);
                     }}
-                    className="py-1.5 px-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded text-center transition-colors"
+                    className="flex-1 py-1.5 px-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded text-center transition-colors"
                   >
-                    Import
+                    Import CSV
                   </button>
 
                   <button
@@ -615,7 +527,7 @@ export default function App() {
             <span>AHRI Standard 810/820</span>
           </div>
           <div className="text-slate-400 text-[11px]">
-            Data permanently backed by Neon PostgreSQL (<span className="font-mono">neondb</span>).
+            Static specification directory · 651 ENERGY STAR® models loaded.
           </div>
         </div>
       </footer>

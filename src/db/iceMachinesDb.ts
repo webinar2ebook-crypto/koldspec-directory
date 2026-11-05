@@ -115,158 +115,71 @@ export async function saveLocalIndexedDb(
 }
 
 /**
- * Check Neon PostgreSQL server connectivity and machine count
+ * Fetch all 651 machines from static ice_machines.json (ideal for Cloudflare Pages static hosting),
+ * with fallback to local browser IndexedDB / LocalStorage cache.
  */
-export async function checkNeonStatus(): Promise<{
-  connected: boolean;
-  machineCount: number;
-  message?: string;
-}> {
+export async function getAllIceMachines(): Promise<IceMachine[]> {
   try {
-    const res = await fetch('/api/health');
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const data = await res.json();
-    return {
-      connected: data.status === 'connected',
-      machineCount: data.machineCount || 0,
-    };
-  } catch (err: any) {
-    return {
-      connected: false,
-      machineCount: 0,
-      message: err.message,
-    };
-  }
-}
-
-/**
- * Fetch all machines from Neon PostgreSQL, with fallback to static ice_machines.json
- * (essential for Cloudflare Pages / static hosting without Node backend), and then local IndexedDB.
- */
-export async function getAllIceMachines(): Promise<{
-  machines: IceMachine[];
-  source: 'neon' | 'static' | 'local';
-}> {
-  // 1. Try Node backend API
-  try {
-    const res = await fetch('/api/machines');
+    const res = await fetch('/ice_machines.json');
     if (res.ok) {
       const data = await res.json();
-      if (Array.isArray(data.machines) && data.machines.length > 0) {
-        saveLocalIndexedDb(data.machines, 'replace');
-        return { machines: data.machines, source: 'neon' };
+      if (Array.isArray(data) && data.length > 0) {
+        // Cache to IndexedDB for offline capability
+        saveLocalIndexedDb(data, 'replace');
+        return data;
       }
     }
   } catch (err) {
-    console.warn('Could not reach Node API, trying static pre-bundled dataset:', err);
+    console.warn('Could not fetch static /ice_machines.json, loading local cache:', err);
   }
 
-  // 2. Fallback to static JSON dataset (ideal for Cloudflare Pages / static hosting)
-  try {
-    const staticRes = await fetch('/ice_machines.json');
-    if (staticRes.ok) {
-      const staticMachines = await staticRes.json();
-      if (Array.isArray(staticMachines) && staticMachines.length > 0) {
-        saveLocalIndexedDb(staticMachines, 'replace');
-        return { machines: staticMachines, source: 'static' };
-      }
-    }
-  } catch {}
-
-  // 3. Fallback to browser IndexedDB
+  // Fallback to browser IndexedDB / LocalStorage
   const local = await getLocalIndexedDbMachines();
-  return { machines: local, source: 'local' };
+  if (local.length > 0) {
+    return local;
+  }
+
+  // Fallback sample if empty
+  return getOfficialEnergyStarSampleRecords();
 }
 
 /**
- * Push machines directly to Neon PostgreSQL database and cache locally
+ * Save machines to local storage (IndexedDB and LocalStorage fallback)
  */
 export async function saveIceMachines(
   newMachines: IceMachine[],
   mode: 'replace' | 'append' = 'replace'
 ): Promise<number> {
-  // 1. Save to local first for immediate UI response
-  await saveLocalIndexedDb(newMachines, mode);
-
-  // 2. Persist permanently to Neon PostgreSQL backend
-  try {
-    const res = await fetch('/api/machines/sync', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ machines: newMachines, mode }),
-    });
-
-    if (res.ok) {
-      const data = await res.json();
-      return data.count;
-    }
-  } catch (err) {
-    console.error('Failed to sync to Neon server:', err);
-  }
-
-  return newMachines.length;
+  return await saveLocalIndexedDb(newMachines, mode);
 }
 
 /**
- * Push locally cached machines (e.g. 651 imported records) to Neon
- */
-export async function syncLocalMachinesToNeon(machines: IceMachine[]): Promise<{
-  success: boolean;
-  count: number;
-}> {
-  try {
-    const res = await fetch('/api/machines/sync', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ machines, mode: 'append' }),
-    });
-
-    if (res.ok) {
-      const data = await res.json();
-      return { success: true, count: data.count };
-    }
-    return { success: false, count: 0 };
-  } catch (err) {
-    console.error('Migration push to Neon failed:', err);
-    return { success: false, count: 0 };
-  }
-}
-
-/**
- * Delete single machine
+ * Delete single machine from local store
  */
 export async function deleteIceMachine(id: string): Promise<void> {
-  try {
-    await fetch(`/api/machines/${encodeURIComponent(id)}`, { method: 'DELETE' });
-  } catch {
-    // ignore
-  }
-
   try {
     const db = await openDB();
     const tx = db.transaction(STORE_NAME, 'readwrite');
     tx.objectStore(STORE_NAME).delete(id);
-  } catch {}
+  } catch {
+    // ignore
+  }
 
   const fallback = getLocalFallback().filter((m) => m.id !== id);
   saveLocalFallback(fallback);
 }
 
 /**
- * Clear all records from Neon and local
+ * Clear all records from local store
  */
 export async function clearAllIceMachines(): Promise<void> {
-  try {
-    await fetch('/api/machines', { method: 'DELETE' });
-  } catch {
-    // ignore
-  }
-
   try {
     const db = await openDB();
     const tx = db.transaction(STORE_NAME, 'readwrite');
     tx.objectStore(STORE_NAME).clear();
-  } catch {}
+  } catch {
+    // ignore
+  }
 
   saveLocalFallback([]);
 }
