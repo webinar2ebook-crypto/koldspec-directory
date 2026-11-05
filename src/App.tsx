@@ -87,52 +87,94 @@ export default function App() {
       .sort((a, b) => b.count - a.count);
   }, [machines]);
 
-  // Filtered and Sorted Machines
+  // Ice type breakdown counts
+  const iceTypeCounts = useMemo(() => {
+    const map = new Map<string, number>();
+    for (const m of machines) {
+      map.set(m.iceType, (map.get(m.iceType) || 0) + 1);
+    }
+    return map;
+  }, [machines]);
+
+  // Equipment type breakdown counts
+  const equipmentTypeCounts = useMemo(() => {
+    const map = new Map<string, number>();
+    for (const m of machines) {
+      map.set(m.equipmentType, (map.get(m.equipmentType) || 0) + 1);
+    }
+    return map;
+  }, [machines]);
+
+  // Condenser cooling breakdown counts
+  const coolingTypeCounts = useMemo(() => {
+    const map = new Map<string, number>();
+    for (const m of machines) {
+      map.set(m.condenserCooling, (map.get(m.condenserCooling) || 0) + 1);
+    }
+    return map;
+  }, [machines]);
+
+  // Filtered and Sorted Machines: simultaneously checks ALL active filters
   const filteredMachines = useMemo(() => {
     return machines.filter((m) => {
-      // Search
+      // 1. Text Search Query
       if (filters.searchQuery.trim()) {
         const query = filters.searchQuery.toLowerCase().trim();
         const matchBrand = m.brand.toLowerCase().includes(query);
         const matchModel = m.modelNumber.toLowerCase().includes(query);
-        const matchName = m.modelName?.toLowerCase().includes(query);
-        const matchRefrig = m.refrigerant?.toLowerCase().includes(query);
+        const matchName = m.modelName?.toLowerCase().includes(query) ?? false;
+        const matchRefrig = m.refrigerant?.toLowerCase().includes(query) ?? false;
         const matchIce = m.iceType.toLowerCase().includes(query);
-        if (!matchBrand && !matchModel && !matchName && !matchRefrig && !matchIce) {
+        const matchShape = m.iceShapeDetail?.toLowerCase().includes(query) ?? false;
+        if (!matchBrand && !matchModel && !matchName && !matchRefrig && !matchIce && !matchShape) {
           return false;
         }
       }
 
-      // Brand
-      if (filters.brands.length > 0 && !filters.brands.includes(m.brand)) {
-        return false;
+      // 2. Brand Filter: machine must match one of the selected brands
+      if (filters.brands.length > 0) {
+        const matchBrand = filters.brands.some(
+          (b) => b.trim().toLowerCase() === m.brand.trim().toLowerCase()
+        );
+        if (!matchBrand) return false;
       }
 
-      // Ice Type
-      if (filters.iceTypes.length > 0 && !filters.iceTypes.includes(m.iceType)) {
-        return false;
+      // 3. Ice Type Filter: machine must match one of the selected ice types (e.g. Flake, Cube, Nugget)
+      if (filters.iceTypes.length > 0) {
+        const matchIce = filters.iceTypes.some(
+          (t) => t.trim().toLowerCase() === m.iceType.trim().toLowerCase()
+        );
+        if (!matchIce) return false;
       }
 
-      // Daily Production
+      // 4. Daily Production Range (Harvest Rate in lbs/24h)
       if (m.harvestRateLbs < filters.productionMin) return false;
-      if (filters.productionMax < maxHarvestRate && m.harvestRateLbs > filters.productionMax) {
+      if (filters.productionMax < 2500 && m.harvestRateLbs > filters.productionMax) {
         return false;
       }
 
-      // Energy Use Rate
-      if (m.energyUseRateKwh > filters.energyMaxKwh) return false;
-
-      // Equipment Type
-      if (filters.equipmentTypes.length > 0 && !filters.equipmentTypes.includes(m.equipmentType)) {
+      // 5. Energy Efficiency Limit (kWh / 100 lbs ice)
+      if (filters.energyMaxKwh < 12.0 && m.energyUseRateKwh > filters.energyMaxKwh) {
         return false;
       }
 
-      // Cooling Type
-      if (filters.coolingTypes.length > 0 && !filters.coolingTypes.includes(m.condenserCooling)) {
-        return false;
+      // 6. Equipment Configuration (IMH, SCU, RCU)
+      if (filters.equipmentTypes.length > 0) {
+        const matchEquip = filters.equipmentTypes.some(
+          (e) => e.trim().toUpperCase() === m.equipmentType.trim().toUpperCase()
+        );
+        if (!matchEquip) return false;
       }
 
-      // ENERGY STAR
+      // 7. Condenser Cooling Type (Air-Cooled, Water-Cooled, Remote Air-Cooled)
+      if (filters.coolingTypes.length > 0) {
+        const matchCooling = filters.coolingTypes.some(
+          (c) => c.trim().toLowerCase() === m.condenserCooling.trim().toLowerCase()
+        );
+        if (!matchCooling) return false;
+      }
+
+      // 8. ENERGY STAR Certified Only
       if (filters.energyStarOnly && !m.energyStarCertified) {
         return false;
       }
@@ -154,7 +196,7 @@ export default function App() {
           return b.harvestRateLbs - a.harvestRateLbs;
       }
     });
-  }, [machines, filters, maxHarvestRate]);
+  }, [machines, filters]);
 
   // Compare helpers
   const comparedMachines = useMemo(() => {
@@ -318,6 +360,9 @@ export default function App() {
                 availableBrands={availableBrands}
                 maxHarvestRate={maxHarvestRate}
                 totalLoaded={machines.length}
+                iceTypeCounts={iceTypeCounts}
+                equipmentTypeCounts={equipmentTypeCounts}
+                coolingTypeCounts={coolingTypeCounts}
               />
 
               {/* Database Management Tools */}

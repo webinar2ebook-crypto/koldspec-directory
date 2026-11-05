@@ -163,14 +163,54 @@ export function parseCsvContent(fileOrString: File | string): Promise<ParseCsvFi
   });
 }
 
-function normalizeIceType(raw: string): IceType {
-  const val = raw.toLowerCase().trim();
+function normalizeIceType(raw: string, modelNumber?: string, brand?: string): IceType {
+  const val = (raw || '').toLowerCase().trim();
+  const model = (modelNumber || '').toUpperCase().trim();
+  const b = (brand || '').toLowerCase().trim();
+
+  // 1. Manufacturer line conventions
+  if (b.includes('hoshizaki')) {
+    if (model.startsWith('F-') || model.startsWith('FS-')) return 'Flake';
+    if (model.startsWith('FD-') || model.startsWith('DCM-')) return 'Nugget';
+    if (model.startsWith('KM') || model.startsWith('DKM') || model.startsWith('KML') || model.startsWith('KMS')) return 'Crescent';
+  }
+  if (b.includes('scotsman')) {
+    if (model.startsWith('FS') || model.startsWith('F-') || model.startsWith('AF') || model.startsWith('EF') || model.startsWith('MF')) return 'Flake';
+    if (model.startsWith('NH') || model.startsWith('NS') || model.startsWith('N-') || model.startsWith('UN') || model.startsWith('SCN')) return 'Nugget';
+    if (model.startsWith('C') || model.startsWith('CU') || model.startsWith('CP')) return 'Cube';
+  }
+  if (b.includes('manitowoc')) {
+    if (model.startsWith('RNF') || model.startsWith('RF') || model.startsWith('UFF') || model.startsWith('RFF')) return 'Flake';
+    if (model.startsWith('RN') || model.startsWith('RNS') || model.startsWith('UNP')) return 'Nugget';
+    if (model.startsWith('BG')) return 'Gourmet';
+    if (model.startsWith('ID') || model.startsWith('IY') || model.startsWith('IB') || model.startsWith('UD') || model.startsWith('UY') || model.startsWith('NEO')) return 'Cube';
+  }
+  if (b.includes('ice-o-matic')) {
+    if (model.startsWith('MFI') || model.startsWith('EF')) return 'Flake';
+    if (model.startsWith('GEM') || model.startsWith('UCP')) return 'Nugget';
+    if (model.startsWith('CIM') || model.startsWith('ICE') || model.startsWith('HIS')) return 'Cube';
+  }
+  if (b.includes('follett')) {
+    if (model.includes('FLAKE') || model.startsWith('FC')) return 'Flake';
+    return 'Nugget';
+  }
+
+  // 2. AHRI 810 continuous test hardness
+  if (val.includes('continuous')) {
+    const match = val.match(/hardness:\s*([0-9.]+)/i);
+    if (match) {
+      const hardness = parseFloat(match[1]);
+      if (hardness > 0 && hardness < 85) return 'Flake';
+      if (hardness >= 85) return 'Nugget';
+    }
+    return 'Flake';
+  }
+
   if (val.includes('cube') || val.includes('dice')) return 'Cube';
   if (val.includes('nugget') || val.includes('chew') || val.includes('pellet') || val.includes('pearl')) return 'Nugget';
   if (val.includes('flake') || val.includes('snow')) return 'Flake';
   if (val.includes('crescent')) return 'Crescent';
   if (val.includes('gourmet') || val.includes('bell')) return 'Gourmet';
-  if (val.includes('continuous')) return 'Continuous';
   return 'Cube';
 }
 
@@ -242,7 +282,7 @@ export function convertRowsToIceMachines(
       modelNumber,
       modelName: row[mapping.modelName]?.trim() || undefined,
       equipmentType: normalizeEquipmentType(rawEquipType),
-      iceType: normalizeIceType(rawIceType),
+      iceType: normalizeIceType(rawIceType, modelNumber, brand),
       iceShapeDetail: rawIceType,
       harvestRateLbs: harvestRateLbs || 0,
       energyUseRateKwh: energyUseRateKwh || 0,
