@@ -1,0 +1,313 @@
+import React, { useState } from 'react';
+import { IceMachine } from '../types/iceMachine';
+import { ArrowUpDown, ArrowUp, ArrowDown, ShieldCheck, CheckSquare, Square, ExternalLink, Trash2 } from 'lucide-react';
+
+interface MachineTableViewProps {
+  machines: IceMachine[];
+  onSelectMachine: (machine: IceMachine) => void;
+  comparedIds: string[];
+  onToggleCompare: (machine: IceMachine) => void;
+  onDeleteMachine?: (id: string) => void;
+  onOpenImporter: () => void;
+}
+
+type SortField = 'brand' | 'modelNumber' | 'harvestRateLbs' | 'energyUseRateKwh' | 'potableWaterUseGal' | 'iceType';
+
+export const MachineTableView: React.FC<MachineTableViewProps> = ({
+  machines,
+  onSelectMachine,
+  comparedIds,
+  onToggleCompare,
+  onDeleteMachine,
+  onOpenImporter,
+}) => {
+  const [sortField, setSortField] = useState<SortField>('harvestRateLbs');
+  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
+
+  const handleSort = (field: SortField) => {
+    if (sortField === field) {
+      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortField(field);
+      setSortDirection(field === 'harvestRateLbs' ? 'desc' : 'asc');
+    }
+  };
+
+  const sortedMachines = [...machines].sort((a, b) => {
+    let aVal: any = a[sortField];
+    let bVal: any = b[sortField];
+
+    if (aVal === undefined) aVal = 0;
+    if (bVal === undefined) bVal = 0;
+
+    if (typeof aVal === 'string') {
+      return sortDirection === 'asc'
+        ? aVal.localeCompare(bVal)
+        : bVal.localeCompare(aVal);
+    }
+    return sortDirection === 'asc' ? aVal - bVal : bVal - aVal;
+  });
+
+  const renderSortIndicator = (field: SortField) => {
+    if (sortField !== field) {
+      return <ArrowUpDown className="w-3 h-3 text-slate-400 opacity-0 group-hover:opacity-100 transition-opacity" />;
+    }
+    return sortDirection === 'asc' ? (
+      <ArrowUp className="w-3 h-3 text-blue-600" />
+    ) : (
+      <ArrowDown className="w-3 h-3 text-blue-600" />
+    );
+  };
+
+  return (
+    <div className="bg-white rounded-xl border border-slate-200 shadow-xs overflow-hidden">
+      {/* Table Title Bar */}
+      <div className="p-4 px-6 border-b border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-slate-50/50">
+        <div>
+          <h2 className="text-sm font-bold uppercase tracking-wider text-slate-900">
+            AHRI Tested Specification Ledger
+          </h2>
+          <p className="text-xs text-slate-500">
+            Standard Rating Conditions: 90°F ambient air / 70°F inlet water / continuous operation
+          </p>
+        </div>
+
+        <div className="text-xs font-mono text-slate-500 tabular-nums">
+          {machines.length} records in active table view
+        </div>
+      </div>
+
+      {/* Overflow Table Container */}
+      <div className="overflow-x-auto custom-scrollbar">
+        <table className="w-full text-left text-xs border-collapse">
+          <thead>
+            <tr className="bg-slate-100/80 border-b border-slate-200 text-slate-600 font-semibold uppercase tracking-wider text-[11px]">
+              <th scope="col" className="w-10 px-3 py-3 text-center">
+                <span className="sr-only">Compare</span>
+              </th>
+              <th
+                scope="col"
+                onClick={() => handleSort('brand')}
+                className="px-4 py-3 cursor-pointer select-none group"
+              >
+                <div className="flex items-center gap-1.5">
+                  <span>Brand</span>
+                  {renderSortIndicator('brand')}
+                </div>
+              </th>
+              <th
+                scope="col"
+                onClick={() => handleSort('modelNumber')}
+                className="px-4 py-3 cursor-pointer select-none group"
+              >
+                <div className="flex items-center gap-1.5">
+                  <span>Model Number</span>
+                  {renderSortIndicator('modelNumber')}
+                </div>
+              </th>
+              <th
+                scope="col"
+                onClick={() => handleSort('iceType')}
+                className="px-3 py-3 cursor-pointer select-none group"
+              >
+                <div className="flex items-center gap-1.5">
+                  <span>Ice Form</span>
+                  {renderSortIndicator('iceType')}
+                </div>
+              </th>
+              <th scope="col" className="px-3 py-3">
+                Unit Type
+              </th>
+              <th
+                scope="col"
+                onClick={() => handleSort('harvestRateLbs')}
+                className="px-4 py-3 text-right cursor-pointer select-none group"
+              >
+                <div className="flex items-center justify-end gap-1.5">
+                  <span>Harvest Rate (lbs/day)</span>
+                  {renderSortIndicator('harvestRateLbs')}
+                </div>
+              </th>
+              <th
+                scope="col"
+                onClick={() => handleSort('energyUseRateKwh')}
+                className="px-4 py-3 text-right cursor-pointer select-none group"
+              >
+                <div className="flex items-center justify-end gap-1.5">
+                  <span>Energy (kWh/100 lbs)</span>
+                  {renderSortIndicator('energyUseRateKwh')}
+                </div>
+              </th>
+              <th
+                scope="col"
+                onClick={() => handleSort('potableWaterUseGal')}
+                className="px-4 py-3 text-right cursor-pointer select-none group"
+              >
+                <div className="flex items-center justify-end gap-1.5">
+                  <span>Water (gal/100 lbs)</span>
+                  {renderSortIndicator('potableWaterUseGal')}
+                </div>
+              </th>
+              <th scope="col" className="px-3 py-3">
+                Condenser
+              </th>
+              <th scope="col" className="px-3 py-3">
+                Refrigerant
+              </th>
+              <th scope="col" className="px-3 py-3 text-center">
+                ENERGY STAR®
+              </th>
+              <th scope="col" className="px-3 py-3 text-right">
+                Actions
+              </th>
+            </tr>
+          </thead>
+
+          <tbody className="divide-y divide-slate-100">
+            {sortedMachines.length === 0 ? (
+              <tr>
+                <td colSpan={12} className="py-16 text-center">
+                  <div className="max-w-md mx-auto px-4 space-y-3">
+                    <div className="w-12 h-12 mx-auto rounded-full bg-slate-100 flex items-center justify-center text-slate-400 font-mono text-base font-bold">
+                      0
+                    </div>
+                    <div className="text-sm font-bold text-slate-800">
+                      Empty Specification Table
+                    </div>
+                    <p className="text-xs text-slate-500 leading-relaxed">
+                      No machines match the selected filter criteria or no CSV data has been loaded into the database yet.
+                    </p>
+                    <button
+                      onClick={onOpenImporter}
+                      className="inline-flex items-center gap-1.5 px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold rounded-lg shadow-xs transition-colors"
+                    >
+                      <span>Import ENERGY STAR CSV</span>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            ) : (
+              sortedMachines.map((m) => {
+                const isCompared = comparedIds.includes(m.id);
+                return (
+                  <tr
+                    key={m.id}
+                    className="hover:bg-blue-50/40 transition-colors group"
+                  >
+                    {/* Compare */}
+                    <td className="px-3 py-2.5 text-center">
+                      <button
+                        onClick={() => onToggleCompare(m)}
+                        className="text-slate-400 hover:text-blue-600 transition-colors p-0.5"
+                        title={isCompared ? 'Remove from comparison' : 'Add to comparison'}
+                      >
+                        {isCompared ? (
+                          <CheckSquare className="w-4 h-4 text-blue-600" />
+                        ) : (
+                          <Square className="w-4 h-4" />
+                        )}
+                      </button>
+                    </td>
+
+                    {/* Brand */}
+                    <td className="px-4 py-2.5 font-semibold text-slate-900 whitespace-nowrap">
+                      {m.brand}
+                    </td>
+
+                    {/* Model */}
+                    <td className="px-4 py-2.5 whitespace-nowrap">
+                      <button
+                        onClick={() => onSelectMachine(m)}
+                        className="font-mono font-medium text-blue-600 hover:text-blue-800 hover:underline transition-colors text-left"
+                      >
+                        {m.modelNumber}
+                      </button>
+                      {m.modelName && (
+                        <div className="text-[10px] text-slate-400 max-w-[180px] truncate">
+                          {m.modelName}
+                        </div>
+                      )}
+                    </td>
+
+                    {/* Ice Type */}
+                    <td className="px-3 py-2.5 whitespace-nowrap text-slate-700">
+                      {m.iceType}
+                    </td>
+
+                    {/* Equipment Type */}
+                    <td className="px-3 py-2.5 whitespace-nowrap font-mono text-[11px] text-slate-600">
+                      {m.equipmentType}
+                    </td>
+
+                    {/* Harvest Rate (lbs/day) */}
+                    <td className="px-4 py-2.5 text-right font-mono font-bold text-slate-900 tabular-nums whitespace-nowrap">
+                      {m.harvestRateLbs.toLocaleString()}
+                    </td>
+
+                    {/* Energy (kWh/100 lbs) */}
+                    <td className="px-4 py-2.5 text-right font-mono tabular-nums whitespace-nowrap">
+                      <span className="font-semibold text-slate-800">
+                        {m.energyUseRateKwh.toFixed(2)}
+                      </span>
+                    </td>
+
+                    {/* Potable Water (gal/100 lbs) */}
+                    <td className="px-4 py-2.5 text-right font-mono tabular-nums whitespace-nowrap text-slate-700">
+                      {m.potableWaterUseGal !== undefined
+                        ? m.potableWaterUseGal.toFixed(1)
+                        : '—'}
+                    </td>
+
+                    {/* Condenser */}
+                    <td className="px-3 py-2.5 whitespace-nowrap text-slate-600">
+                      {m.condenserCooling}
+                    </td>
+
+                    {/* Refrigerant */}
+                    <td className="px-3 py-2.5 whitespace-nowrap font-mono text-[11px] text-slate-600">
+                      {m.refrigerant || '—'}
+                    </td>
+
+                    {/* ENERGY STAR */}
+                    <td className="px-3 py-2.5 text-center whitespace-nowrap">
+                      {m.energyStarCertified ? (
+                        <span className="inline-flex items-center gap-1 text-[11px] font-medium text-blue-700">
+                          <ShieldCheck className="w-3.5 h-3.5 text-blue-600" />
+                          <span>Yes</span>
+                        </span>
+                      ) : (
+                        <span className="text-slate-400 text-[11px]">No</span>
+                      )}
+                    </td>
+
+                    {/* Actions */}
+                    <td className="px-3 py-2.5 text-right whitespace-nowrap">
+                      <div className="flex items-center justify-end gap-1.5">
+                        <button
+                          onClick={() => onSelectMachine(m)}
+                          className="px-2 py-1 text-[11px] font-semibold text-slate-700 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 rounded transition-colors"
+                          title="View specification sheet"
+                        >
+                          Specs
+                        </button>
+                        {onDeleteMachine && (
+                          <button
+                            onClick={() => onDeleteMachine(m.id)}
+                            className="p-1 text-slate-400 hover:text-red-600 transition-colors rounded"
+                            title="Delete this record"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        )}
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })
+            )}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+};

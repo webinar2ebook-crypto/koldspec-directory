@@ -1,0 +1,6 @@
+{
+  "name": "KoldSpec Commercial Ice Machine Directory",
+  "description": "Professional B2B specification directory and ENERGY STAR benchmarking database for commercial ice machines.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

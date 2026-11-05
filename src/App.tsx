@@ -1,0 +1,614 @@
+import React, { useState, useEffect, useMemo } from 'react';
+import { IceMachine, FilterState, IceType, EquipmentType, CondenserType } from './types/iceMachine';
+import {
+  getAllIceMachines,
+  saveIceMachines,
+  deleteIceMachine,
+  clearAllIceMachines,
+  exportMachinesToCsv,
+  getOfficialEnergyStarSampleRecords,
+  checkNeonStatus,
+  syncLocalMachinesToNeon,
+} from './db/iceMachinesDb';
+import { Navbar } from './components/Navbar';
+import { HeroSection } from './components/HeroSection';
+import { FilterSidebar } from './components/FilterSidebar';
+import { MachineCard } from './components/MachineCard';
+import { MachineTableView } from './components/MachineTableView';
+import { MachineDetailModal } from './components/MachineDetailModal';
+import { CompareModal } from './components/CompareModal';
+import { CsvImportModal } from './components/CsvImportModal';
+import { EmptyDatabaseView } from './components/EmptyDatabaseView';
+import { StandardsInfoView } from './components/StandardsInfoView';
+import { BarChart3, Database, Trash2, CheckCircle2, RefreshCw, Server, ArrowRight } from 'lucide-react';
+
+export default function App() {
+  const [machines, setMachines] = useState<IceMachine[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [viewMode, setViewMode] = useState<'grid' | 'table'>('grid');
+  const [currentView, setCurrentView] = useState<'directory' | 'table' | 'standards'>('directory');
+  const [isImportModalOpen, setIsImportModalOpen] = useState(false);
+  const [isCompareModalOpen, setIsCompareModalOpen] = useState(false);
+  const [selectedMachine, setSelectedMachine] = useState<IceMachine | null>(null);
+  const [comparedMachineIds, setComparedMachineIds] = useState<string[]>([]);
+  const [droppedFile, setDroppedFile] = useState<File | null>(null);
+  const [notification, setNotification] = useState<string | null>(null);
+
+  // Neon PostgreSQL status
+  const [neonConnected, setNeonConnected] = useState<boolean>(true);
+  const [neonCount, setNeonCount] = useState<number>(0);
+  const [isSyncing, setIsSyncing] = useState<boolean>(false);
+
+  // Filters State
+  const [filters, setFilters] = useState<FilterState>({
+    searchQuery: '',
+    brands: [],
+    iceTypes: [],
+    productionMin: 0,
+    productionMax: 2500,
+    energyMaxKwh: 12.0,
+    equipmentTypes: [],
+    coolingTypes: [],
+    energyStarOnly: false,
+    sortBy: 'production-desc',
+  });
+
+  // Show auto-dismissing notifications
+  const notify = (msg: string) => {
+    setNotification(msg);
+    setTimeout(() => {
+      setNotification((curr) => (curr === msg ? null : curr));
+    }, 4500);
+  };
+
+  // Load from Neon and local on startup
+  useEffect(() => {
+    async function initDatabase() {
+      try {
+        setIsLoading(true);
+        // 1. Check Neon PostgreSQL health
+        const status = await checkNeonStatus();
+        setNeonConnected(status.connected);
+        setNeonCount(status.machineCount);
+
+        // 2. Fetch machines
+        const res = await getAllIceMachines();
+        const safeList = res && Array.isArray(res.machines) ? res.machines : [];
+        setMachines(safeList);
+
+        // 3. If browser has local machines (e.g. 651 imported records) but Neon is empty or has fewer, auto-migrate to Neon
+        if (safeList.length > 0 && status.connected && status.machineCount < safeList.length) {
+          setIsSyncing(true);
+          notify(`Pushing all ${safeList.length} machines to Neon PostgreSQL...`);
+          const syncRes = await syncLocalMachinesToNeon(safeList);
+          setIsSyncing(false);
+          if (syncRes.success) {
+            setNeonCount(syncRes.count);
+            notify(`Migration complete: ${safeList.length} machines saved permanently in Neon.`);
+          }
+        }
+      } catch (err) {
+        console.error('Failed to load database:', err);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    initDatabase();
+  }, []);
+
+  // Compute maximum harvest rate in loaded dataset for slider bound
+  const maxHarvestRate = useMemo(() => {
+    if (machines.length === 0) return 2500;
+    return Math.max(...machines.map((m) => m.harvestRateLbs), 1500);
+  }, [machines]);
+
+  // Available brands with counts
+  const availableBrands = useMemo(() => {
+    const map = new Map<string, number>();
+    for (const m of machines) {
+      map.set(m.brand, (map.get(m.brand) || 0) + 1);
+    }
+    return Array.from(map.entries())
+      .map(([name, count]) => ({ name, count }))
+      .sort((a, b) => b.count - a.count);
+  }, [machines]);
+
+  // Filtered and Sorted Machines
+  const filteredMachines = useMemo(() => {
+    return machines.filter((m) => {
+      // Search
+      if (filters.searchQuery.trim()) {
+        const query = filters.searchQuery.toLowerCase().trim();
+        const matchBrand = m.brand.toLowerCase().includes(query);
+        const matchModel = m.modelNumber.toLowerCase().includes(query);
+        const matchName = m.modelName?.toLowerCase().includes(query);
+        const matchRefrig = m.refrigerant?.toLowerCase().includes(query);
+        const matchIce = m.iceType.toLowerCase().includes(query);
+        if (!matchBrand && !matchModel && !matchName && !matchRefrig && !matchIce) {
+          return false;
+        }
+      }
+
+      // Brand
+      if (filters.brands.length > 0 && !filters.brands.includes(m.brand)) {
+        return false;
+      }
+
+      // Ice Type
+      if (filters.iceTypes.length > 0 && !filters.iceTypes.includes(m.iceType)) {
+        return false;
+      }
+
+      // Daily Production
+      if (m.harvestRateLbs < filters.productionMin) return false;
+      if (filters.productionMax < maxHarvestRate && m.harvestRateLbs > filters.productionMax) {
+        return false;
+      }
+
+      // Energy Use Rate
+      if (m.energyUseRateKwh > filters.energyMaxKwh) return false;
+
+      // Equipment Type
+      if (filters.equipmentTypes.length > 0 && !filters.equipmentTypes.includes(m.equipmentType)) {
+        return false;
+      }
+
+      // Cooling Type
+      if (filters.coolingTypes.length > 0 && !filters.coolingTypes.includes(m.condenserCooling)) {
+        return false;
+      }
+
+      // ENERGY STAR
+      if (filters.energyStarOnly && !m.energyStarCertified) {
+        return false;
+      }
+
+      return true;
+    }).sort((a, b) => {
+      switch (filters.sortBy) {
+        case 'production-desc':
+          return b.harvestRateLbs - a.harvestRateLbs;
+        case 'production-asc':
+          return a.harvestRateLbs - b.harvestRateLbs;
+        case 'energy-asc':
+          return a.energyUseRateKwh - b.energyUseRateKwh;
+        case 'water-asc':
+          return (a.potableWaterUseGal || 999) - (b.potableWaterUseGal || 999);
+        case 'brand-asc':
+          return a.brand.localeCompare(b.brand);
+        default:
+          return b.harvestRateLbs - a.harvestRateLbs;
+      }
+    });
+  }, [machines, filters, maxHarvestRate]);
+
+  // Compare helpers
+  const comparedMachines = useMemo(() => {
+    return machines.filter((m) => comparedMachineIds.includes(m.id));
+  }, [machines, comparedMachineIds]);
+
+  const toggleCompare = (machine: IceMachine) => {
+    if (comparedMachineIds.includes(machine.id)) {
+      setComparedMachineIds((prev) => prev.filter((id) => id !== machine.id));
+    } else {
+      if (comparedMachineIds.length >= 4) {
+        notify('Maximum 4 models can be compared at once.');
+        return;
+      }
+      setComparedMachineIds((prev) => [...prev, machine.id]);
+    }
+  };
+
+  const removeCompared = (id: string) => {
+    setComparedMachineIds((prev) => prev.filter((item) => item !== id));
+  };
+
+  // Toggle Ice Type from Hero
+  const toggleIceType = (type: IceType) => {
+    setFilters((prev) => {
+      const exists = prev.iceTypes.includes(type);
+      return {
+        ...prev,
+        iceTypes: exists
+          ? prev.iceTypes.filter((t) => t !== type)
+          : [...prev.iceTypes, type],
+      };
+    });
+  };
+
+  // Manual Trigger to sync current dataset to Neon PostgreSQL
+  const handlePushToNeon = async () => {
+    if (machines.length === 0) return;
+    setIsSyncing(true);
+    notify(`Pushing all ${machines.length} machines to Neon PostgreSQL...`);
+    try {
+      const syncRes = await syncLocalMachinesToNeon(machines);
+      setIsSyncing(false);
+      if (syncRes.success) {
+        setNeonCount(syncRes.count);
+        notify(`Migration success: ${syncRes.count} machines permanently stored in Neon.`);
+      } else {
+        notify('Migration failed. Please check connection.');
+      }
+    } catch {
+      setIsSyncing(false);
+      notify('Failed to connect to Neon PostgreSQL.');
+    }
+  };
+
+  // Database handlers
+  const handleImportComplete = async (newMachines: IceMachine[], mode: 'replace' | 'append') => {
+    try {
+      setIsSyncing(true);
+      const total = await saveIceMachines(newMachines, mode);
+      const res = await getAllIceMachines();
+      setMachines(res.machines);
+      setNeonCount(total);
+      setIsSyncing(false);
+      setDroppedFile(null);
+      notify(`Imported ${newMachines.length} ice machines directly into Neon PostgreSQL database!`);
+    } catch (err: any) {
+      setIsSyncing(false);
+      console.error('Import save error:', err);
+      notify('Failed to store records in database.');
+    }
+  };
+
+  const handleDeleteMachine = async (id: string) => {
+    await deleteIceMachine(id);
+    setMachines((prev) => prev.filter((m) => m.id !== id));
+    setComparedMachineIds((prev) => prev.filter((mId) => mId !== id));
+    setNeonCount((prev) => Math.max(0, prev - 1));
+    notify('Machine specification removed from Neon database.');
+  };
+
+  const handleClearDatabase = async () => {
+    if (window.confirm('Are you sure you want to clear all records from the Neon PostgreSQL database? This will remove all permanently stored machines.')) {
+      await clearAllIceMachines();
+      setMachines([]);
+      setComparedMachineIds([]);
+      setNeonCount(0);
+      notify('Neon PostgreSQL database cleared.');
+    }
+  };
+
+  const handleExportCsv = () => {
+    const csvContent = exportMachinesToCsv(filteredMachines);
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', `KoldSpec_Commercial_Ice_Machines_${new Date().toISOString().slice(0, 10)}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  const handleLoadSample = async () => {
+    const sample = getOfficialEnergyStarSampleRecords();
+    await handleImportComplete(sample, 'replace');
+  };
+
+  return (
+    <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col font-sans">
+      {/* Toast Notification */}
+      {notification && (
+        <div className="fixed bottom-6 right-6 z-50 bg-slate-900 text-white px-4 py-3 rounded-xl shadow-xl flex items-center gap-2.5 text-xs font-medium border border-slate-700 animate-in fade-in slide-in-from-bottom-2">
+          <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+          <span>{notification}</span>
+        </div>
+      )}
+
+      {/* Top Bar Contract (3 zones) */}
+      <Navbar
+        currentView={currentView}
+        onViewChange={(view) => {
+          setCurrentView(view);
+          if (view === 'table') setViewMode('table');
+          if (view === 'directory') setViewMode('grid');
+        }}
+        onOpenImporter={() => {
+          setDroppedFile(null);
+          setIsImportModalOpen(true);
+        }}
+        onOpenCompare={() => setIsCompareModalOpen(true)}
+        compareCount={comparedMachineIds.length}
+        totalMachines={machines.length}
+        neonConnected={neonConnected}
+        neonCount={neonCount}
+        onSyncToNeon={handlePushToNeon}
+        isSyncing={isSyncing}
+      />
+
+      {/* Hero Section */}
+      {currentView !== 'standards' && (
+        <HeroSection
+          searchQuery={filters.searchQuery}
+          onSearchChange={(q) => setFilters({ ...filters, searchQuery: q })}
+          selectedIceTypes={filters.iceTypes}
+          onToggleIceType={toggleIceType}
+          totalCount={machines.length}
+          filteredCount={filteredMachines.length}
+          viewMode={viewMode}
+          onViewModeChange={(m) => {
+            setViewMode(m);
+            if (currentView === 'table' && m === 'grid') setCurrentView('directory');
+            if (currentView === 'directory' && m === 'table') setCurrentView('table');
+          }}
+          onOpenImporter={() => {
+            setDroppedFile(null);
+            setIsImportModalOpen(true);
+          }}
+          onExportCsv={handleExportCsv}
+        />
+      )}
+
+      {/* Neon PostgreSQL Synchronization Banner if local data needs migration */}
+      {machines.length > 0 && neonCount < machines.length && (
+        <div className="bg-blue-600 text-white py-2.5 px-4">
+          <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
+            <div className="flex items-center gap-2 font-medium">
+              <Server className="w-4 h-4" />
+              <span>
+                Found <strong>{machines.length}</strong> machines ready to persist into your Neon PostgreSQL database.
+              </span>
+            </div>
+            <button
+              onClick={handlePushToNeon}
+              disabled={isSyncing}
+              className="px-3 py-1 bg-white text-blue-900 rounded-md font-bold hover:bg-blue-50 transition-colors shadow-xs flex items-center gap-1.5"
+            >
+              <RefreshCw className={`w-3.5 h-3.5 ${isSyncing ? 'animate-spin' : ''}`} />
+              <span>{isSyncing ? 'Pushing to Neon...' : 'Push All Machines to Neon Now'}</span>
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Main View Area */}
+      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {currentView === 'standards' ? (
+          <StandardsInfoView
+            onBackToDirectory={() => setCurrentView('directory')}
+            onOpenImporter={() => setIsImportModalOpen(true)}
+          />
+        ) : machines.length === 0 ? (
+          // Empty State view when no CSV imported yet
+          <EmptyDatabaseView
+            onOpenFileSelect={(file) => {
+              setDroppedFile(file);
+              setIsImportModalOpen(true);
+            }}
+            onOpenImporterModal={() => {
+              setDroppedFile(null);
+              setIsImportModalOpen(true);
+            }}
+            onLoadSampleData={handleLoadSample}
+          />
+        ) : (
+          // Populated View: Sidebar + Main Grid / Table
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 items-start">
+            {/* Filters Sidebar */}
+            <div className="lg:col-span-1">
+              <FilterSidebar
+                filters={filters}
+                onFilterChange={setFilters}
+                availableBrands={availableBrands}
+                maxHarvestRate={maxHarvestRate}
+                totalLoaded={machines.length}
+              />
+
+              {/* Database Management Tools */}
+              <div className="mt-4 p-4 bg-white rounded-xl border border-slate-200 text-xs space-y-2.5">
+                <div className="flex items-center justify-between text-slate-500 font-semibold uppercase tracking-wider text-[10px]">
+                  <span>Database Operations</span>
+                  <Database className="w-3.5 h-3.5 text-blue-600" />
+                </div>
+                <div className="text-[11px] text-slate-700 leading-snug">
+                  <div>Backend: <strong>Neon PostgreSQL</strong></div>
+                  <div className="text-slate-500 font-mono text-[10px] truncate">ep-wispy-waterfall.aws.neon.tech</div>
+                </div>
+                <div className="text-[11px] text-slate-600 font-medium">
+                  Persisted records: <strong className="font-mono text-slate-900">{neonCount || machines.length}</strong> models
+                </div>
+
+                <div className="flex gap-2 pt-1">
+                  <button
+                    onClick={handlePushToNeon}
+                    disabled={isSyncing}
+                    className="flex-1 py-1.5 px-2 bg-blue-50 hover:bg-blue-100 text-blue-700 font-semibold rounded text-center transition-colors flex items-center justify-center gap-1"
+                    title="Push current models to Neon"
+                  >
+                    <RefreshCw className={`w-3 h-3 ${isSyncing ? 'animate-spin' : ''}`} />
+                    <span>Sync Neon</span>
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      setDroppedFile(null);
+                      setIsImportModalOpen(true);
+                    }}
+                    className="py-1.5 px-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded text-center transition-colors"
+                  >
+                    Import
+                  </button>
+
+                  <button
+                    onClick={handleClearDatabase}
+                    className="py-1.5 px-2.5 bg-red-50 hover:bg-red-100 text-red-700 font-semibold rounded transition-colors"
+                    title="Clear Database"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* Results Display */}
+            <div className="lg:col-span-3 space-y-4">
+              {/* Active Filter Toolbar */}
+              <div className="bg-white p-3.5 px-4 rounded-xl border border-slate-200 flex flex-wrap items-center justify-between gap-3 text-xs">
+                <div className="flex items-center gap-2">
+                  <span className="text-slate-500">Showing:</span>
+                  <strong className="text-slate-900 font-mono tabular-nums">
+                    {filteredMachines.length}
+                  </strong>
+                  <span className="text-slate-500">machines</span>
+                  {filteredMachines.length !== machines.length && (
+                    <span className="text-slate-400 font-mono">
+                      (filtered from {machines.length})
+                    </span>
+                  )}
+                </div>
+
+                {/* Sort dropdown */}
+                <div className="flex items-center gap-2">
+                  <span className="text-slate-500 font-medium">Sort by:</span>
+                  <select
+                    value={filters.sortBy}
+                    onChange={(e) =>
+                      setFilters({ ...filters, sortBy: e.target.value as any })
+                    }
+                    className="text-xs py-1 px-2.5 bg-slate-50 border border-slate-300 rounded-lg focus:ring-1 focus:ring-blue-500 text-slate-800 font-medium cursor-pointer"
+                  >
+                    <option value="production-desc">Daily Production (Highest First)</option>
+                    <option value="production-asc">Daily Production (Lowest First)</option>
+                    <option value="energy-asc">Energy Efficiency (Lowest kWh First)</option>
+                    <option value="water-asc">Water Efficiency (Lowest Gal First)</option>
+                    <option value="brand-asc">Brand (A–Z)</option>
+                  </select>
+                </div>
+              </div>
+
+              {/* View Rendering */}
+              {viewMode === 'grid' && currentView !== 'table' ? (
+                filteredMachines.length === 0 ? (
+                  <div className="bg-white rounded-xl border border-slate-200 p-12 text-center space-y-3">
+                    <div className="w-10 h-10 mx-auto rounded-full bg-slate-100 flex items-center justify-center text-slate-400 font-bold font-mono">
+                      0
+                    </div>
+                    <h3 className="text-sm font-bold text-slate-800">
+                      No matching ice machines found
+                    </h3>
+                    <p className="text-xs text-slate-500 max-w-sm mx-auto">
+                      Try expanding your production range, clearing brand selections, or adjusting the energy efficiency threshold.
+                    </p>
+                    <button
+                      onClick={() =>
+                        setFilters({
+                          ...filters,
+                          searchQuery: '',
+                          brands: [],
+                          iceTypes: [],
+                          productionMin: 0,
+                          productionMax: maxHarvestRate,
+                          energyMaxKwh: 12.0,
+                          equipmentTypes: [],
+                          coolingTypes: [],
+                          energyStarOnly: false,
+                        })
+                      }
+                      className="px-4 py-2 bg-slate-900 text-white rounded-lg text-xs font-semibold hover:bg-slate-800 transition-colors"
+                    >
+                      Reset All Filters
+                    </button>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    {filteredMachines.map((m) => (
+                      <MachineCard
+                        key={m.id}
+                        machine={m}
+                        onSelect={setSelectedMachine}
+                        isCompared={comparedMachineIds.includes(m.id)}
+                        onToggleCompare={toggleCompare}
+                      />
+                    ))}
+                  </div>
+                )
+              ) : (
+                <MachineTableView
+                  machines={filteredMachines}
+                  onSelectMachine={setSelectedMachine}
+                  comparedIds={comparedMachineIds}
+                  onToggleCompare={toggleCompare}
+                  onDeleteMachine={handleDeleteMachine}
+                  onOpenImporter={() => setIsImportModalOpen(true)}
+                />
+              )}
+            </div>
+          </div>
+        )}
+      </main>
+
+      {/* Floating Side-by-Side Comparison Bar */}
+      {comparedMachineIds.length > 0 && (
+        <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-40 bg-slate-900 text-white px-5 py-3 rounded-2xl shadow-2xl border border-slate-700 flex items-center gap-4 text-xs">
+          <div className="flex items-center gap-2">
+            <BarChart3 className="w-4 h-4 text-blue-400" />
+            <span>
+              Comparing <strong className="font-mono text-blue-300">{comparedMachineIds.length}</strong> of 4 models
+            </span>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setIsCompareModalOpen(true)}
+              className="px-3.5 py-1.5 bg-blue-600 hover:bg-blue-500 text-white font-semibold rounded-lg transition-colors whitespace-nowrap"
+            >
+              Open Comparison Matrix
+            </button>
+            <button
+              onClick={() => setComparedMachineIds([])}
+              className="p-1 text-slate-400 hover:text-white transition-colors"
+              title="Clear all compared"
+            >
+              Clear
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Machine Detail Spec Sheet Modal */}
+      <MachineDetailModal
+        machine={selectedMachine}
+        onClose={() => setSelectedMachine(null)}
+        isCompared={selectedMachine ? comparedMachineIds.includes(selectedMachine.id) : false}
+        onToggleCompare={toggleCompare}
+      />
+
+      {/* Compare Modal */}
+      <CompareModal
+        isOpen={isCompareModalOpen}
+        onClose={() => setIsCompareModalOpen(false)}
+        comparedMachines={comparedMachines}
+        onRemoveMachine={removeCompared}
+        onSelectMachine={setSelectedMachine}
+      />
+
+      {/* CSV Importer Modal */}
+      <CsvImportModal
+        isOpen={isImportModalOpen}
+        onClose={() => setIsImportModalOpen(false)}
+        onImportComplete={handleImportComplete}
+        initialFile={droppedFile}
+      />
+
+      {/* Clean B2B Footer */}
+      <footer className="mt-16 bg-white border-t border-slate-200 text-xs text-slate-500 py-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <span className="font-bold text-slate-900">KoldSpec Directory</span>
+            <span aria-hidden="true">·</span>
+            <span>Independent Commercial Ice Machine Specifications</span>
+            <span aria-hidden="true">·</span>
+            <span>AHRI Standard 810/820</span>
+          </div>
+          <div className="text-slate-400 text-[11px]">
+            Data permanently backed by Neon PostgreSQL (<span className="font-mono">neondb</span>).
+          </div>
+        </div>
+      </footer>
+    </div>
+  );
+}
