@@ -6,6 +6,7 @@ dotenv.config();
 
 const connectionString =
   process.env.NEON_DATABASE_URL ||
+  process.env.DATABASE_URL ||
   'postgresql://neondb_owner:npg_t43TsLgmiSpJ@ep-wispy-waterfall-bdy5vce3.c-8.us-east-2.aws.neon.tech/neondb?sslmode=require';
 
 let pool: Pool | null = null;

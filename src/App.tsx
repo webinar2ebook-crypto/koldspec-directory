@@ -20,7 +20,7 @@ import { CompareModal } from './components/CompareModal';
 import { CsvImportModal } from './components/CsvImportModal';
 import { EmptyDatabaseView } from './components/EmptyDatabaseView';
 import { StandardsInfoView } from './components/StandardsInfoView';
-import { BarChart3, Database, Trash2, CheckCircle2, RefreshCw, Server, ArrowRight } from 'lucide-react';
+import { BarChart3, Database, Trash2, CheckCircle2, RefreshCw, Server, ArrowRight, Download } from 'lucide-react';
 
 export default function App() {
   const [machines, setMachines] = useState<IceMachine[]>([]);
@@ -441,6 +441,16 @@ export default function App() {
                     <Trash2 className="w-3.5 h-3.5" />
                   </button>
                 </div>
+
+                <a
+                  href="/insert_data.sql"
+                  download="insert_data.sql"
+                  className="w-full py-1.5 px-2 bg-slate-900 hover:bg-slate-800 text-white font-semibold rounded text-center transition-colors flex items-center justify-center gap-1.5 block shadow-2xs text-[11px]"
+                  title="Download Neon SQL Editor script for all 651 machines"
+                >
+                  <Download className="w-3 h-3 text-blue-400" />
+                  <span>Download insert_data.sql (651)</span>
+                </a>
               </div>
             </div>
 

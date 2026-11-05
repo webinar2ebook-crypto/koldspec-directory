@@ -140,27 +140,40 @@ export async function checkNeonStatus(): Promise<{
 }
 
 /**
- * Fetch all machines from Neon PostgreSQL with seamless local cache fallback
+ * Fetch all machines from Neon PostgreSQL, with fallback to static ice_machines.json
+ * (essential for Cloudflare Pages / static hosting without Node backend), and then local IndexedDB.
  */
 export async function getAllIceMachines(): Promise<{
   machines: IceMachine[];
-  source: 'neon' | 'local';
+  source: 'neon' | 'static' | 'local';
 }> {
+  // 1. Try Node backend API
   try {
     const res = await fetch('/api/machines');
     if (res.ok) {
       const data = await res.json();
       if (Array.isArray(data.machines) && data.machines.length > 0) {
-        // Cache to local IndexedDB
         saveLocalIndexedDb(data.machines, 'replace');
         return { machines: data.machines, source: 'neon' };
       }
     }
   } catch (err) {
-    console.warn('Could not reach Neon API directly, falling back to local cache:', err);
+    console.warn('Could not reach Node API, trying static pre-bundled dataset:', err);
   }
 
-  // Fallback to local
+  // 2. Fallback to static JSON dataset (ideal for Cloudflare Pages / static hosting)
+  try {
+    const staticRes = await fetch('/ice_machines.json');
+    if (staticRes.ok) {
+      const staticMachines = await staticRes.json();
+      if (Array.isArray(staticMachines) && staticMachines.length > 0) {
+        saveLocalIndexedDb(staticMachines, 'replace');
+        return { machines: staticMachines, source: 'static' };
+      }
+    }
+  } catch {}
+
+  // 3. Fallback to browser IndexedDB
   const local = await getLocalIndexedDbMachines();
   return { machines: local, source: 'local' };
 }

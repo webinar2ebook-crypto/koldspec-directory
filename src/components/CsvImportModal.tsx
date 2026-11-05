@@ -183,6 +183,16 @@ export const CsvImportModal: React.FC<CsvImportModalProps> = ({
                 <span>Template CSV</span>
               </button>
 
+              <a
+                href="/insert_data.sql"
+                download="insert_data.sql"
+                className="px-3.5 py-2.5 bg-slate-900 border border-slate-800 hover:bg-slate-800 text-white rounded-lg text-xs font-semibold flex items-center justify-center gap-1.5 shadow-2xs transition-colors shrink-0"
+                title="Download complete SQL insert script for Neon SQL Editor"
+              >
+                <Download className="w-3.5 h-3.5 text-blue-400" />
+                <span>insert_data.sql (651 models)</span>
+              </a>
+
               <button
                 type="button"
                 onClick={handleLoadSample}
