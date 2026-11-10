@@ -37,8 +37,6 @@ export default function App() {
   const [selectedArticleSlug, setSelectedArticleSlug] = useState<string | null>(null);
   const [isImportModalOpen, setIsImportModalOpen] = useState(false);
   const [isCompareModalOpen, setIsCompareModalOpen] = useState(false);
-  const [isQuoteModalOpen, setIsQuoteModalOpen] = useState(false);
-  const [quoteTargetMachine, setQuoteTargetMachine] = useState<IceMachine | null>(null);
   const [selectedMachine, setSelectedMachine] = useState<IceMachine | null>(null);
   const [comparedMachineIds, setComparedMachineIds] = useState<string[]>([]);
   const [droppedFile, setDroppedFile] = useState<File | null>(null);
@@ -423,11 +421,6 @@ export default function App() {
     notify(`Downloaded dynamic sitemap.xml with ${machines.length + 2 + BLOG_ARTICLES.length} URLs!`);
   };
 
-  const handleOpenQuote = (targetMachine?: IceMachine) => {
-    setQuoteTargetMachine(targetMachine || selectedMachine || null);
-    setIsQuoteModalOpen(true);
-  };
-
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col font-sans">
       {/* Toast Notification */}
@@ -455,7 +448,6 @@ export default function App() {
           setIsImportModalOpen(true);
         }}
         onOpenCompare={() => setIsCompareModalOpen(true)}
-        onOpenQuote={() => handleOpenQuote()}
         compareCount={comparedMachineIds.length}
         totalMachines={machines.length}
       />
@@ -480,7 +472,6 @@ export default function App() {
             setIsImportModalOpen(true);
           }}
           onExportCsv={handleExportCsv}
-          onOpenQuote={() => handleOpenQuote()}
         />
       )}
 
@@ -686,7 +677,6 @@ export default function App() {
                         onSelect={setSelectedMachine}
                         isCompared={comparedMachineIds.includes(m.id)}
                         onToggleCompare={toggleCompare}
-                        onOpenQuote={handleOpenQuote}
                       />
                     ))}
                   </div>
@@ -699,7 +689,6 @@ export default function App() {
                   onToggleCompare={toggleCompare}
                   onDeleteMachine={handleDeleteMachine}
                   onOpenImporter={() => setIsImportModalOpen(true)}
-                  onOpenQuote={handleOpenQuote}
                 />
               )}
             </div>
@@ -741,7 +730,6 @@ export default function App() {
         onClose={() => setSelectedMachine(null)}
         isCompared={selectedMachine ? comparedMachineIds.includes(selectedMachine.id) : false}
         onToggleCompare={toggleCompare}
-        onOpenQuote={handleOpenQuote}
       />
 
       {/* Compare Modal */}
@@ -760,8 +748,6 @@ export default function App() {
         onImportComplete={handleImportComplete}
         initialFile={droppedFile}
       />
-
-
 
       {/* Clean B2B Footer */}
       <footer className="mt-16 bg-white border-t border-slate-200 text-xs text-slate-500 py-8">
