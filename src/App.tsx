@@ -20,7 +20,6 @@ import { EmptyDatabaseView } from './components/EmptyDatabaseView';
 import { StandardsInfoView } from './components/StandardsInfoView';
 import { BlogIndexView } from './components/BlogIndexView';
 import { ArticlePageView } from './components/ArticlePageView';
-import { QuoteRequestModal } from './components/QuoteRequestModal';
 import { BLOG_ARTICLES } from './data/blogArticles';
 import { BarChart3, Database, Trash2, CheckCircle2, Download, Globe, FileCode } from 'lucide-react';
 import {
@@ -762,16 +761,7 @@ export default function App() {
         initialFile={droppedFile}
       />
 
-      {/* B2B Commercial Lead Generation Quote Request Modal */}
-      <QuoteRequestModal
-        isOpen={isQuoteModalOpen}
-        onClose={() => {
-          setIsQuoteModalOpen(false);
-          setQuoteTargetMachine(null);
-        }}
-        selectedMachine={quoteTargetMachine}
-        allMachines={machines}
-      />
+
 
       {/* Clean B2B Footer */}
       <footer className="mt-16 bg-white border-t border-slate-200 text-xs text-slate-500 py-8">
