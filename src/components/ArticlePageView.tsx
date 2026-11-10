@@ -10,6 +10,7 @@ interface ArticlePageViewProps {
   onBackToBlog: () => void;
   onSelectArticle: (slug: string) => void;
   onNavigateToDirectory: () => void;
+  onOpenQuote?: (prefilledInterest?: string) => void;
 }
 
 export const ArticlePageView: React.FC<ArticlePageViewProps> = ({
@@ -17,6 +18,7 @@ export const ArticlePageView: React.FC<ArticlePageViewProps> = ({
   onBackToBlog,
   onSelectArticle,
   onNavigateToDirectory,
+  onOpenQuote,
 }) => {
   const [copied, setCopied] = useState(false);
 
@@ -288,27 +290,38 @@ export const ArticlePageView: React.FC<ArticlePageViewProps> = ({
         ))}
       </div>
 
-      {/* Interactive Directory Search CTA */}
-      <div className="p-6 sm:p-8 bg-slate-100 rounded-2xl border border-slate-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 my-10">
-        <div className="space-y-1">
-          <div className="text-xs font-bold uppercase tracking-wider text-blue-700">
-            Interactive Technical Database
+      {/* Interactive Directory Search & Quote CTA */}
+      <div className="p-6 sm:p-8 bg-slate-900 text-white rounded-2xl border border-slate-800 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6 my-10 shadow-md">
+        <div className="space-y-1.5 max-w-xl">
+          <div className="text-xs font-bold uppercase tracking-wider text-blue-400">
+            Commercial Equipment Procurement
           </div>
-          <h3 className="text-lg font-bold text-slate-900">
-            Compare Certified Commercial Ice Machines
+          <h3 className="text-xl font-extrabold text-white">
+            Need Wholesale Pricing for Your Cafe or Restaurant?
           </h3>
-          <p className="text-xs text-slate-600 max-w-lg">
-            Use the KoldSpec specification directory to filter by brand, exact daily capacity, ice shape, and certified kWh power consumption.
+          <p className="text-xs text-slate-300 leading-relaxed">
+            Submit a direct quote request on our simple form to receive itemized pricing, freight logistics, and factory warranty details across all 651 ENERGY STAR® certified commercial models.
           </p>
         </div>
 
-        <button
-          type="button"
-          onClick={onNavigateToDirectory}
-          className="px-5 py-2.5 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold rounded-xl transition-colors whitespace-nowrap shadow-xs cursor-pointer"
-        >
-          Open Model Directory
-        </button>
+        <div className="flex flex-wrap items-center gap-3 shrink-0">
+          {onOpenQuote && (
+            <button
+              type="button"
+              onClick={() => onOpenQuote(article.title)}
+              className="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded-xl transition-colors whitespace-nowrap shadow-xs cursor-pointer active:scale-[0.99]"
+            >
+              Get an Itemized Quote
+            </button>
+          )}
+          <button
+            type="button"
+            onClick={onNavigateToDirectory}
+            className="px-5 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold rounded-xl border border-slate-700 transition-colors whitespace-nowrap cursor-pointer"
+          >
+            Browse All 651 Models
+          </button>
+        </div>
       </div>
 
       {/* Related Articles Section */}

@@ -538,6 +538,14 @@ export default function App() {
                 setCurrentView('directory');
                 setSelectedArticleSlug(null);
               }}
+              onOpenQuote={(prefilled) => {
+                if (prefilled) {
+                  setQuotePrefill(`Quote inquiry regarding: ${prefilled}`);
+                }
+                setSelectedArticleSlug(null);
+                setCurrentView('quote');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }}
             />
           ) : (
             <BlogIndexView

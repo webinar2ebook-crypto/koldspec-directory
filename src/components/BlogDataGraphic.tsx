@@ -1,6 +1,6 @@
 import React from 'react';
 import { BlogArticle } from '../types/blog';
-import { BarChart3, Zap, ShieldCheck, Scale, ThermometerSnowflake, CheckCircle2, ArrowDownRight, Droplets } from 'lucide-react';
+import { BarChart3, Zap, ShieldCheck, Scale, ThermometerSnowflake, CheckCircle2, ArrowDownRight, Droplets, Coffee } from 'lucide-react';
 
 interface BlogDataGraphicProps {
   article: BlogArticle;
@@ -8,12 +8,19 @@ interface BlogDataGraphicProps {
 }
 
 export const BlogDataGraphic: React.FC<BlogDataGraphicProps> = ({ article, variant = 'full' }) => {
+  const isCafeArticle =
+    article.slug === 'best-commercial-ice-machines-for-coffee-shops-cafes' ||
+    article.title.toLowerCase().includes('coffee') ||
+    article.title.toLowerCase().includes('cafe');
+
   const isBrandComparison =
-    article.slug === 'hoshizaki-vs-manitowoc-commercial-ice-machines' ||
-    article.title.toLowerCase().includes('hoshizaki') ||
-    article.title.toLowerCase().includes('manitowoc');
+    !isCafeArticle &&
+    (article.slug === 'hoshizaki-vs-manitowoc-commercial-ice-machines' ||
+      article.title.toLowerCase().includes('hoshizaki') ||
+      article.title.toLowerCase().includes('manitowoc'));
 
   const isEnergyArticle =
+    !isCafeArticle &&
     !isBrandComparison &&
     (article.slug === 'most-energy-efficient-ice-machines' ||
       article.category === 'Energy Efficiency' ||
@@ -21,9 +28,10 @@ export const BlogDataGraphic: React.FC<BlogDataGraphicProps> = ({ article, varia
       article.tags.includes('Energy Efficiency'));
 
   const isBuyingGuide =
-    article.slug === 'how-to-choose-the-right-commercial-ice-machine-for-your-restaurant' ||
-    article.category === 'Buying Guides' ||
-    article.title.toLowerCase().includes('choose');
+    !isCafeArticle &&
+    (article.slug === 'how-to-choose-the-right-commercial-ice-machine-for-your-restaurant' ||
+      article.category === 'Buying Guides' ||
+      article.title.toLowerCase().includes('choose'));
 
   const isStandardsArticle =
     article.slug === 'understanding-ahri-standard-810-ice-machine-ratings' ||
@@ -32,6 +40,67 @@ export const BlogDataGraphic: React.FC<BlogDataGraphicProps> = ({ article, varia
 
   // Compact Variant (Used for Cards in BlogIndexView)
   if (variant === 'compact') {
+    if (isCafeArticle) {
+      return (
+        <div className="w-full h-full p-4 bg-linear-to-br from-slate-900 via-slate-800 to-slate-900 text-white flex flex-col justify-between select-none">
+          <div className="flex items-center justify-between text-[10px] font-mono tracking-wider text-amber-300 uppercase">
+            <span className="flex items-center gap-1 font-semibold">
+              <Coffee className="w-3 h-3 text-amber-400" />
+              Cafe Ice Benchmark
+            </span>
+            <span className="text-slate-400">kWh/100 lbs</span>
+          </div>
+
+          {/* Mini Comparative Bars */}
+          <div className="space-y-1.5 my-1">
+            <div>
+              <div className="flex justify-between text-[11px] font-medium text-slate-200">
+                <span>True TCIM-530</span>
+                <span className="font-mono text-emerald-400 font-bold">3.92</span>
+              </div>
+              <div className="w-full h-2 bg-slate-700/60 rounded-xs overflow-hidden mt-0.5">
+                <div className="h-full bg-emerald-500 rounded-xs" style={{ width: '52.2%' }}></div>
+              </div>
+            </div>
+
+            <div>
+              <div className="flex justify-between text-[11px] font-medium text-slate-200">
+                <span>Ice-O-Matic HEM0650</span>
+                <span className="font-mono text-blue-400 font-bold">4.34</span>
+              </div>
+              <div className="w-full h-2 bg-slate-700/60 rounded-xs overflow-hidden mt-0.5">
+                <div className="h-full bg-blue-500 rounded-xs" style={{ width: '57.8%' }}></div>
+              </div>
+            </div>
+
+            <div>
+              <div className="flex justify-between text-[11px] font-medium text-slate-200">
+                <span>Scotsman MC0530</span>
+                <span className="font-mono text-indigo-400 font-bold">4.75</span>
+              </div>
+              <div className="w-full h-2 bg-slate-700/60 rounded-xs overflow-hidden mt-0.5">
+                <div className="h-full bg-indigo-500 rounded-xs" style={{ width: '63.3%' }}></div>
+              </div>
+            </div>
+
+            <div>
+              <div className="flex justify-between text-[10px] text-slate-400">
+                <span>Market Baseline</span>
+                <span className="font-mono text-slate-400">7.50</span>
+              </div>
+              <div className="w-full h-1.5 bg-slate-700/60 rounded-xs overflow-hidden mt-0.5">
+                <div className="h-full bg-slate-500 rounded-xs" style={{ width: '100%' }}></div>
+              </div>
+            </div>
+          </div>
+
+          <div className="pt-2 border-t border-slate-700/60 flex items-center justify-between text-[10px] text-slate-400">
+            <span className="text-amber-300 font-semibold">200–500 lbs/day</span>
+            <span>AHRI 810 Certified</span>
+          </div>
+        </div>
+      );
+    }
     if (isBrandComparison) {
       return (
         <div className="w-full h-full p-4 bg-linear-to-br from-slate-900 via-slate-800 to-slate-900 text-white flex flex-col justify-between select-none">
@@ -204,6 +273,185 @@ export const BlogDataGraphic: React.FC<BlogDataGraphicProps> = ({ article, varia
         <div className="pt-2 border-t border-slate-700/60 flex items-center justify-between text-[10px] text-slate-400">
           <span className="text-cyan-300 font-medium">Standard 810/820</span>
           <span>Verified Specs</span>
+        </div>
+      </div>
+    );
+  }
+
+  // Full Variant (Hero Graphic at the top of ArticlePageView and featured card)
+  if (isCafeArticle) {
+    return (
+      <div className="w-full rounded-2xl border border-slate-200 bg-white shadow-xs overflow-hidden">
+        {/* Header Ribbon */}
+        <div className="px-6 py-3.5 bg-slate-900 text-white flex flex-wrap items-center justify-between gap-3 text-xs border-b border-slate-800">
+          <div className="flex items-center gap-2">
+            <div className="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></div>
+            <span className="font-bold tracking-tight">AHRI Standard 810 Benchmark: Top 3 Commercial Ice Makers for Coffee Shops & Cafes</span>
+          </div>
+          <div className="flex items-center gap-4 text-slate-300 font-mono text-[11px]">
+            <span>253 Certified Models Evaluated (200–500 lbs/day)</span>
+            <span className="hidden sm:inline text-slate-500">|</span>
+            <span className="hidden sm:inline text-amber-300 font-semibold">90°F Air / 70°F Water Benchmark</span>
+          </div>
+        </div>
+
+        {/* Data Chart Body */}
+        <div className="p-6 sm:p-8 space-y-6 bg-slate-50/60">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-200 pb-4">
+            <div>
+              <h3 className="text-base sm:text-lg font-bold text-slate-900">
+                Electrical Energy Consumption Comparison (kWh / 100 lbs of Ice)
+              </h3>
+              <p className="text-xs text-slate-500 mt-0.5">
+                Audited AHRI 810 / ENERGY STAR data. Lower kWh indicates superior energy efficiency and lower monthly electricity bills for cafe owners.
+              </p>
+            </div>
+            <div className="flex items-center gap-2 self-start sm:self-auto bg-amber-50 border border-amber-200 text-amber-900 px-3 py-1.5 rounded-lg text-xs font-semibold">
+              <ArrowDownRight className="w-4 h-4 text-amber-600 shrink-0" />
+              <span>Up to 48% lower electric draw</span>
+            </div>
+          </div>
+
+          {/* Comparative Horizontal Bars */}
+          <div className="space-y-4">
+            {/* Rank 1: True TCIM-530 */}
+            <div className="space-y-1.5">
+              <div className="flex flex-wrap items-center justify-between text-xs">
+                <div className="flex items-center gap-2 font-semibold text-slate-900">
+                  <span className="w-5 h-5 rounded bg-emerald-600 text-white font-bold text-[10px] flex items-center justify-center font-mono">1</span>
+                  <span>True Refrigeration TCIM-530-HA1</span>
+                  <span className="text-[11px] text-slate-500 font-normal">(489 lbs/day · Cube · R-290)</span>
+                </div>
+                <div className="flex items-center gap-2 font-mono">
+                  <span className="text-xs font-extrabold text-emerald-700">3.92 kWh / 100 lbs</span>
+                  <span className="text-[10px] text-emerald-700 font-semibold bg-emerald-100 px-1.5 py-0.5 rounded">Efficiency Winner</span>
+                </div>
+              </div>
+              <div className="w-full h-7 bg-slate-200/80 rounded-lg overflow-hidden flex items-center">
+                <div
+                  className="h-full bg-emerald-600 rounded-lg flex items-center justify-between px-3 text-[11px] font-mono font-bold text-white transition-all duration-500"
+                  style={{ width: '52.2%' }}
+                >
+                  <span>True TCIM-530</span>
+                  <span>3.92 kWh</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Rank 2: Ice-O-Matic HEM0650 */}
+            <div className="space-y-1.5">
+              <div className="flex flex-wrap items-center justify-between text-xs">
+                <div className="flex items-center gap-2 font-semibold text-slate-900">
+                  <span className="w-5 h-5 rounded bg-blue-600 text-white font-bold text-[10px] flex items-center justify-center font-mono">2</span>
+                  <span>Ice-O-Matic HEM0650A90</span>
+                  <span className="text-[11px] text-slate-500 font-normal">(492 lbs/day · Chewable Pearl / Nugget · R-290)</span>
+                </div>
+                <div className="flex items-center gap-2 font-mono">
+                  <span className="text-xs font-extrabold text-blue-700">4.34 kWh / 100 lbs</span>
+                  <span className="text-[10px] text-blue-700 font-semibold bg-blue-100 px-1.5 py-0.5 rounded">Nugget Ice Leader</span>
+                </div>
+              </div>
+              <div className="w-full h-7 bg-slate-200/80 rounded-lg overflow-hidden flex items-center">
+                <div
+                  className="h-full bg-blue-600 rounded-lg flex items-center justify-between px-3 text-[11px] font-mono font-bold text-white transition-all duration-500"
+                  style={{ width: '57.8%' }}
+                >
+                  <span>Ice-O-Matic HEM0650</span>
+                  <span>4.34 kWh</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Rank 3: Scotsman MC0530 */}
+            <div className="space-y-1.5">
+              <div className="flex flex-wrap items-center justify-between text-xs">
+                <div className="flex items-center gap-2 font-semibold text-slate-900">
+                  <span className="w-5 h-5 rounded bg-indigo-600 text-white font-bold text-[10px] flex items-center justify-center font-mono">3</span>
+                  <span>Scotsman MC0530SAX-1A (Prodigy Plus)</span>
+                  <span className="text-[11px] text-slate-500 font-normal">(370 lbs/day · Medium Cube · R-290)</span>
+                </div>
+                <div className="flex items-center gap-2 font-mono">
+                  <span className="text-xs font-extrabold text-indigo-700">4.75 kWh / 100 lbs</span>
+                  <span className="text-[10px] text-indigo-700 font-semibold bg-indigo-100 px-1.5 py-0.5 rounded">WaterSense Defense</span>
+                </div>
+              </div>
+              <div className="w-full h-7 bg-slate-200/80 rounded-lg overflow-hidden flex items-center">
+                <div
+                  className="h-full bg-indigo-600 rounded-lg flex items-center justify-between px-3 text-[11px] font-mono font-bold text-white transition-all duration-500"
+                  style={{ width: '63.3%' }}
+                >
+                  <span>Scotsman MC0530</span>
+                  <span>4.75 kWh</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Industry Baseline */}
+            <div className="space-y-1.5 pt-2 border-t border-slate-200">
+              <div className="flex flex-wrap items-center justify-between text-xs">
+                <div className="flex items-center gap-2 text-slate-600 font-medium">
+                  <span className="w-5 h-5 rounded bg-slate-300 text-slate-700 font-bold text-[10px] flex items-center justify-center font-mono">—</span>
+                  <span>Uncertified Commercial Baseline</span>
+                  <span className="text-[11px] text-slate-400">(Standard Non-ENERGY STAR Models)</span>
+                </div>
+                <div className="font-mono text-xs font-bold text-slate-600">
+                  7.50 kWh / 100 lbs
+                </div>
+              </div>
+              <div className="w-full h-5 bg-slate-200/80 rounded-lg overflow-hidden flex items-center">
+                <div
+                  className="h-full bg-slate-400 rounded-lg flex items-center justify-between px-3 text-[10px] font-mono font-bold text-white"
+                  style={{ width: '100%' }}
+                >
+                  <span>Market Baseline</span>
+                  <span>7.50 kWh</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Direct Category Breakdown Metrics */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 pt-2">
+            <div className="p-3.5 bg-white rounded-xl border border-slate-200 shadow-2xs space-y-1">
+              <div className="text-[10px] font-bold uppercase tracking-wider text-emerald-600">Lowest Power Draw</div>
+              <div className="font-mono text-base font-extrabold text-slate-900">
+                True TCIM: <span className="text-emerald-600">3.92</span> kWh
+              </div>
+              <div className="text-[11px] text-slate-500 leading-snug">
+                Sub-4.0 kWh benchmark saves ~$4,115 over 5 years.
+              </div>
+            </div>
+
+            <div className="p-3.5 bg-white rounded-xl border border-slate-200 shadow-2xs space-y-1">
+              <div className="text-[10px] font-bold uppercase tracking-wider text-blue-600">Chewable Pearl Ice</div>
+              <div className="font-mono text-base font-extrabold text-slate-900">
+                Ice-O-Matic: <span className="text-blue-600">4.34</span> kWh
+              </div>
+              <div className="text-[11px] text-slate-500 leading-snug">
+                Customer-favorite texture for cold foam and matcha.
+              </div>
+            </div>
+
+            <div className="p-3.5 bg-white rounded-xl border border-slate-200 shadow-2xs space-y-1">
+              <div className="text-[10px] font-bold uppercase tracking-wider text-indigo-600">WaterSense Scale Purge</div>
+              <div className="font-mono text-base font-extrabold text-slate-900">
+                Scotsman: <span className="text-indigo-600">370</span> lbs/day
+              </div>
+              <div className="text-[11px] text-slate-500 leading-snug">
+                Adaptive mineral conductivity testing protects plates.
+              </div>
+            </div>
+
+            <div className="p-3.5 bg-white rounded-xl border border-slate-200 shadow-2xs space-y-1">
+              <div className="text-[10px] font-bold uppercase tracking-wider text-amber-600">100% Eco Refrigerants</div>
+              <div className="font-mono text-base font-extrabold text-slate-900">
+                <span className="text-amber-600">Natural R-290</span>
+              </div>
+              <div className="text-[11px] text-slate-500 leading-snug">
+                Zero ozone depletion & ultra-low global warming impact.
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     );
