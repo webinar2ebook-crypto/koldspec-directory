@@ -3,6 +3,7 @@ import { BlogArticle } from '../types/blog';
 import { BLOG_ARTICLES } from '../data/blogArticles';
 import { ArrowLeft, Share2, Check, Printer, Clock, User, ChevronRight, Bookmark, ArrowRight, ShieldCheck, CheckCircle2, AlertTriangle, Lightbulb } from 'lucide-react';
 import { DOMAIN } from '../utils/sitemapGenerator';
+import { BlogDataGraphic } from './BlogDataGraphic';
 
 interface ArticlePageViewProps {
   article: BlogArticle;
@@ -27,7 +28,7 @@ export const ArticlePageView: React.FC<ArticlePageViewProps> = ({
       '@type': 'TechArticle',
       'headline': article.title,
       'description': article.excerpt,
-      'image': `${DOMAIN}${article.heroImage}`,
+      'image': `${DOMAIN}/og-image.jpg`,
       'datePublished': '2026-11-09T08:00:00+00:00',
       'dateModified': '2026-11-09T08:00:00+00:00',
       'author': {
@@ -151,15 +152,8 @@ export const ArticlePageView: React.FC<ArticlePageViewProps> = ({
         </div>
       </header>
 
-      {/* Hero Visual Asset */}
-      <div className="relative aspect-video w-full rounded-2xl overflow-hidden border border-slate-200 bg-slate-900 shadow-xs">
-        <img
-          src={article.heroImage}
-          alt={article.title}
-          referrerPolicy="no-referrer"
-          className="w-full h-full object-cover object-center"
-        />
-      </div>
+      {/* Professional CSS/SVG Data Chart Graphic Header (Replaces Empty Image Box) */}
+      <BlogDataGraphic article={article} variant="full" />
 
       {/* Quick Jump Table of Contents */}
       <div className="p-5 bg-slate-50 rounded-xl border border-slate-200 text-xs space-y-3">

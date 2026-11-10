@@ -2,6 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { BlogArticle } from '../types/blog';
 import { BLOG_ARTICLES } from '../data/blogArticles';
 import { Search, Clock, ArrowRight, BookOpen, ShieldCheck, Sparkles, Filter } from 'lucide-react';
+import { BlogDataGraphic } from './BlogDataGraphic';
 
 interface BlogIndexViewProps {
   onSelectArticle: (slug: string) => void;
@@ -136,14 +137,8 @@ export const BlogIndexView: React.FC<BlogIndexViewProps> = ({
               </div>
             </div>
 
-            <div className="lg:col-span-5 relative min-h-[260px] lg:min-h-full bg-slate-900 overflow-hidden">
-              <img
-                src={featuredArticle.heroImage}
-                alt={featuredArticle.title}
-                referrerPolicy="no-referrer"
-                className="w-full h-full object-cover object-center group-hover:scale-102 transition-transform duration-500"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-slate-950/60 via-transparent to-transparent lg:hidden" />
+            <div className="lg:col-span-5 flex flex-col justify-center bg-slate-50 border-t lg:border-t-0 lg:border-l border-slate-200 p-4 sm:p-6 overflow-hidden">
+              <BlogDataGraphic article={featuredArticle} variant="full" />
             </div>
           </div>
         </article>
@@ -185,13 +180,8 @@ export const BlogIndexView: React.FC<BlogIndexViewProps> = ({
                 className="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-xs hover:border-slate-300 hover:shadow-sm transition-all duration-200 flex flex-col justify-between group"
               >
                 <div>
-                  <div className="aspect-video w-full relative bg-slate-100 overflow-hidden">
-                    <img
-                      src={article.heroImage}
-                      alt={article.title}
-                      referrerPolicy="no-referrer"
-                      className="w-full h-full object-cover object-center group-hover:scale-102 transition-transform duration-300"
-                    />
+                  <div className="aspect-video w-full relative border-b border-slate-200 overflow-hidden">
+                    <BlogDataGraphic article={article} variant="compact" />
                   </div>
 
                   <div className="p-5 space-y-2.5">
