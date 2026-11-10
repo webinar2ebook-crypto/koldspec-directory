@@ -18,6 +18,9 @@ import { CompareModal } from './components/CompareModal';
 import { CsvImportModal } from './components/CsvImportModal';
 import { EmptyDatabaseView } from './components/EmptyDatabaseView';
 import { StandardsInfoView } from './components/StandardsInfoView';
+import { BlogIndexView } from './components/BlogIndexView';
+import { ArticlePageView } from './components/ArticlePageView';
+import { BLOG_ARTICLES } from './data/blogArticles';
 import { BarChart3, Database, Trash2, CheckCircle2, Download, Globe, FileCode } from 'lucide-react';
 import {
   buildMachineSlugMap,
@@ -30,13 +33,19 @@ export default function App() {
   const [machines, setMachines] = useState<IceMachine[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [viewMode, setViewMode] = useState<'grid' | 'table'>('grid');
-  const [currentView, setCurrentView] = useState<'directory' | 'table' | 'standards'>('directory');
+  const [currentView, setCurrentView] = useState<'directory' | 'table' | 'standards' | 'blog'>('directory');
+  const [selectedArticleSlug, setSelectedArticleSlug] = useState<string | null>(null);
   const [isImportModalOpen, setIsImportModalOpen] = useState(false);
   const [isCompareModalOpen, setIsCompareModalOpen] = useState(false);
   const [selectedMachine, setSelectedMachine] = useState<IceMachine | null>(null);
   const [comparedMachineIds, setComparedMachineIds] = useState<string[]>([]);
   const [droppedFile, setDroppedFile] = useState<File | null>(null);
   const [notification, setNotification] = useState<string | null>(null);
+
+  const selectedArticle = useMemo(
+    () => BLOG_ARTICLES.find((a) => a.slug === selectedArticleSlug) || null,
+    [selectedArticleSlug]
+  );
 
   // Filters State
   const [filters, setFilters] = useState<FilterState>({
@@ -69,9 +78,24 @@ export default function App() {
         const safeList = Array.isArray(list) ? list : [];
         setMachines(safeList);
 
-        // Check for machine URL slug (e.g. /machine/hoshizaki-km-1900saj3 or #/machine/...)
+        // Check for blog URL slug or root blog route
         const path = window.location.pathname;
         const hash = window.location.hash;
+
+        const blogMatch = path.match(/^\/blog\/([a-z0-9-]+)/i) || hash.match(/^#\/blog\/([a-z0-9-]+)/i);
+        if (blogMatch && blogMatch[1]) {
+          setCurrentView('blog');
+          setSelectedArticleSlug(blogMatch[1]);
+          return;
+        }
+
+        if (path === '/blog' || path === '/blog/' || hash === '#/blog') {
+          setCurrentView('blog');
+          setSelectedArticleSlug(null);
+          return;
+        }
+
+        // Check for machine URL slug (e.g. /machine/hoshizaki-km-1900saj3 or #/machine/...)
         const match = path.match(/^\/machine\/([a-z0-9-]+)/i) || hash.match(/^#\/machine\/([a-z0-9-]+)/i);
         if (match && match[1]) {
           const targetSlug = match[1];
@@ -89,7 +113,7 @@ export default function App() {
     initDatabase();
   }, []);
 
-  // Sync browser URL and document title / canonical tags when a machine is selected
+  // Sync browser URL and document title / canonical tags when view or selection changes
   useEffect(() => {
     if (selectedMachine) {
       const slugMap = buildMachineSlugMap(machines);
@@ -106,8 +130,30 @@ export default function App() {
       if (canonical) {
         canonical.setAttribute('href', `${DOMAIN}/machine/${slug}`);
       }
+    } else if (currentView === 'blog') {
+      if (selectedArticleSlug && selectedArticle) {
+        const targetUrl = `/blog/${selectedArticleSlug}`;
+        if (window.location.pathname !== targetUrl) {
+          window.history.pushState({ articleSlug: selectedArticleSlug }, '', targetUrl);
+        }
+        document.title = `${selectedArticle.title} | KoldSpec Guides`;
+        const canonical = document.querySelector('link[rel="canonical"]');
+        if (canonical) {
+          canonical.setAttribute('href', `${DOMAIN}/blog/${selectedArticleSlug}`);
+        }
+      } else {
+        const targetUrl = '/blog';
+        if (window.location.pathname !== targetUrl) {
+          window.history.pushState(null, '', targetUrl);
+        }
+        document.title = 'Commercial Ice Equipment Buying Guides & Engineering Insights | KoldSpec';
+        const canonical = document.querySelector('link[rel="canonical"]');
+        if (canonical) {
+          canonical.setAttribute('href', `${DOMAIN}/blog`);
+        }
+      }
     } else {
-      if (window.location.pathname.startsWith('/machine/')) {
+      if (window.location.pathname.startsWith('/machine/') || window.location.pathname.startsWith('/blog')) {
         window.history.pushState(null, '', '/');
       }
 
@@ -118,12 +164,28 @@ export default function App() {
         canonical.setAttribute('href', `${DOMAIN}/`);
       }
     }
-  }, [selectedMachine, machines]);
+  }, [selectedMachine, machines, currentView, selectedArticleSlug, selectedArticle]);
 
   // Handle browser back / forward navigation
   useEffect(() => {
     const handlePopState = () => {
       const path = window.location.pathname;
+
+      const blogMatch = path.match(/^\/blog\/([a-z0-9-]+)/i);
+      if (blogMatch && blogMatch[1]) {
+        setCurrentView('blog');
+        setSelectedArticleSlug(blogMatch[1]);
+        setSelectedMachine(null);
+        return;
+      }
+
+      if (path === '/blog' || path === '/blog/') {
+        setCurrentView('blog');
+        setSelectedArticleSlug(null);
+        setSelectedMachine(null);
+        return;
+      }
+
       const match = path.match(/^\/machine\/([a-z0-9-]+)/i);
       if (match && match[1]) {
         const found = findMachineBySlug(machines, match[1]);
@@ -356,7 +418,7 @@ export default function App() {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-    notify(`Downloaded dynamic sitemap.xml with ${machines.length + 1} URLs!`);
+    notify(`Downloaded dynamic sitemap.xml with ${machines.length + 2 + BLOG_ARTICLES.length} URLs!`);
   };
 
   return (
@@ -374,6 +436,10 @@ export default function App() {
         currentView={currentView}
         onViewChange={(view) => {
           setCurrentView(view);
+          setSelectedMachine(null);
+          if (view !== 'blog') {
+            setSelectedArticleSlug(null);
+          }
           if (view === 'table') setViewMode('table');
           if (view === 'directory') setViewMode('grid');
         }}
@@ -387,7 +453,7 @@ export default function App() {
       />
 
       {/* Hero Section */}
-      {currentView !== 'standards' && (
+      {currentView !== 'standards' && currentView !== 'blog' && (
         <HeroSection
           searchQuery={filters.searchQuery}
           onSearchChange={(q) => setFilters({ ...filters, searchQuery: q })}
@@ -416,6 +482,26 @@ export default function App() {
             onBackToDirectory={() => setCurrentView('directory')}
             onOpenImporter={() => setIsImportModalOpen(true)}
           />
+        ) : currentView === 'blog' ? (
+          selectedArticle ? (
+            <ArticlePageView
+              article={selectedArticle}
+              onBackToBlog={() => setSelectedArticleSlug(null)}
+              onSelectArticle={(slug) => setSelectedArticleSlug(slug)}
+              onNavigateToDirectory={() => {
+                setCurrentView('directory');
+                setSelectedArticleSlug(null);
+              }}
+            />
+          ) : (
+            <BlogIndexView
+              onSelectArticle={(slug) => setSelectedArticleSlug(slug)}
+              onNavigateToDirectory={() => {
+                setCurrentView('directory');
+                setSelectedArticleSlug(null);
+              }}
+            />
+          )
         ) : machines.length === 0 ? (
           // Empty State view when no CSV imported yet
           <EmptyDatabaseView
@@ -485,10 +571,10 @@ export default function App() {
                     target="_blank"
                     rel="noopener noreferrer"
                     className="w-full py-1.5 px-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 font-semibold rounded text-center transition-colors flex items-center justify-center gap-1.5 block text-[11px]"
-                    title="View live sitemap.xml with 651 machine URLs"
+                    title="View live sitemap.xml with 651 machine URLs and technical guides"
                   >
                     <Globe className="w-3 h-3 text-emerald-600" />
-                    <span>View sitemap.xml ({machines.length + 1} URLs)</span>
+                    <span>View sitemap.xml ({machines.length + 2 + BLOG_ARTICLES.length} URLs)</span>
                   </a>
 
                   <button
@@ -666,15 +752,59 @@ export default function App() {
       {/* Clean B2B Footer */}
       <footer className="mt-16 bg-white border-t border-slate-200 text-xs text-slate-500 py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
+          <div className="flex flex-wrap items-center gap-3">
             <span className="font-bold text-slate-900">KoldSpec Directory</span>
             <span aria-hidden="true">·</span>
-            <span>Independent Commercial Ice Machine Specifications</span>
+            <button
+              onClick={() => {
+                setCurrentView('directory');
+                setSelectedArticleSlug(null);
+                setSelectedMachine(null);
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }}
+              className="hover:text-slate-900 transition-colors"
+            >
+              Directory
+            </button>
             <span aria-hidden="true">·</span>
-            <span>AHRI Standard 810/820</span>
+            <button
+              onClick={() => {
+                setCurrentView('table');
+                setSelectedArticleSlug(null);
+                setSelectedMachine(null);
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }}
+              className="hover:text-slate-900 transition-colors"
+            >
+              Specs Table
+            </button>
+            <span aria-hidden="true">·</span>
+            <button
+              onClick={() => {
+                setCurrentView('standards');
+                setSelectedArticleSlug(null);
+                setSelectedMachine(null);
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }}
+              className="hover:text-slate-900 transition-colors"
+            >
+              AHRI 810 Standards
+            </button>
+            <span aria-hidden="true">·</span>
+            <button
+              onClick={() => {
+                setCurrentView('blog');
+                setSelectedArticleSlug(null);
+                setSelectedMachine(null);
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }}
+              className="hover:text-slate-900 transition-colors font-medium text-blue-600"
+            >
+              Guides & Articles
+            </button>
           </div>
-          <div className="text-slate-400 text-[11px]">
-            Static specification directory · 651 ENERGY STAR® models loaded.
+          <div className="text-slate-400 text-[11px] font-mono">
+            651 models · AHRI 810/820 verified
           </div>
         </div>
       </footer>

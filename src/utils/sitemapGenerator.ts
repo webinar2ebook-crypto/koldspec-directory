@@ -1,4 +1,5 @@
 import { IceMachine } from '../types/iceMachine';
+import { BLOG_ARTICLES } from '../data/blogArticles';
 
 export const DOMAIN = 'https://koldspec.com';
 
@@ -65,8 +66,8 @@ function formatDate(date: Date = new Date()): string {
 }
 
 /**
- * Dynamically generates standard XML Sitemap content containing the homepage
- * and a unique URL for every commercial ice machine in the database.
+ * Dynamically generates standard XML Sitemap content containing the homepage,
+ * blog guides hub, article pages, and a unique URL for every commercial ice machine in the database.
  */
 export function generateSitemapXml(
   machines: IceMachine[],
@@ -84,6 +85,32 @@ export function generateSitemapXml(
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>`);
+
+  // 2. Blog / Guides Hub
+  urls.push(`  <url>
+    <loc>${domain}/blog</loc>
+    <lastmod>${lastmod}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>`);
+
+  // 3. Blog Articles
+  for (const article of BLOG_ARTICLES) {
+    let articleMod = lastmod;
+    if (article.publishDate) {
+      const parsed = new Date(article.publishDate);
+      if (!isNaN(parsed.getTime())) {
+        articleMod = formatDate(parsed);
+      }
+    }
+
+    urls.push(`  <url>
+    <loc>${domain}/blog/${article.slug}</loc>
+    <lastmod>${articleMod}</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>`);
+  }
 
   // 2. Individual Machine URLs
   for (const m of machines) {

@@ -2,8 +2,8 @@ import React from 'react';
 import { Database, Upload, BarChart3 } from 'lucide-react';
 
 interface NavbarProps {
-  currentView: 'directory' | 'table' | 'standards';
-  onViewChange: (view: 'directory' | 'table' | 'standards') => void;
+  currentView: 'directory' | 'table' | 'standards' | 'blog';
+  onViewChange: (view: 'directory' | 'table' | 'standards' | 'blog') => void;
   onOpenImporter: () => void;
   onOpenCompare: () => void;
   compareCount: number;
@@ -81,6 +81,14 @@ export const Navbar: React.FC<NavbarProps> = ({
             }`}
           >
             AHRI / ENERGY STAR Standards
+          </button>
+          <button
+            onClick={() => onViewChange('blog')}
+            className={`transition-colors whitespace-nowrap shrink-0 hover:text-slate-900 py-1 ${
+              currentView === 'blog' ? 'text-slate-900 border-b-2 border-slate-900 font-semibold' : ''
+            }`}
+          >
+            Guides
           </button>
         </nav>
 
