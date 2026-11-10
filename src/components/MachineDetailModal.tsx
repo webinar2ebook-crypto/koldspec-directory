@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { IceMachine } from '../types/iceMachine';
-import { X, ShieldCheck, Zap, Droplets, Gauge, Calculator, CheckSquare, Square, Printer, Check, Share2, Link2 } from 'lucide-react';
+import { X, ShieldCheck, Zap, Droplets, Gauge, Calculator, CheckSquare, Square, Printer, Check, Share2, Link2, FileText } from 'lucide-react';
 import { getBaseMachineSlug, DOMAIN } from '../utils/sitemapGenerator';
 
 interface MachineDetailModalProps {
@@ -8,6 +8,7 @@ interface MachineDetailModalProps {
   onClose: () => void;
   isCompared: boolean;
   onToggleCompare: (machine: IceMachine) => void;
+  onOpenQuote?: (machine: IceMachine) => void;
 }
 
 export const MachineDetailModal: React.FC<MachineDetailModalProps> = ({
@@ -15,6 +16,7 @@ export const MachineDetailModal: React.FC<MachineDetailModalProps> = ({
   onClose,
   isCompared,
   onToggleCompare,
+  onOpenQuote,
 }) => {
   const [kwhRate, setKwhRate] = useState<number>(0.14); // $0.14 / kWh commercial average
   const [operatingDays, setOperatingDays] = useState<number>(365);
@@ -125,6 +127,15 @@ export const MachineDetailModal: React.FC<MachineDetailModalProps> = ({
                 <Square className="w-3.5 h-3.5" />
               )}
               <span>{isCompared ? 'Compared' : 'Compare'}</span>
+            </button>
+
+            <button
+              onClick={() => onOpenQuote?.(machine)}
+              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-lg bg-blue-600 hover:bg-blue-500 text-white transition-colors shadow-2xs cursor-pointer whitespace-nowrap"
+              title="Request commercial pricing for this model"
+            >
+              <FileText className="w-3.5 h-3.5" />
+              <span>Get a Quote</span>
             </button>
 
             <button
@@ -372,16 +383,25 @@ export const MachineDetailModal: React.FC<MachineDetailModalProps> = ({
         </div>
 
         {/* Modal Footer */}
-        <div className="px-6 py-4 border-t border-slate-200 bg-slate-50 flex items-center justify-between">
+        <div className="px-6 py-4 border-t border-slate-200 bg-slate-50 flex flex-col sm:flex-row items-center justify-between gap-3">
           <span className="text-xs text-slate-500">
             Ratings verified under AHRI Standard 810/820 testing protocol.
           </span>
-          <button
-            onClick={onClose}
-            className="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold rounded-lg transition-colors"
-          >
-            Close Spec Sheet
-          </button>
+          <div className="flex items-center gap-2 w-full sm:w-auto">
+            <button
+              onClick={() => onOpenQuote?.(machine)}
+              className="flex-1 sm:flex-none px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded-lg transition-colors flex items-center justify-center gap-1.5 shadow-xs cursor-pointer whitespace-nowrap"
+            >
+              <FileText className="w-3.5 h-3.5" />
+              <span>Get a Quote for this Model</span>
+            </button>
+            <button
+              onClick={onClose}
+              className="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold rounded-lg transition-colors"
+            >
+              Close
+            </button>
+          </div>
         </div>
       </div>
     </div>

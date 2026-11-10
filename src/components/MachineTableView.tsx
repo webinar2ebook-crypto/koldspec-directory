@@ -9,6 +9,7 @@ interface MachineTableViewProps {
   onToggleCompare: (machine: IceMachine) => void;
   onDeleteMachine?: (id: string) => void;
   onOpenImporter: () => void;
+  onOpenQuote?: (machine: IceMachine) => void;
 }
 
 type SortField = 'brand' | 'modelNumber' | 'harvestRateLbs' | 'energyUseRateKwh' | 'potableWaterUseGal' | 'iceType';
@@ -20,6 +21,7 @@ export const MachineTableView: React.FC<MachineTableViewProps> = ({
   onToggleCompare,
   onDeleteMachine,
   onOpenImporter,
+  onOpenQuote,
 }) => {
   const [sortField, setSortField] = useState<SortField>('harvestRateLbs');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
@@ -289,6 +291,13 @@ export const MachineTableView: React.FC<MachineTableViewProps> = ({
                           title="View specification sheet"
                         >
                           Specs
+                        </button>
+                        <button
+                          onClick={() => onOpenQuote?.(m)}
+                          className="px-2 py-1 text-[11px] font-bold text-white bg-blue-600 hover:bg-blue-500 rounded transition-colors cursor-pointer"
+                          title="Get a commercial quote for this model"
+                        >
+                          Quote
                         </button>
                         {onDeleteMachine && (
                           <button

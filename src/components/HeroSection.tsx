@@ -1,5 +1,5 @@
 import React from 'react';
-import { Search, SlidersHorizontal, LayoutGrid, Table, Download, UploadCloud, X } from 'lucide-react';
+import { Search, SlidersHorizontal, LayoutGrid, Table, Download, UploadCloud, X, FileText } from 'lucide-react';
 import { IceType } from '../types/iceMachine';
 
 interface HeroSectionProps {
@@ -13,6 +13,7 @@ interface HeroSectionProps {
   onViewModeChange: (mode: 'grid' | 'table') => void;
   onOpenImporter: () => void;
   onExportCsv: () => void;
+  onOpenQuote?: () => void;
 }
 
 export const HeroSection: React.FC<HeroSectionProps> = ({
@@ -63,6 +64,19 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
           <p className="mt-3 text-sm sm:text-base text-slate-300 leading-relaxed max-w-2xl">
             Independent equipment benchmarking, 24-hour harvest capacity ratings, and energy consumption metrics for foodservice consultants, facility engineers, and commercial buyers.
           </p>
+
+          <div className="mt-4 flex flex-wrap items-center gap-3">
+            <button
+              onClick={onOpenQuote}
+              className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded-lg transition-colors shadow-xs flex items-center gap-1.5 cursor-pointer whitespace-nowrap"
+            >
+              <FileText className="w-3.5 h-3.5" />
+              <span>Get a Commercial Quote</span>
+            </button>
+            <span className="text-xs text-slate-400">
+              Direct pricing, freight quotes & lead times across 651 certified models.
+            </span>
+          </div>
         </div>
 
         {/* Search Bar & Quick Controls */}

@@ -1,11 +1,12 @@
 import React from 'react';
-import { Database, Upload, BarChart3 } from 'lucide-react';
+import { Database, Upload, BarChart3, FileText } from 'lucide-react';
 
 interface NavbarProps {
   currentView: 'directory' | 'table' | 'standards' | 'blog';
   onViewChange: (view: 'directory' | 'table' | 'standards' | 'blog') => void;
   onOpenImporter: () => void;
   onOpenCompare: () => void;
+  onOpenQuote: () => void;
   compareCount: number;
   totalMachines: number;
 }
@@ -15,6 +16,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   onViewChange,
   onOpenImporter,
   onOpenCompare,
+  onOpenQuote,
   compareCount,
   totalMachines,
 }) => {
@@ -106,11 +108,19 @@ export const Navbar: React.FC<NavbarProps> = ({
           )}
 
           <button
+            onClick={onOpenQuote}
+            className="flex items-center gap-1.5 px-3.5 py-2 text-xs font-bold text-white bg-blue-600 rounded-lg hover:bg-blue-500 transition-colors whitespace-nowrap shadow-xs active:scale-[0.99] cursor-pointer"
+          >
+            <FileText className="w-3.5 h-3.5" />
+            <span>Get a Quote</span>
+          </button>
+
+          <button
             onClick={onOpenImporter}
-            className="flex items-center gap-2 px-3.5 py-2 text-xs font-semibold text-white bg-slate-900 rounded-lg hover:bg-slate-800 transition-colors whitespace-nowrap shadow-xs active:scale-[0.99]"
+            className="flex items-center gap-2 px-3 py-2 text-xs font-semibold text-slate-700 bg-white hover:bg-slate-50 border border-slate-200 rounded-lg transition-colors whitespace-nowrap shadow-2xs active:scale-[0.99]"
           >
             <Upload className="w-3.5 h-3.5" />
-            <span>Import CSV</span>
+            <span className="hidden lg:inline">Import CSV</span>
           </button>
         </div>
       </div>

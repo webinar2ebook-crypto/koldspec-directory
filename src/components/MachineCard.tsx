@@ -1,12 +1,13 @@
 import React from 'react';
 import { IceMachine } from '../types/iceMachine';
-import { Zap, Droplets, Gauge, ShieldCheck, CheckSquare, Square } from 'lucide-react';
+import { Zap, Droplets, Gauge, ShieldCheck, CheckSquare, Square, FileText } from 'lucide-react';
 
 interface MachineCardProps {
   machine: IceMachine;
   onSelect: (machine: IceMachine) => void;
   isCompared: boolean;
   onToggleCompare: (machine: IceMachine) => void;
+  onOpenQuote?: (machine: IceMachine) => void;
 }
 
 export const MachineCard: React.FC<MachineCardProps> = ({
@@ -14,6 +15,7 @@ export const MachineCard: React.FC<MachineCardProps> = ({
   onSelect,
   isCompared,
   onToggleCompare,
+  onOpenQuote,
 }) => {
   // Get corresponding ice imagery
   const getIceImage = (iceType: string) => {
@@ -176,12 +178,20 @@ export const MachineCard: React.FC<MachineCardProps> = ({
       </div>
 
       {/* Card Action Footer */}
-      <div className="p-4 bg-slate-50/70 border-t border-slate-100 flex items-center justify-between gap-3">
+      <div className="p-3.5 bg-slate-50/70 border-t border-slate-100 flex items-center justify-between gap-2.5">
         <button
           onClick={() => onSelect(machine)}
-          className="w-full py-2 px-3 text-xs font-semibold text-slate-800 bg-white hover:bg-slate-100 border border-slate-300 rounded-lg transition-colors text-center shadow-2xs active:scale-[0.99]"
+          className="flex-1 py-2 px-3 text-xs font-semibold text-slate-700 bg-white hover:bg-slate-100 border border-slate-300 rounded-lg transition-colors text-center shadow-2xs active:scale-[0.99] cursor-pointer"
         >
-          View Full Technical Specs
+          View Specs
+        </button>
+        <button
+          onClick={() => onOpenQuote?.(machine)}
+          className="flex-1 py-2 px-3 text-xs font-bold text-white bg-blue-600 hover:bg-blue-500 rounded-lg transition-colors text-center shadow-2xs active:scale-[0.99] flex items-center justify-center gap-1.5 cursor-pointer"
+          title="Get a commercial quote for this model"
+        >
+          <FileText className="w-3.5 h-3.5" />
+          <span>Get a Quote</span>
         </button>
       </div>
     </div>
