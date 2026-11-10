@@ -8,11 +8,17 @@ interface BlogDataGraphicProps {
 }
 
 export const BlogDataGraphic: React.FC<BlogDataGraphicProps> = ({ article, variant = 'full' }) => {
+  const isBrandComparison =
+    article.slug === 'hoshizaki-vs-manitowoc-commercial-ice-machines' ||
+    article.title.toLowerCase().includes('hoshizaki') ||
+    article.title.toLowerCase().includes('manitowoc');
+
   const isEnergyArticle =
-    article.slug === 'most-energy-efficient-ice-machines' ||
-    article.category === 'Energy Efficiency' ||
-    article.title.toLowerCase().includes('energy') ||
-    article.tags.includes('Energy Efficiency');
+    !isBrandComparison &&
+    (article.slug === 'most-energy-efficient-ice-machines' ||
+      article.category === 'Energy Efficiency' ||
+      article.title.toLowerCase().includes('energy') ||
+      article.tags.includes('Energy Efficiency'));
 
   const isBuyingGuide =
     article.slug === 'how-to-choose-the-right-commercial-ice-machine-for-your-restaurant' ||
@@ -26,6 +32,63 @@ export const BlogDataGraphic: React.FC<BlogDataGraphicProps> = ({ article, varia
 
   // Compact Variant (Used for Cards in BlogIndexView)
   if (variant === 'compact') {
+    if (isBrandComparison) {
+      return (
+        <div className="w-full h-full p-4 bg-linear-to-br from-slate-900 via-slate-800 to-slate-900 text-white flex flex-col justify-between select-none">
+          <div className="flex items-center justify-between text-[10px] font-mono tracking-wider text-blue-300 uppercase">
+            <span className="flex items-center gap-1 font-semibold">
+              <BarChart3 className="w-3 h-3 text-blue-400" />
+              Brand Benchmark
+            </span>
+            <span className="text-slate-400">Avg kWh/100 lbs</span>
+          </div>
+
+          {/* Mini Comparative Bars */}
+          <div className="space-y-2 my-1">
+            <div>
+              <div className="flex justify-between text-[11px] font-medium text-slate-200">
+                <span className="flex items-center gap-1">
+                  <span className="w-2 h-2 rounded-full bg-blue-500 inline-block"></span>
+                  Manitowoc (109 models)
+                </span>
+                <span className="font-mono text-blue-400 font-bold">5.17</span>
+              </div>
+              <div className="w-full h-2 bg-slate-700/60 rounded-xs overflow-hidden mt-0.5">
+                <div className="h-full bg-blue-500 rounded-xs" style={{ width: '68.9%' }}></div>
+              </div>
+            </div>
+
+            <div>
+              <div className="flex justify-between text-[11px] font-medium text-slate-200">
+                <span className="flex items-center gap-1">
+                  <span className="w-2 h-2 rounded-full bg-indigo-500 inline-block"></span>
+                  Hoshizaki (42 models)
+                </span>
+                <span className="font-mono text-indigo-400 font-bold">5.38</span>
+              </div>
+              <div className="w-full h-2 bg-slate-700/60 rounded-xs overflow-hidden mt-0.5">
+                <div className="h-full bg-indigo-500 rounded-xs" style={{ width: '71.7%' }}></div>
+              </div>
+            </div>
+
+            <div>
+              <div className="flex justify-between text-[10px] text-slate-400">
+                <span>Industry Baseline</span>
+                <span className="font-mono text-slate-400">7.50</span>
+              </div>
+              <div className="w-full h-1.5 bg-slate-700/60 rounded-xs overflow-hidden mt-0.5">
+                <div className="h-full bg-slate-500 rounded-xs" style={{ width: '100%' }}></div>
+              </div>
+            </div>
+          </div>
+
+          <div className="pt-2 border-t border-slate-700/60 flex items-center justify-between text-[10px] text-slate-400">
+            <span className="text-blue-300 font-semibold">151 Models Compared</span>
+            <span>AHRI 810 Certified</span>
+          </div>
+        </div>
+      );
+    }
     if (isEnergyArticle) {
       return (
         <div className="w-full h-full p-4 bg-linear-to-br from-slate-900 via-slate-800 to-slate-900 text-white flex flex-col justify-between select-none">
@@ -141,6 +204,161 @@ export const BlogDataGraphic: React.FC<BlogDataGraphicProps> = ({ article, varia
         <div className="pt-2 border-t border-slate-700/60 flex items-center justify-between text-[10px] text-slate-400">
           <span className="text-cyan-300 font-medium">Standard 810/820</span>
           <span>Verified Specs</span>
+        </div>
+      </div>
+    );
+  }
+
+  // Full Variant (Hero Graphic at the top of ArticlePageView and featured card)
+  if (isBrandComparison) {
+    return (
+      <div className="w-full rounded-2xl border border-slate-200 bg-white shadow-xs overflow-hidden">
+        {/* Header Ribbon */}
+        <div className="px-6 py-3.5 bg-slate-900 text-white flex flex-wrap items-center justify-between gap-3 text-xs border-b border-slate-800">
+          <div className="flex items-center gap-2">
+            <div className="w-2 h-2 rounded-full bg-blue-400 animate-pulse"></div>
+            <span className="font-bold tracking-tight">AHRI Standard 810 Head-to-Head Audit: Hoshizaki vs. Manitowoc</span>
+          </div>
+          <div className="flex items-center gap-4 text-slate-300 font-mono text-[11px]">
+            <span>151 Certified Models Evaluated</span>
+            <span className="hidden sm:inline text-slate-500">|</span>
+            <span className="hidden sm:inline text-blue-300 font-semibold">90°F Air / 70°F Water Benchmark</span>
+          </div>
+        </div>
+
+        {/* Data Chart Body */}
+        <div className="p-6 sm:p-8 space-y-6 bg-slate-50/60">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-200 pb-4">
+            <div>
+              <h3 className="text-base sm:text-lg font-bold text-slate-900">
+                Average Electrical Energy Consumption Comparison (kWh / 100 lbs)
+              </h3>
+              <p className="text-xs text-slate-500 mt-0.5">
+                Official ENERGY STAR and AHRI 810 dataset average across all certified models. Lower score indicates higher energy efficiency.
+              </p>
+            </div>
+            <div className="flex items-center gap-2 self-start sm:self-auto bg-blue-50 border border-blue-200 text-blue-800 px-3 py-1.5 rounded-lg text-xs font-semibold">
+              <BarChart3 className="w-4 h-4 text-blue-600 shrink-0" />
+              <span>151 Total Commercial Records</span>
+            </div>
+          </div>
+
+          {/* Comparative Horizontal Bars */}
+          <div className="space-y-4">
+            {/* Manitowoc */}
+            <div className="space-y-1.5">
+              <div className="flex flex-wrap items-center justify-between text-xs">
+                <div className="flex items-center gap-2 font-semibold text-slate-900">
+                  <span className="w-5 h-5 rounded bg-blue-600 text-white font-bold text-[10px] flex items-center justify-center font-mono">M</span>
+                  <span>Manitowoc Portfolio Average</span>
+                  <span className="text-[11px] text-slate-500 font-normal">(109 Models · Avg Harvest: 674 lbs/day)</span>
+                </div>
+                <div className="flex items-center gap-2 font-mono">
+                  <span className="text-xs font-extrabold text-blue-700">5.17 kWh / 100 lbs</span>
+                  <span className="text-[10px] text-blue-700 font-semibold bg-blue-100 px-1.5 py-0.5 rounded">Efficiency Winner</span>
+                </div>
+              </div>
+              <div className="w-full h-7 bg-slate-200/80 rounded-lg overflow-hidden flex items-center">
+                <div
+                  className="h-full bg-blue-600 rounded-lg flex items-center justify-between px-3 text-[11px] font-mono font-bold text-white transition-all duration-500"
+                  style={{ width: '68.9%' }}
+                >
+                  <span>Manitowoc</span>
+                  <span>5.17 kWh</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Hoshizaki */}
+            <div className="space-y-1.5">
+              <div className="flex flex-wrap items-center justify-between text-xs">
+                <div className="flex items-center gap-2 font-semibold text-slate-900">
+                  <span className="w-5 h-5 rounded bg-indigo-600 text-white font-bold text-[10px] flex items-center justify-center font-mono">H</span>
+                  <span>Hoshizaki Portfolio Average</span>
+                  <span className="text-[11px] text-slate-500 font-normal">(42 Models · Avg Harvest: 783 lbs/day)</span>
+                </div>
+                <div className="flex items-center gap-2 font-mono">
+                  <span className="text-xs font-extrabold text-indigo-700">5.38 kWh / 100 lbs</span>
+                  <span className="text-[10px] text-slate-500 font-normal">(+4.0% energy difference)</span>
+                </div>
+              </div>
+              <div className="w-full h-7 bg-slate-200/80 rounded-lg overflow-hidden flex items-center">
+                <div
+                  className="h-full bg-indigo-600 rounded-lg flex items-center justify-between px-3 text-[11px] font-mono font-bold text-white transition-all duration-500"
+                  style={{ width: '71.7%' }}
+                >
+                  <span>Hoshizaki</span>
+                  <span>5.38 kWh</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Industry Baseline */}
+            <div className="space-y-1.5 pt-2 border-t border-slate-200">
+              <div className="flex flex-wrap items-center justify-between text-xs">
+                <div className="flex items-center gap-2 text-slate-600 font-medium">
+                  <span className="w-5 h-5 rounded bg-slate-300 text-slate-700 font-bold text-[10px] flex items-center justify-center font-mono">—</span>
+                  <span>Uncertified Commercial Baseline</span>
+                  <span className="text-[11px] text-slate-400">(Standard Non-ENERGY STAR Models)</span>
+                </div>
+                <div className="font-mono text-xs font-bold text-slate-600">
+                  7.50 kWh / 100 lbs
+                </div>
+              </div>
+              <div className="w-full h-5 bg-slate-200/80 rounded-lg overflow-hidden flex items-center">
+                <div
+                  className="h-full bg-slate-400 rounded-lg flex items-center justify-between px-3 text-[10px] font-mono font-bold text-white"
+                  style={{ width: '100%' }}
+                >
+                  <span>Market Baseline</span>
+                  <span>7.50 kWh</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Direct Category Breakdown Metrics */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 pt-2">
+            <div className="p-3.5 bg-white rounded-xl border border-slate-200 shadow-2xs space-y-1">
+              <div className="text-[10px] font-bold uppercase tracking-wider text-blue-600">Avg Electrical Efficiency</div>
+              <div className="font-mono text-base font-extrabold text-slate-900">
+                Manitowoc: <span className="text-blue-600">5.17</span> vs 5.38
+              </div>
+              <div className="text-[11px] text-slate-500 leading-snug">
+                Manitowoc holds a slight 3.9% fleet-wide efficiency lead.
+              </div>
+            </div>
+
+            <div className="p-3.5 bg-white rounded-xl border border-slate-200 shadow-2xs space-y-1">
+              <div className="text-[10px] font-bold uppercase tracking-wider text-emerald-600">Water Consumption</div>
+              <div className="font-mono text-base font-extrabold text-slate-900">
+                Hoshizaki: <span className="text-emerald-600">15.8</span> vs 17.6 gal
+              </div>
+              <div className="text-[11px] text-slate-500 leading-snug">
+                Hoshizaki uses ~10% less potable water per 100 lbs.
+              </div>
+            </div>
+
+            <div className="p-3.5 bg-white rounded-xl border border-slate-200 shadow-2xs space-y-1">
+              <div className="text-[10px] font-bold uppercase tracking-wider text-indigo-600">Maximum Harvest Capacity</div>
+              <div className="font-mono text-base font-extrabold text-slate-900">
+                Hoshizaki: <span className="text-indigo-600">2,580</span> lbs/day
+              </div>
+              <div className="text-[11px] text-slate-500 leading-snug">
+                Hoshizaki KM-2600 leads top-end single-unit volume.
+              </div>
+            </div>
+
+            <div className="p-3.5 bg-white rounded-xl border border-slate-200 shadow-2xs space-y-1">
+              <div className="text-[10px] font-bold uppercase tracking-wider text-cyan-600">Eco-Refrigerant (R-290)</div>
+              <div className="font-mono text-base font-extrabold text-slate-900">
+                Manitowoc: <span className="text-cyan-600">41</span> Models
+              </div>
+              <div className="text-[11px] text-slate-500 leading-snug">
+                Manitowoc leads green propane refrigerant adoption.
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     );
