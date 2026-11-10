@@ -20,6 +20,7 @@ import { EmptyDatabaseView } from './components/EmptyDatabaseView';
 import { StandardsInfoView } from './components/StandardsInfoView';
 import { BlogIndexView } from './components/BlogIndexView';
 import { ArticlePageView } from './components/ArticlePageView';
+import { QuotePageView } from './components/QuotePageView';
 import { BLOG_ARTICLES } from './data/blogArticles';
 import { BarChart3, Database, Trash2, CheckCircle2, Download, Globe, FileCode } from 'lucide-react';
 import {
@@ -33,8 +34,9 @@ export default function App() {
   const [machines, setMachines] = useState<IceMachine[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [viewMode, setViewMode] = useState<'grid' | 'table'>('grid');
-  const [currentView, setCurrentView] = useState<'directory' | 'table' | 'standards' | 'blog'>('directory');
+  const [currentView, setCurrentView] = useState<'directory' | 'table' | 'standards' | 'blog' | 'quote'>('directory');
   const [selectedArticleSlug, setSelectedArticleSlug] = useState<string | null>(null);
+  const [quotePrefill, setQuotePrefill] = useState<string>('');
   const [isImportModalOpen, setIsImportModalOpen] = useState(false);
   const [isCompareModalOpen, setIsCompareModalOpen] = useState(false);
   const [selectedMachine, setSelectedMachine] = useState<IceMachine | null>(null);
@@ -78,10 +80,16 @@ export default function App() {
         const safeList = Array.isArray(list) ? list : [];
         setMachines(safeList);
 
-        // Check for blog URL slug or root blog route
         const path = window.location.pathname;
         const hash = window.location.hash;
 
+        // Check for quote page route
+        if (path === '/quote' || path === '/quote/' || hash === '#/quote') {
+          setCurrentView('quote');
+          return;
+        }
+
+        // Check for blog URL slug or root blog route
         const blogMatch = path.match(/^\/blog\/([a-z0-9-]+)/i) || hash.match(/^#\/blog\/([a-z0-9-]+)/i);
         if (blogMatch && blogMatch[1]) {
           setCurrentView('blog');
@@ -130,6 +138,16 @@ export default function App() {
       if (canonical) {
         canonical.setAttribute('href', `${DOMAIN}/machine/${slug}`);
       }
+    } else if (currentView === 'quote') {
+      const targetUrl = '/quote';
+      if (window.location.pathname !== targetUrl) {
+        window.history.pushState(null, '', targetUrl);
+      }
+      document.title = 'Get a Commercial Ice Machine Quote | KoldSpec';
+      const canonical = document.querySelector('link[rel="canonical"]');
+      if (canonical) {
+        canonical.setAttribute('href', `${DOMAIN}/quote`);
+      }
     } else if (currentView === 'blog') {
       if (selectedArticleSlug && selectedArticle) {
         const targetUrl = `/blog/${selectedArticleSlug}`;
@@ -153,7 +171,11 @@ export default function App() {
         }
       }
     } else {
-      if (window.location.pathname.startsWith('/machine/') || window.location.pathname.startsWith('/blog')) {
+      if (
+        window.location.pathname.startsWith('/machine/') ||
+        window.location.pathname.startsWith('/blog') ||
+        window.location.pathname.startsWith('/quote')
+      ) {
         window.history.pushState(null, '', '/');
       }
 
@@ -170,6 +192,13 @@ export default function App() {
   useEffect(() => {
     const handlePopState = () => {
       const path = window.location.pathname;
+
+      if (path === '/quote' || path === '/quote/') {
+        setCurrentView('quote');
+        setSelectedArticleSlug(null);
+        setSelectedMachine(null);
+        return;
+      }
 
       const blogMatch = path.match(/^\/blog\/([a-z0-9-]+)/i);
       if (blogMatch && blogMatch[1]) {
@@ -421,6 +450,19 @@ export default function App() {
     notify(`Downloaded dynamic sitemap.xml with ${machines.length + 2 + BLOG_ARTICLES.length} URLs!`);
   };
 
+  const handleOpenQuote = (targetMachine?: IceMachine) => {
+    const machine = targetMachine || selectedMachine || null;
+    if (machine) {
+      setQuotePrefill(`${machine.brand} ${machine.modelNumber} (${machine.harvestRateLbs.toLocaleString()} lbs/day · ${machine.iceType} Ice)`);
+    } else {
+      setQuotePrefill('');
+    }
+    setSelectedMachine(null);
+    setSelectedArticleSlug(null);
+    setCurrentView('quote');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col font-sans">
       {/* Toast Notification */}
@@ -437,6 +479,9 @@ export default function App() {
         onViewChange={(view) => {
           setCurrentView(view);
           setSelectedMachine(null);
+          if (view !== 'quote') {
+            setQuotePrefill('');
+          }
           if (view !== 'blog') {
             setSelectedArticleSlug(null);
           }
@@ -453,7 +498,7 @@ export default function App() {
       />
 
       {/* Hero Section */}
-      {currentView !== 'standards' && currentView !== 'blog' && (
+      {currentView !== 'standards' && currentView !== 'blog' && currentView !== 'quote' && (
         <HeroSection
           searchQuery={filters.searchQuery}
           onSearchChange={(q) => setFilters({ ...filters, searchQuery: q })}
@@ -472,6 +517,7 @@ export default function App() {
             setIsImportModalOpen(true);
           }}
           onExportCsv={handleExportCsv}
+          onOpenQuote={() => handleOpenQuote()}
         />
       )}
 
@@ -502,6 +548,14 @@ export default function App() {
               }}
             />
           )
+        ) : currentView === 'quote' ? (
+          <QuotePageView
+            onBackToDirectory={() => {
+              setCurrentView('directory');
+              setQuotePrefill('');
+            }}
+            prefilledMachine={quotePrefill}
+          />
         ) : machines.length === 0 ? (
           // Empty State view when no CSV imported yet
           <EmptyDatabaseView
@@ -677,6 +731,7 @@ export default function App() {
                         onSelect={setSelectedMachine}
                         isCompared={comparedMachineIds.includes(m.id)}
                         onToggleCompare={toggleCompare}
+                        onOpenQuote={handleOpenQuote}
                       />
                     ))}
                   </div>
@@ -689,6 +744,7 @@ export default function App() {
                   onToggleCompare={toggleCompare}
                   onDeleteMachine={handleDeleteMachine}
                   onOpenImporter={() => setIsImportModalOpen(true)}
+                  onOpenQuote={handleOpenQuote}
                 />
               )}
             </div>
@@ -730,6 +786,7 @@ export default function App() {
         onClose={() => setSelectedMachine(null)}
         isCompared={selectedMachine ? comparedMachineIds.includes(selectedMachine.id) : false}
         onToggleCompare={toggleCompare}
+        onOpenQuote={handleOpenQuote}
       />
 
       {/* Compare Modal */}
@@ -798,9 +855,16 @@ export default function App() {
                 setSelectedMachine(null);
                 window.scrollTo({ top: 0, behavior: 'smooth' });
               }}
-              className="hover:text-slate-900 transition-colors font-medium text-blue-600"
+              className="hover:text-slate-900 transition-colors font-medium text-slate-700"
             >
               Guides & Articles
+            </button>
+            <span aria-hidden="true">·</span>
+            <button
+              onClick={() => handleOpenQuote()}
+              className="hover:text-blue-700 transition-colors font-semibold text-blue-600"
+            >
+              Get a Quote
             </button>
           </div>
           <div className="text-slate-400 text-[11px] font-mono">

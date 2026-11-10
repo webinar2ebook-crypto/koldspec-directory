@@ -27,6 +27,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
   onViewModeChange,
   onOpenImporter,
   onExportCsv,
+  onOpenQuote,
 }) => {
   const iceOptions: { type: IceType; label: string; desc: string }[] = [
     { type: 'Cube', label: 'Cube & Dice', desc: 'Cocktails, beverages & banquet' },

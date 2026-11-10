@@ -2,11 +2,10 @@ import React from 'react';
 import { Database, Upload, BarChart3, FileText } from 'lucide-react';
 
 interface NavbarProps {
-  currentView: 'directory' | 'table' | 'standards' | 'blog';
-  onViewChange: (view: 'directory' | 'table' | 'standards' | 'blog') => void;
+  currentView: 'directory' | 'table' | 'standards' | 'blog' | 'quote';
+  onViewChange: (view: 'directory' | 'table' | 'standards' | 'blog' | 'quote') => void;
   onOpenImporter: () => void;
   onOpenCompare: () => void;
-  onOpenQuote: () => void;
   compareCount: number;
   totalMachines: number;
 }
@@ -16,7 +15,6 @@ export const Navbar: React.FC<NavbarProps> = ({
   onViewChange,
   onOpenImporter,
   onOpenCompare,
-  onOpenQuote,
   compareCount,
   totalMachines,
 }) => {
@@ -92,6 +90,16 @@ export const Navbar: React.FC<NavbarProps> = ({
           >
             Guides
           </button>
+          <button
+            onClick={() => onViewChange('quote')}
+            className={`transition-colors whitespace-nowrap shrink-0 py-1 font-semibold ${
+              currentView === 'quote'
+                ? 'text-blue-600 border-b-2 border-blue-600'
+                : 'text-blue-600 hover:text-blue-700'
+            }`}
+          >
+            Get a Quote
+          </button>
         </nav>
 
         {/* Zone 3: Actions & Dataset Status */}
@@ -108,7 +116,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           )}
 
           <button
-            onClick={onOpenQuote}
+            onClick={() => onViewChange('quote')}
             className="flex items-center gap-1.5 px-3.5 py-2 text-xs font-bold text-white bg-blue-600 rounded-lg hover:bg-blue-500 transition-colors whitespace-nowrap shadow-xs active:scale-[0.99] cursor-pointer"
           >
             <FileText className="w-3.5 h-3.5" />

@@ -94,6 +94,14 @@ export function generateSitemapXml(
     <priority>0.9</priority>
   </url>`);
 
+  // 3. Get a Quote Page
+  urls.push(`  <url>
+    <loc>${domain}/quote</loc>
+    <lastmod>${lastmod}</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>`);
+
   // 3. Blog Articles
   for (const article of BLOG_ARTICLES) {
     let articleMod = lastmod;
