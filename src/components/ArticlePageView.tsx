@@ -78,7 +78,7 @@ export const ArticlePageView: React.FC<ArticlePageViewProps> = ({
   const relatedArticles = BLOG_ARTICLES.filter((a) => a.slug !== article.slug).slice(0, 2);
 
   return (
-    <article className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+    <article className="w-full max-w-5xl mx-auto space-y-8">
       {/* Top Breadcrumb & Navigation Bar */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 pb-4">
         <button

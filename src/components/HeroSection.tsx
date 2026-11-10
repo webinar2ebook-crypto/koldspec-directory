@@ -68,7 +68,9 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
 
           <div className="mt-4 flex flex-wrap items-center gap-3">
             <button
+              type="button"
               onClick={onOpenQuote}
+              style={{ cursor: 'pointer' }}
               className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded-lg transition-colors shadow-xs flex items-center gap-1.5 cursor-pointer whitespace-nowrap"
             >
               <FileText className="w-3.5 h-3.5" />

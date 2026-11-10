@@ -220,22 +220,22 @@ export const FilterSidebar: React.FC<FilterSidebarProps> = ({
               <label
                 key={opt.type}
                 htmlFor={`filter-ice-${opt.type}`}
-                className={`flex items-center justify-between px-2.5 py-1.5 rounded-lg cursor-pointer text-xs transition-colors select-none ${
+                className={`flex items-center justify-between px-3 py-2.5 sm:py-1.5 rounded-lg cursor-pointer text-xs transition-colors select-none min-h-[44px] sm:min-h-0 ${
                   checked ? 'bg-blue-50/80 font-semibold text-blue-900' : 'hover:bg-slate-50 text-slate-700'
                 }`}
               >
-                <div className="flex items-center gap-2.5">
+                <div className="flex items-center gap-3">
                   <input
                     type="checkbox"
                     id={`filter-ice-${opt.type}`}
                     checked={checked}
                     onChange={() => handleIceTypeToggle(opt.type)}
-                    className="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer accent-blue-600 shrink-0"
+                    className="w-5 h-5 sm:w-4 sm:h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer accent-blue-600 shrink-0"
                   />
-                  <span>{opt.label}</span>
+                  <span className="text-sm sm:text-xs">{opt.label}</span>
                 </div>
                 {count !== undefined && (
-                  <span className={`font-mono text-[11px] tabular-nums ${checked ? 'text-blue-700 font-bold' : 'text-slate-400'}`}>
+                  <span className={`font-mono text-xs sm:text-[11px] tabular-nums ${checked ? 'text-blue-700 font-bold' : 'text-slate-400'}`}>
                     {count}
                   </span>
                 )}
@@ -276,7 +276,7 @@ export const FilterSidebar: React.FC<FilterSidebarProps> = ({
                 value={brandSearch}
                 onChange={(e) => setBrandSearch(e.target.value)}
                 placeholder="Search brands (e.g. Hoshizaki)..."
-                className="w-full pl-8 pr-7 py-1 text-xs bg-slate-50 border border-slate-200 rounded-md focus:bg-white focus:outline-none focus:ring-1 focus:ring-blue-500 placeholder:text-slate-400"
+                className="w-full pl-8 pr-7 py-2 sm:py-1 text-xs bg-slate-50 border border-slate-200 rounded-md focus:bg-white focus:outline-none focus:ring-1 focus:ring-blue-500 placeholder:text-slate-400"
               />
               {brandSearch && (
                 <button
@@ -289,7 +289,7 @@ export const FilterSidebar: React.FC<FilterSidebarProps> = ({
               )}
             </div>
 
-            <div className="max-h-48 overflow-y-auto space-y-0.5 pr-1 custom-scrollbar">
+            <div className="max-h-56 sm:max-h-48 overflow-y-auto space-y-1 sm:space-y-0.5 pr-1 custom-scrollbar">
               {filteredBrandList.length === 0 ? (
                 <div className="py-2 text-center text-xs text-slate-400">
                   No brand matching "{brandSearch}"
@@ -301,23 +301,23 @@ export const FilterSidebar: React.FC<FilterSidebarProps> = ({
                     <label
                       key={b.name}
                       htmlFor={`filter-brand-${b.name.replace(/[^a-zA-Z0-9]/g, '_')}`}
-                      className={`flex items-center justify-between px-2 py-1 rounded-md cursor-pointer text-xs transition-colors select-none ${
+                      className={`flex items-center justify-between px-2.5 py-2 sm:py-1 rounded-md cursor-pointer text-xs transition-colors select-none min-h-[40px] sm:min-h-0 ${
                         checked ? 'bg-blue-50/80 font-semibold text-blue-900' : 'hover:bg-slate-50 text-slate-700'
                       }`}
                     >
-                      <div className="flex items-center gap-2 min-w-0">
+                      <div className="flex items-center gap-2.5 min-w-0">
                         <input
                           type="checkbox"
                           id={`filter-brand-${b.name.replace(/[^a-zA-Z0-9]/g, '_')}`}
                           checked={checked}
                           onChange={() => handleBrandToggle(b.name)}
-                          className="w-3.5 h-3.5 rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer accent-blue-600 shrink-0"
+                          className="w-5 h-5 sm:w-3.5 sm:h-3.5 rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer accent-blue-600 shrink-0"
                         />
-                        <span className="truncate max-w-[150px]">
+                        <span className="truncate max-w-[150px] text-sm sm:text-xs">
                           {b.name}
                         </span>
                       </div>
-                      <span className={`font-mono text-[11px] tabular-nums shrink-0 ml-1 ${checked ? 'text-blue-700 font-bold' : 'text-slate-400'}`}>
+                      <span className={`font-mono text-xs sm:text-[11px] tabular-nums shrink-0 ml-1 ${checked ? 'text-blue-700 font-bold' : 'text-slate-400'}`}>
                         {b.count}
                       </span>
                     </label>
@@ -486,25 +486,25 @@ export const FilterSidebar: React.FC<FilterSidebarProps> = ({
               <label
                 key={opt.type}
                 htmlFor={`filter-equip-${opt.type}`}
-                className={`flex items-start justify-between p-2 rounded-lg cursor-pointer text-xs transition-colors select-none ${
+                className={`flex items-start justify-between p-3 sm:p-2 rounded-lg cursor-pointer text-xs transition-colors select-none min-h-[48px] sm:min-h-0 ${
                   checked ? 'bg-blue-50/80 font-semibold text-blue-900' : 'hover:bg-slate-50 text-slate-700'
                 }`}
               >
-                <div className="flex items-start gap-2.5">
+                <div className="flex items-start gap-3">
                   <input
                     type="checkbox"
                     id={`filter-equip-${opt.type}`}
                     checked={checked}
                     onChange={() => handleEquipTypeToggle(opt.type)}
-                    className="w-4 h-4 mt-0.5 rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer accent-blue-600 shrink-0"
+                    className="w-5 h-5 sm:w-4 sm:h-4 mt-0.5 rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer accent-blue-600 shrink-0"
                   />
                   <div>
-                    <div className="text-slate-800 font-medium">{opt.label}</div>
-                    <div className="text-[10px] text-slate-400 font-normal">{opt.sub}</div>
+                    <div className="text-slate-800 font-medium text-sm sm:text-xs">{opt.label}</div>
+                    <div className="text-[11px] sm:text-[10px] text-slate-400 font-normal">{opt.sub}</div>
                   </div>
                 </div>
                 {count !== undefined && (
-                  <span className={`font-mono text-[11px] tabular-nums ${checked ? 'text-blue-700 font-bold' : 'text-slate-400'}`}>
+                  <span className={`font-mono text-xs sm:text-[11px] tabular-nums ${checked ? 'text-blue-700 font-bold' : 'text-slate-400'}`}>
                     {count}
                   </span>
                 )}
@@ -538,22 +538,22 @@ export const FilterSidebar: React.FC<FilterSidebarProps> = ({
               <label
                 key={opt.type}
                 htmlFor={`filter-cooling-${opt.type.replace(/[^a-zA-Z0-9]/g, '_')}`}
-                className={`flex items-center justify-between px-2.5 py-1.5 rounded-lg cursor-pointer text-xs transition-colors select-none ${
+                className={`flex items-center justify-between px-3 py-2.5 sm:py-1.5 rounded-lg cursor-pointer text-xs transition-colors select-none min-h-[44px] sm:min-h-0 ${
                   checked ? 'bg-blue-50/80 font-semibold text-blue-900' : 'hover:bg-slate-50 text-slate-700'
                 }`}
               >
-                <div className="flex items-center gap-2.5">
+                <div className="flex items-center gap-3">
                   <input
                     type="checkbox"
                     id={`filter-cooling-${opt.type.replace(/[^a-zA-Z0-9]/g, '_')}`}
                     checked={checked}
                     onChange={() => handleCoolingToggle(opt.type)}
-                    className="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer accent-blue-600 shrink-0"
+                    className="w-5 h-5 sm:w-4 sm:h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer accent-blue-600 shrink-0"
                   />
-                  <span>{opt.label}</span>
+                  <span className="text-sm sm:text-xs">{opt.label}</span>
                 </div>
                 {count !== undefined && (
-                  <span className={`font-mono text-[11px] tabular-nums ${checked ? 'text-blue-700 font-bold' : 'text-slate-400'}`}>
+                  <span className={`font-mono text-xs sm:text-[11px] tabular-nums ${checked ? 'text-blue-700 font-bold' : 'text-slate-400'}`}>
                     {count}
                   </span>
                 )}
@@ -567,7 +567,7 @@ export const FilterSidebar: React.FC<FilterSidebarProps> = ({
       <div className="pt-4">
         <label
           htmlFor="filter-energystar"
-          className="flex items-start gap-2.5 p-2.5 rounded-lg bg-blue-50/70 border border-blue-200/80 cursor-pointer transition-colors hover:bg-blue-50 select-none"
+          className="flex items-start gap-3 p-3.5 sm:p-2.5 rounded-lg bg-blue-50/70 border border-blue-200/80 cursor-pointer transition-colors hover:bg-blue-50 select-none min-h-[48px] sm:min-h-0"
         >
           <input
             type="checkbox"
@@ -576,14 +576,14 @@ export const FilterSidebar: React.FC<FilterSidebarProps> = ({
             onChange={(e) =>
               onFilterChange({ ...filters, energyStarOnly: e.target.checked })
             }
-            className="w-4 h-4 mt-0.5 rounded border-blue-400 text-blue-600 focus:ring-blue-500 cursor-pointer accent-blue-600 shrink-0"
+            className="w-5 h-5 sm:w-4 sm:h-4 mt-0.5 rounded border-blue-400 text-blue-600 focus:ring-blue-500 cursor-pointer accent-blue-600 shrink-0"
           />
           <div>
-            <div className="text-xs font-bold text-blue-900 flex items-center gap-1">
-              <ShieldCheck className="w-3.5 h-3.5 text-blue-600" />
+            <div className="text-sm sm:text-xs font-bold text-blue-900 flex items-center gap-1">
+              <ShieldCheck className="w-4 h-4 sm:w-3.5 sm:h-3.5 text-blue-600" />
               <span>ENERGY STAR® Only</span>
             </div>
-            <div className="text-[11px] text-blue-700 leading-snug">
+            <div className="text-xs sm:text-[11px] text-blue-700 leading-snug">
               Show only models certified under EPA specification standards.
             </div>
           </div>

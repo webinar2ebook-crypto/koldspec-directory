@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { IceMachine } from '../types/iceMachine';
-import { ArrowUpDown, ArrowUp, ArrowDown, ShieldCheck, CheckSquare, Square, ExternalLink, Trash2 } from 'lucide-react';
+import { ArrowUpDown, ArrowUp, ArrowDown, ShieldCheck, CheckSquare, Square, ExternalLink, Trash2, Box, Sparkles, Snowflake, Layers, Award } from 'lucide-react';
 
 interface MachineTableViewProps {
   machines: IceMachine[];
@@ -11,6 +11,22 @@ interface MachineTableViewProps {
   onOpenImporter: () => void;
   onOpenQuote?: (machine: IceMachine) => void;
 }
+
+const renderIceIcon = (iceType: string) => {
+  switch (iceType) {
+    case 'Nugget':
+      return <Sparkles className="w-3.5 h-3.5 text-cyan-600 shrink-0" />;
+    case 'Flake':
+      return <Snowflake className="w-3.5 h-3.5 text-sky-600 shrink-0" />;
+    case 'Crescent':
+      return <Layers className="w-3.5 h-3.5 text-indigo-600 shrink-0" />;
+    case 'Gourmet':
+      return <Award className="w-3.5 h-3.5 text-amber-600 shrink-0" />;
+    case 'Cube':
+    default:
+      return <Box className="w-3.5 h-3.5 text-blue-600 shrink-0" />;
+  }
+};
 
 type SortField = 'brand' | 'modelNumber' | 'harvestRateLbs' | 'energyUseRateKwh' | 'potableWaterUseGal' | 'iceType';
 
@@ -233,7 +249,10 @@ export const MachineTableView: React.FC<MachineTableViewProps> = ({
 
                     {/* Ice Type */}
                     <td className="px-3 py-2.5 whitespace-nowrap text-slate-700">
-                      {m.iceType}
+                      <div className="flex items-center gap-1.5">
+                        {renderIceIcon(m.iceType)}
+                        <span>{m.iceType}</span>
+                      </div>
                     </td>
 
                     {/* Equipment Type */}

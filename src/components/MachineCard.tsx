@@ -1,6 +1,6 @@
 import React from 'react';
 import { IceMachine } from '../types/iceMachine';
-import { Zap, Droplets, Gauge, ShieldCheck, CheckSquare, Square, FileText } from 'lucide-react';
+import { Zap, Droplets, Gauge, ShieldCheck, CheckSquare, Square, FileText, Box, Sparkles, Snowflake, Layers, Award } from 'lucide-react';
 
 interface MachineCardProps {
   machine: IceMachine;
@@ -10,6 +10,22 @@ interface MachineCardProps {
   onOpenQuote?: (machine: IceMachine) => void;
 }
 
+const renderIceIcon = (iceType: string) => {
+  switch (iceType) {
+    case 'Nugget':
+      return <Sparkles className="w-4 h-4 text-cyan-600" />;
+    case 'Flake':
+      return <Snowflake className="w-4 h-4 text-sky-600" />;
+    case 'Crescent':
+      return <Layers className="w-4 h-4 text-indigo-600" />;
+    case 'Gourmet':
+      return <Award className="w-4 h-4 text-amber-600" />;
+    case 'Cube':
+    default:
+      return <Box className="w-4 h-4 text-blue-600" />;
+  }
+};
+
 export const MachineCard: React.FC<MachineCardProps> = ({
   machine,
   onSelect,
@@ -17,21 +33,6 @@ export const MachineCard: React.FC<MachineCardProps> = ({
   onToggleCompare,
   onOpenQuote,
 }) => {
-  // Get corresponding ice imagery
-  const getIceImage = (iceType: string) => {
-    switch (iceType) {
-      case 'Nugget':
-        return '/src/assets/images/ice_type_nugget_1793852592796.jpg';
-      case 'Flake':
-        return '/src/assets/images/ice_type_flake_1793852593025.jpg';
-      case 'Cube':
-      case 'Crescent':
-      case 'Gourmet':
-      default:
-        return '/src/assets/images/ice_type_cube_1793852592605.jpg';
-    }
-  };
-
   // Standard energy cost calculation (AHRI 810 estimate: 365 days, 100 lbs/day ratio, $0.14/kWh)
   const annualLbsProduced = machine.harvestRateLbs * 365;
   const annualKwhUsed = (annualLbsProduced / 100) * machine.energyUseRateKwh;
@@ -94,12 +95,9 @@ export const MachineCard: React.FC<MachineCardProps> = ({
         {/* Ice Type & Spec Snapshot Bar */}
         <div className="px-5 py-2.5 bg-slate-50 border-y border-slate-100 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
-            <img
-              src={getIceImage(machine.iceType)}
-              alt={`${machine.iceType} ice thumbnail`}
-              referrerPolicy="no-referrer"
-              className="w-9 h-9 rounded object-cover border border-slate-200 shrink-0"
-            />
+            <div className="w-8 h-8 rounded-lg bg-white border border-slate-200 flex items-center justify-center shrink-0 shadow-2xs">
+              {renderIceIcon(machine.iceType)}
+            </div>
             <div>
               <div className="text-xs font-bold text-slate-800">
                 {machine.iceType} Ice
@@ -177,20 +175,24 @@ export const MachineCard: React.FC<MachineCardProps> = ({
         </div>
       </div>
 
-      {/* Card Action Footer */}
+      {/* Card Action Footer with Thumb-Friendly Mobile Targets */}
       <div className="p-3.5 bg-slate-50/70 border-t border-slate-100 flex items-center justify-between gap-2.5">
         <button
+          type="button"
           onClick={() => onSelect(machine)}
-          className="flex-1 py-2 px-3 text-xs font-semibold text-slate-700 bg-white hover:bg-slate-100 border border-slate-300 rounded-lg transition-colors text-center shadow-2xs active:scale-[0.99] cursor-pointer"
+          style={{ cursor: 'pointer' }}
+          className="flex-1 py-3 sm:py-2 px-3 text-xs font-semibold text-slate-700 bg-white hover:bg-slate-100 border border-slate-300 rounded-lg transition-colors text-center shadow-2xs active:scale-[0.99] cursor-pointer min-h-[44px] sm:min-h-0 flex items-center justify-center"
         >
           View Specs
         </button>
         <button
+          type="button"
           onClick={() => onOpenQuote?.(machine)}
-          className="flex-1 py-2 px-3 text-xs font-bold text-white bg-blue-600 hover:bg-blue-500 rounded-lg transition-colors text-center shadow-2xs active:scale-[0.99] flex items-center justify-center gap-1.5 cursor-pointer"
+          style={{ cursor: 'pointer' }}
+          className="flex-1 py-3 sm:py-2 px-3 text-xs font-bold text-white bg-blue-600 hover:bg-blue-500 rounded-lg transition-colors text-center shadow-2xs active:scale-[0.99] flex items-center justify-center gap-1.5 cursor-pointer min-h-[44px] sm:min-h-0"
           title="Get a commercial quote for this model"
         >
-          <FileText className="w-3.5 h-3.5" />
+          <FileText className="w-4 h-4 sm:w-3.5 sm:h-3.5" />
           <span>Get a Quote</span>
         </button>
       </div>

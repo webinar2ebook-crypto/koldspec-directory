@@ -1,5 +1,5 @@
 import React from 'react';
-import { Database, Upload, BarChart3, FileText } from 'lucide-react';
+import { Database, Upload, BarChart3, Mail } from 'lucide-react';
 
 interface NavbarProps {
   currentView: 'directory' | 'table' | 'standards' | 'blog' | 'quote';
@@ -26,6 +26,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           <button
             type="button"
             onClick={() => onViewChange('directory')}
+            style={{ cursor: 'pointer' }}
             className="flex items-center gap-2.5 text-left group cursor-pointer"
           >
             <div className="w-8 h-8 rounded bg-slate-900 flex items-center justify-center text-white font-bold text-sm tracking-wider">
@@ -47,6 +48,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           <button
             type="button"
             onClick={() => onViewChange('directory')}
+            style={{ cursor: 'pointer' }}
             className={`transition-colors whitespace-nowrap shrink-0 hover:text-slate-900 py-1 cursor-pointer ${
               currentView === 'directory' ? 'text-slate-900 border-b-2 border-slate-900 font-semibold' : ''
             }`}
@@ -56,6 +58,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           <button
             type="button"
             onClick={() => onViewChange('table')}
+            style={{ cursor: 'pointer' }}
             className={`transition-colors whitespace-nowrap shrink-0 hover:text-slate-900 py-1 flex items-center gap-1.5 cursor-pointer ${
               currentView === 'table' ? 'text-slate-900 border-b-2 border-slate-900 font-semibold' : ''
             }`}
@@ -68,6 +71,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           <button
             type="button"
             onClick={onOpenCompare}
+            style={{ cursor: 'pointer' }}
             className="transition-colors whitespace-nowrap shrink-0 hover:text-slate-900 py-1 flex items-center gap-1.5 cursor-pointer"
           >
             <BarChart3 className="w-4 h-4 text-slate-500" />
@@ -81,6 +85,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           <button
             type="button"
             onClick={() => onViewChange('standards')}
+            style={{ cursor: 'pointer' }}
             className={`transition-colors whitespace-nowrap shrink-0 hover:text-slate-900 py-1 cursor-pointer ${
               currentView === 'standards' ? 'text-slate-900 border-b-2 border-slate-900 font-semibold' : ''
             }`}
@@ -90,22 +95,12 @@ export const Navbar: React.FC<NavbarProps> = ({
           <button
             type="button"
             onClick={() => onViewChange('blog')}
+            style={{ cursor: 'pointer' }}
             className={`transition-colors whitespace-nowrap shrink-0 hover:text-slate-900 py-1 cursor-pointer ${
               currentView === 'blog' ? 'text-slate-900 border-b-2 border-slate-900 font-semibold' : ''
             }`}
           >
             Guides
-          </button>
-          <button
-            type="button"
-            onClick={() => onViewChange('quote')}
-            className={`transition-colors whitespace-nowrap shrink-0 py-1 font-semibold cursor-pointer ${
-              currentView === 'quote'
-                ? 'text-blue-600 border-b-2 border-blue-600'
-                : 'text-blue-600 hover:text-blue-700'
-            }`}
-          >
-            Get a Quote
           </button>
         </nav>
 
@@ -125,15 +120,17 @@ export const Navbar: React.FC<NavbarProps> = ({
           <button
             type="button"
             onClick={() => onViewChange('quote')}
+            style={{ cursor: 'pointer' }}
             className="flex items-center gap-1.5 px-3.5 py-2 text-xs font-bold text-white bg-blue-600 rounded-lg hover:bg-blue-500 transition-colors whitespace-nowrap shadow-xs active:scale-[0.99] cursor-pointer"
           >
-            <FileText className="w-3.5 h-3.5" />
-            <span>Get a Quote</span>
+            <Mail className="w-3.5 h-3.5" />
+            <span>Contact Us</span>
           </button>
 
           <button
             type="button"
             onClick={onOpenImporter}
+            style={{ cursor: 'pointer' }}
             className="flex items-center gap-2 px-3 py-2 text-xs font-semibold text-slate-700 bg-white hover:bg-slate-50 border border-slate-200 rounded-lg transition-colors whitespace-nowrap shadow-2xs active:scale-[0.99] cursor-pointer"
           >
             <Upload className="w-3.5 h-3.5" />

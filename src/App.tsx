@@ -869,10 +869,12 @@ export default function App() {
             </button>
             <span aria-hidden="true">·</span>
             <button
+              type="button"
               onClick={() => handleOpenQuote()}
-              className="hover:text-blue-700 transition-colors font-semibold text-blue-600"
+              style={{ cursor: 'pointer' }}
+              className="hover:text-blue-700 transition-colors font-semibold text-blue-600 cursor-pointer"
             >
-              Get a Quote
+              Contact Us
             </button>
           </div>
           <div className="text-slate-400 text-[11px] font-mono">

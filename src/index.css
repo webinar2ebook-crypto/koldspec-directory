@@ -11,11 +11,21 @@
   code, pre, .font-mono {
     font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   }
+}
 
-  button:not(:disabled),
-  [role="button"]:not(:disabled) {
-    cursor: pointer;
-  }
+/* Enforce pointer hand cursor across all interactive elements */
+button,
+[role="button"],
+a,
+nav button,
+input[type="button"],
+input[type="submit"] {
+  cursor: pointer !important;
+}
+
+button:disabled,
+[role="button"][aria-disabled="true"] {
+  cursor: not-allowed !important;
 }
 
 /* Custom scrollbars for high-density spec tables */

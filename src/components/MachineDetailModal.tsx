@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { IceMachine } from '../types/iceMachine';
-import { X, ShieldCheck, Zap, Droplets, Gauge, Calculator, CheckSquare, Square, Printer, Check, Share2, Link2, FileText } from 'lucide-react';
+import { X, ShieldCheck, Zap, Droplets, Gauge, Calculator, CheckSquare, Square, Printer, Check, Share2, Link2, FileText, Box, Sparkles, Snowflake, Layers, Award } from 'lucide-react';
 import { getBaseMachineSlug, DOMAIN } from '../utils/sitemapGenerator';
 
 interface MachineDetailModalProps {
@@ -10,6 +10,22 @@ interface MachineDetailModalProps {
   onToggleCompare: (machine: IceMachine) => void;
   onOpenQuote?: (machine: IceMachine) => void;
 }
+
+const renderIceIcon = (iceType: string, sizeClass = 'w-4 h-4') => {
+  switch (iceType) {
+    case 'Nugget':
+      return <Sparkles className={`${sizeClass} text-cyan-600`} />;
+    case 'Flake':
+      return <Snowflake className={`${sizeClass} text-sky-600`} />;
+    case 'Crescent':
+      return <Layers className={`${sizeClass} text-indigo-600`} />;
+    case 'Gourmet':
+      return <Award className={`${sizeClass} text-amber-600`} />;
+    case 'Cube':
+    default:
+      return <Box className={`${sizeClass} text-blue-600`} />;
+  }
+};
 
 export const MachineDetailModal: React.FC<MachineDetailModalProps> = ({
   machine,
@@ -38,20 +54,6 @@ export const MachineDetailModal: React.FC<MachineDetailModalProps> = ({
   const annualWaterGal = machine.potableWaterUseGal
     ? Math.round((annualLbsProduced / 100) * machine.potableWaterUseGal)
     : null;
-
-  const getIceImage = (iceType: string) => {
-    switch (iceType) {
-      case 'Nugget':
-        return '/src/assets/images/ice_type_nugget_1793852592796.jpg';
-      case 'Flake':
-        return '/src/assets/images/ice_type_flake_1793852593025.jpg';
-      case 'Cube':
-      case 'Crescent':
-      case 'Gourmet':
-      default:
-        return '/src/assets/images/ice_type_cube_1793852592605.jpg';
-    }
-  };
 
   const handleCopyLink = () => {
     const slug = getBaseMachineSlug(machine);
@@ -159,12 +161,9 @@ export const MachineDetailModal: React.FC<MachineDetailModalProps> = ({
         <div className="p-6 overflow-y-auto space-y-6 custom-scrollbar flex-1">
           {/* Top Banner & Photo */}
           <div className="bg-slate-50 rounded-xl border border-slate-200 p-4 flex flex-col sm:flex-row items-center gap-5">
-            <img
-              src={getIceImage(machine.iceType)}
-              alt={`${machine.iceType} ice photography`}
-              referrerPolicy="no-referrer"
-              className="w-24 h-24 rounded-lg object-cover border border-slate-200 shadow-2xs shrink-0"
-            />
+            <div className="w-16 h-16 rounded-xl bg-white border border-slate-200 flex items-center justify-center shrink-0 shadow-2xs">
+              {renderIceIcon(machine.iceType, 'w-8 h-8')}
+            </div>
             <div className="space-y-1.5 text-center sm:text-left flex-1">
               <div className="text-xs font-bold uppercase tracking-wider text-blue-600">
                 {machine.iceType} Ice Form
