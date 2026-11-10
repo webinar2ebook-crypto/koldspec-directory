@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { IceMachine } from '../types/iceMachine';
-import { X, ShieldCheck, Zap, Droplets, Gauge, Calculator, CheckSquare, Square, Printer, Check } from 'lucide-react';
+import { X, ShieldCheck, Zap, Droplets, Gauge, Calculator, CheckSquare, Square, Printer, Check, Share2, Link2 } from 'lucide-react';
+import { getBaseMachineSlug, DOMAIN } from '../utils/sitemapGenerator';
 
 interface MachineDetailModalProps {
   machine: IceMachine | null;
@@ -17,6 +18,7 @@ export const MachineDetailModal: React.FC<MachineDetailModalProps> = ({
 }) => {
   const [kwhRate, setKwhRate] = useState<number>(0.14); // $0.14 / kWh commercial average
   const [operatingDays, setOperatingDays] = useState<number>(365);
+  const [copiedLink, setCopiedLink] = useState(false);
 
   if (!machine) return null;
 
@@ -46,6 +48,17 @@ export const MachineDetailModal: React.FC<MachineDetailModalProps> = ({
       case 'Gourmet':
       default:
         return '/src/assets/images/ice_type_cube_1793852592605.jpg';
+    }
+  };
+
+  const handleCopyLink = () => {
+    const slug = getBaseMachineSlug(machine);
+    const url = `${DOMAIN}/machine/${slug}`;
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(url).then(() => {
+        setCopiedLink(true);
+        setTimeout(() => setCopiedLink(false), 2000);
+      }).catch(() => {});
     }
   };
 
@@ -80,6 +93,24 @@ export const MachineDetailModal: React.FC<MachineDetailModalProps> = ({
           </div>
 
           <div className="flex items-center gap-2">
+            <button
+              onClick={handleCopyLink}
+              className="flex items-center gap-1 px-2.5 py-1.5 text-xs font-semibold rounded-lg border border-slate-300 text-slate-700 hover:bg-slate-50 transition-colors"
+              title="Copy direct SEO URL for this model"
+            >
+              {copiedLink ? (
+                <>
+                  <Check className="w-3.5 h-3.5 text-emerald-600" />
+                  <span className="text-emerald-700 font-bold">Copied!</span>
+                </>
+              ) : (
+                <>
+                  <Link2 className="w-3.5 h-3.5 text-slate-500" />
+                  <span>Share URL</span>
+                </>
+              )}
+            </button>
+
             <button
               onClick={() => onToggleCompare(machine)}
               className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg border transition-colors ${

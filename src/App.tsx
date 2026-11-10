@@ -18,7 +18,13 @@ import { CompareModal } from './components/CompareModal';
 import { CsvImportModal } from './components/CsvImportModal';
 import { EmptyDatabaseView } from './components/EmptyDatabaseView';
 import { StandardsInfoView } from './components/StandardsInfoView';
-import { BarChart3, Database, Trash2, CheckCircle2, Download } from 'lucide-react';
+import { BarChart3, Database, Trash2, CheckCircle2, Download, Globe, FileCode } from 'lucide-react';
+import {
+  buildMachineSlugMap,
+  findMachineBySlug,
+  generateSitemapXml,
+  DOMAIN,
+} from './utils/sitemapGenerator';
 
 export default function App() {
   const [machines, setMachines] = useState<IceMachine[]>([]);
@@ -54,13 +60,26 @@ export default function App() {
     }, 4500);
   };
 
-  // Load 651 machines from static ice_machines.json on startup
+  // Load 651 machines from static ice_machines.json on startup & check for deep link
   useEffect(() => {
     async function initDatabase() {
       try {
         setIsLoading(true);
         const list = await getAllIceMachines();
-        setMachines(Array.isArray(list) ? list : []);
+        const safeList = Array.isArray(list) ? list : [];
+        setMachines(safeList);
+
+        // Check for machine URL slug (e.g. /machine/hoshizaki-km-1900saj3 or #/machine/...)
+        const path = window.location.pathname;
+        const hash = window.location.hash;
+        const match = path.match(/^\/machine\/([a-z0-9-]+)/i) || hash.match(/^#\/machine\/([a-z0-9-]+)/i);
+        if (match && match[1]) {
+          const targetSlug = match[1];
+          const found = findMachineBySlug(safeList, targetSlug);
+          if (found) {
+            setSelectedMachine(found);
+          }
+        }
       } catch (err) {
         console.error('Failed to load database:', err);
       } finally {
@@ -69,6 +88,54 @@ export default function App() {
     }
     initDatabase();
   }, []);
+
+  // Sync browser URL and document title / canonical tags when a machine is selected
+  useEffect(() => {
+    if (selectedMachine) {
+      const slugMap = buildMachineSlugMap(machines);
+      const slug = slugMap.get(selectedMachine.id) || selectedMachine.id;
+      const targetUrl = `/machine/${slug}`;
+
+      if (window.location.pathname !== targetUrl) {
+        window.history.pushState({ machineId: selectedMachine.id }, '', targetUrl);
+      }
+
+      document.title = `${selectedMachine.brand} ${selectedMachine.modelNumber} Commercial Ice Maker Specs | KoldSpec`;
+
+      const canonical = document.querySelector('link[rel="canonical"]');
+      if (canonical) {
+        canonical.setAttribute('href', `${DOMAIN}/machine/${slug}`);
+      }
+    } else {
+      if (window.location.pathname.startsWith('/machine/')) {
+        window.history.pushState(null, '', '/');
+      }
+
+      document.title = 'KoldSpec Commercial Ice Machine Directory';
+
+      const canonical = document.querySelector('link[rel="canonical"]');
+      if (canonical) {
+        canonical.setAttribute('href', `${DOMAIN}/`);
+      }
+    }
+  }, [selectedMachine, machines]);
+
+  // Handle browser back / forward navigation
+  useEffect(() => {
+    const handlePopState = () => {
+      const path = window.location.pathname;
+      const match = path.match(/^\/machine\/([a-z0-9-]+)/i);
+      if (match && match[1]) {
+        const found = findMachineBySlug(machines, match[1]);
+        setSelectedMachine(found || null);
+      } else {
+        setSelectedMachine(null);
+      }
+    };
+
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, [machines]);
 
   // Compute maximum harvest rate in loaded dataset for slider bound
   const maxHarvestRate = useMemo(() => {
@@ -279,6 +346,19 @@ export default function App() {
     await handleImportComplete(sample, 'replace');
   };
 
+  const handleDownloadSitemap = () => {
+    const xml = generateSitemapXml(machines, DOMAIN);
+    const blob = new Blob([xml], { type: 'application/xml;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', 'sitemap.xml');
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    notify(`Downloaded dynamic sitemap.xml with ${machines.length + 1} URLs!`);
+  };
+
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col font-sans">
       {/* Toast Notification */}
@@ -399,15 +479,37 @@ export default function App() {
                   </button>
                 </div>
 
-                <a
-                  href="/insert_data.sql"
-                  download="insert_data.sql"
-                  className="w-full py-1.5 px-2 bg-slate-900 hover:bg-slate-800 text-white font-semibold rounded text-center transition-colors flex items-center justify-center gap-1.5 block shadow-2xs text-[11px]"
-                  title="Download Neon SQL Editor script for all 651 machines"
-                >
-                  <Download className="w-3 h-3 text-blue-400" />
-                  <span>Download insert_data.sql (651)</span>
-                </a>
+                <div className="pt-1 border-t border-slate-100 space-y-1.5">
+                  <a
+                    href="/sitemap.xml"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-full py-1.5 px-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 font-semibold rounded text-center transition-colors flex items-center justify-center gap-1.5 block text-[11px]"
+                    title="View live sitemap.xml with 651 machine URLs"
+                  >
+                    <Globe className="w-3 h-3 text-emerald-600" />
+                    <span>View sitemap.xml ({machines.length + 1} URLs)</span>
+                  </a>
+
+                  <button
+                    onClick={handleDownloadSitemap}
+                    className="w-full py-1.5 px-2 bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-200 font-semibold rounded text-center transition-colors flex items-center justify-center gap-1.5 text-[11px]"
+                    title="Download dynamically generated sitemap.xml for current database"
+                  >
+                    <FileCode className="w-3 h-3 text-blue-600" />
+                    <span>Download Dynamic sitemap.xml</span>
+                  </button>
+
+                  <a
+                    href="/insert_data.sql"
+                    download="insert_data.sql"
+                    className="w-full py-1.5 px-2 bg-slate-900 hover:bg-slate-800 text-white font-semibold rounded text-center transition-colors flex items-center justify-center gap-1.5 block shadow-2xs text-[11px]"
+                    title="Download Neon SQL Editor script for all 651 machines"
+                  >
+                    <Download className="w-3 h-3 text-blue-400" />
+                    <span>Download insert_data.sql (651)</span>
+                  </a>
+                </div>
               </div>
             </div>
 
