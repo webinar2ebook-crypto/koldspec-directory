@@ -21,7 +21,7 @@ export interface BlogArticle {
   title: string;
   subtitle: string;
   excerpt: string;
-  category: 'Buying Guides' | 'Energy Efficiency' | 'Equipment Standards' | 'Kitchen Operations';
+  category: 'Buying Guides' | 'Energy Efficiency' | 'Equipment Standards' | 'Kitchen Operations' | 'Equipment Comparisons' | 'Operating Costs';
   readTime: string;
   publishDate: string;
   author: {

@@ -1,6 +1,6 @@
 import React from 'react';
 import { BlogArticle } from '../types/blog';
-import { BarChart3, Zap, ShieldCheck, Scale, ThermometerSnowflake, CheckCircle2, ArrowDownRight, Droplets, Coffee } from 'lucide-react';
+import { BarChart3, Zap, ShieldCheck, Scale, ThermometerSnowflake, CheckCircle2, ArrowDownRight, Droplets, Coffee, Wine } from 'lucide-react';
 
 interface BlogDataGraphicProps {
   article: BlogArticle;
@@ -15,20 +15,34 @@ export const BlogDataGraphic: React.FC<BlogDataGraphicProps> = ({ article, varia
 
   const isBrandComparison =
     !isCafeArticle &&
-    (article.slug === 'hoshizaki-vs-manitowoc-commercial-ice-machines' ||
+    (article.slug.includes('hoshizaki') ||
+      article.slug.includes('manitowoc') ||
       article.title.toLowerCase().includes('hoshizaki') ||
       article.title.toLowerCase().includes('manitowoc'));
+
+  const isUndercounterArticle =
+    !isCafeArticle &&
+    !isBrandComparison &&
+    (article.slug.includes('undercounter') ||
+      article.title.toLowerCase().includes('undercounter'));
 
   const isEnergyArticle =
     !isCafeArticle &&
     !isBrandComparison &&
+    !isUndercounterArticle &&
     (article.slug === 'most-energy-efficient-ice-machines' ||
+      article.slug.includes('cost') ||
       article.category === 'Energy Efficiency' ||
+      article.category === 'Operating Costs' ||
+      article.title.toLowerCase().includes('cost') ||
       article.title.toLowerCase().includes('energy') ||
       article.tags.includes('Energy Efficiency'));
 
   const isBuyingGuide =
     !isCafeArticle &&
+    !isBrandComparison &&
+    !isUndercounterArticle &&
+    !isEnergyArticle &&
     (article.slug === 'how-to-size-a-commercial-ice-machine-for-your-restaurant' ||
       article.slug === 'how-to-choose-the-right-commercial-ice-machine-for-your-restaurant' ||
       article.title.toLowerCase().includes('size') ||
@@ -607,6 +621,208 @@ export const BlogDataGraphic: React.FC<BlogDataGraphicProps> = ({ article, varia
               </div>
               <div className="text-[11px] text-slate-500 leading-snug">
                 Manitowoc leads green propane refrigerant adoption.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Undercounter Variant (Top compact machines for small bars)
+  if (isUndercounterArticle) {
+    return (
+      <div className="w-full rounded-2xl border border-slate-200 bg-white shadow-xs overflow-hidden">
+        {/* Header Ribbon */}
+        <div className="px-6 py-3.5 bg-slate-900 text-white flex flex-wrap items-center justify-between gap-3 text-xs border-b border-slate-800">
+          <div className="flex items-center gap-2">
+            <Wine className="w-4 h-4 text-cyan-400" />
+            <span className="font-bold tracking-tight">AHRI 810 Benchmark: Top Compact Undercounter Ice Machines for Small Bars (&lt; 200 lbs/day)</span>
+          </div>
+          <div className="flex items-center gap-4 text-slate-300 font-mono text-[11px]">
+            <span>233 Compact Models Evaluated</span>
+            <span className="hidden sm:inline text-slate-500">|</span>
+            <span className="hidden sm:inline text-cyan-300 font-semibold">Front-Breathing Zero Clearance</span>
+          </div>
+        </div>
+
+        {/* Data Chart Body */}
+        <div className="p-6 sm:p-8 space-y-6 bg-slate-50/60">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-200 pb-4">
+            <div>
+              <h3 className="text-base sm:text-lg font-bold text-slate-900">
+                Electrical Energy Rate Comparison (kWh / 100 lbs) & Production Specs
+              </h3>
+              <p className="text-xs text-slate-500 mt-0.5">
+                Official ENERGY STAR and AHRI 810 tested ratings for leading undercounter bar units. Lower kWh indicates superior power efficiency.
+              </p>
+            </div>
+            <div className="flex items-center gap-2 self-start sm:self-auto bg-cyan-50 border border-cyan-200 text-cyan-900 px-3 py-1.5 rounded-lg text-xs font-semibold">
+              <Zap className="w-4 h-4 text-cyan-600 shrink-0" />
+              <span>Sub-6.0 kWh Category Leaders</span>
+            </div>
+          </div>
+
+          {/* Comparative Horizontal Bars */}
+          <div className="space-y-4">
+            {/* Rank 1: Scotsman UC2024 */}
+            <div className="space-y-1.5">
+              <div className="flex flex-wrap items-center justify-between text-xs">
+                <div className="flex items-center gap-2 font-semibold text-slate-900">
+                  <span className="w-5 h-5 rounded bg-emerald-600 text-white font-bold text-[10px] flex items-center justify-center font-mono">1</span>
+                  <span>Scotsman UC2024MAX-1A</span>
+                  <span className="text-[11px] text-slate-500 font-normal">(170 lbs/day · Medium Cube · 80 lb Bin · R-290)</span>
+                </div>
+                <div className="flex items-center gap-2 font-mono">
+                  <span className="text-xs font-extrabold text-emerald-700">5.12 kWh / 100 lbs</span>
+                  <span className="text-[10px] text-emerald-700 font-semibold bg-emerald-100 px-1.5 py-0.5 rounded">Efficiency Winner</span>
+                </div>
+              </div>
+              <div className="w-full h-7 bg-slate-200/80 rounded-lg overflow-hidden flex items-center">
+                <div
+                  className="h-full bg-emerald-600 rounded-lg flex items-center justify-between px-3 text-[11px] font-mono font-bold text-white transition-all duration-500"
+                  style={{ width: '51.2%' }}
+                >
+                  <span>Scotsman UC2024</span>
+                  <span>5.12 kWh</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Rank 2: Hoshizaki KM-116 */}
+            <div className="space-y-1.5">
+              <div className="flex flex-wrap items-center justify-between text-xs">
+                <div className="flex items-center gap-2 font-semibold text-slate-900">
+                  <span className="w-5 h-5 rounded bg-blue-600 text-white font-bold text-[10px] flex items-center justify-center font-mono">2</span>
+                  <span>Hoshizaki KM-116BAK</span>
+                  <span className="text-[11px] text-slate-500 font-normal">(110 lbs/day · Crescent Cube · 53 lb Bin · R-290)</span>
+                </div>
+                <div className="flex items-center gap-2 font-mono">
+                  <span className="text-xs font-extrabold text-blue-700">5.20 kWh / 100 lbs</span>
+                  <span className="text-[10px] text-blue-700 font-semibold bg-blue-100 px-1.5 py-0.5 rounded">Bar Crescent Leader</span>
+                </div>
+              </div>
+              <div className="w-full h-7 bg-slate-200/80 rounded-lg overflow-hidden flex items-center">
+                <div
+                  className="h-full bg-blue-600 rounded-lg flex items-center justify-between px-3 text-[11px] font-mono font-bold text-white transition-all duration-500"
+                  style={{ width: '52.0%' }}
+                >
+                  <span>Hoshizaki KM-116</span>
+                  <span>5.20 kWh</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Rank 3: Manitowoc UYP0190 */}
+            <div className="space-y-1.5">
+              <div className="flex flex-wrap items-center justify-between text-xs">
+                <div className="flex items-center gap-2 font-semibold text-slate-900">
+                  <span className="w-5 h-5 rounded bg-indigo-600 text-white font-bold text-[10px] flex items-center justify-center font-mono">3</span>
+                  <span>Manitowoc UYP0190A-161B</span>
+                  <span className="text-[11px] text-slate-500 font-normal">(180 lbs/day · Regular Dice · 90 lb Bin · R-290)</span>
+                </div>
+                <div className="flex items-center gap-2 font-mono">
+                  <span className="text-xs font-extrabold text-indigo-700">5.83 kWh / 100 lbs</span>
+                  <span className="text-[10px] text-indigo-700 font-semibold bg-indigo-100 px-1.5 py-0.5 rounded">Max Storage Bin</span>
+                </div>
+              </div>
+              <div className="w-full h-7 bg-slate-200/80 rounded-lg overflow-hidden flex items-center">
+                <div
+                  className="h-full bg-indigo-600 rounded-lg flex items-center justify-between px-3 text-[11px] font-mono font-bold text-white transition-all duration-500"
+                  style={{ width: '58.3%' }}
+                >
+                  <span>Manitowoc UYP0190</span>
+                  <span>5.83 kWh</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Rank 4: True TUIADA-15 */}
+            <div className="space-y-1.5">
+              <div className="flex flex-wrap items-center justify-between text-xs">
+                <div className="flex items-center gap-2 font-semibold text-slate-900">
+                  <span className="w-5 h-5 rounded bg-slate-700 text-white font-bold text-[10px] flex items-center justify-center font-mono">4</span>
+                  <span>True Refrigeration TUIADA-15</span>
+                  <span className="text-[11px] text-slate-500 font-normal">(82 lbs/day · Clear Gourmet Cube · 15" Slim · ADA 32")</span>
+                </div>
+                <div className="font-mono text-xs font-bold text-slate-700">
+                  6.00 kWh / 100 lbs
+                </div>
+              </div>
+              <div className="w-full h-7 bg-slate-200/80 rounded-lg overflow-hidden flex items-center">
+                <div
+                  className="h-full bg-slate-600 rounded-lg flex items-center justify-between px-3 text-[11px] font-mono font-bold text-white transition-all duration-500"
+                  style={{ width: '60.0%' }}
+                >
+                  <span>True TUIADA-15</span>
+                  <span>6.00 kWh</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Industry Baseline */}
+            <div className="space-y-1.5 pt-2 border-t border-slate-200">
+              <div className="flex flex-wrap items-center justify-between text-xs">
+                <div className="flex items-center gap-2 text-slate-600 font-medium">
+                  <span className="w-5 h-5 rounded bg-slate-300 text-slate-700 font-bold text-[10px] flex items-center justify-center font-mono">—</span>
+                  <span>Uncertified Compact Undercounter Baseline</span>
+                  <span className="text-[11px] text-slate-400">(Legacy R-134a Models)</span>
+                </div>
+                <div className="font-mono text-xs font-bold text-slate-600">
+                  10.00 kWh / 100 lbs
+                </div>
+              </div>
+              <div className="w-full h-5 bg-slate-200/80 rounded-lg overflow-hidden flex items-center">
+                <div
+                  className="h-full bg-slate-400 rounded-lg flex items-center justify-between px-3 text-[10px] font-mono font-bold text-white"
+                  style={{ width: '100%' }}
+                >
+                  <span>Market Baseline</span>
+                  <span>10.00 kWh</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* 4-Card Breakdown */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 pt-2">
+            <div className="p-3.5 bg-white rounded-xl border border-slate-200 shadow-2xs space-y-1">
+              <div className="text-[10px] font-bold uppercase tracking-wider text-emerald-600">Lowest Power Draw</div>
+              <div className="font-mono text-base font-extrabold text-slate-900">
+                Scotsman: <span className="text-emerald-600">5.12</span> kWh
+              </div>
+              <div className="text-[11px] text-slate-500 leading-snug">
+                Slashes compact bar electricity draw by nearly 50%.
+              </div>
+            </div>
+
+            <div className="p-3.5 bg-white rounded-xl border border-slate-200 shadow-2xs space-y-1">
+              <div className="text-[10px] font-bold uppercase tracking-wider text-blue-600">Cocktail Crescent Ice</div>
+              <div className="font-mono text-base font-extrabold text-slate-900">
+                Hoshizaki: <span className="text-blue-600">KM-116</span>
+              </div>
+              <div className="text-[11px] text-slate-500 leading-snug">
+                Stainless evaporator creates hard, slow-melting cubes.
+              </div>
+            </div>
+
+            <div className="p-3.5 bg-white rounded-xl border border-slate-200 shadow-2xs space-y-1">
+              <div className="text-[10px] font-bold uppercase tracking-wider text-indigo-600">Largest Bin Buffer</div>
+              <div className="font-mono text-base font-extrabold text-slate-900">
+                Manitowoc: <span className="text-indigo-600">90</span> lbs
+              </div>
+              <div className="text-[11px] text-slate-500 leading-snug">
+                Angled ergonomic door buffers peak Friday evening rushes.
+              </div>
+            </div>
+
+            <div className="p-3.5 bg-white rounded-xl border border-slate-200 shadow-2xs space-y-1">
+              <div className="text-[10px] font-bold uppercase tracking-wider text-cyan-600">Slim 15" ADA Fit</div>
+              <div className="font-mono text-base font-extrabold text-slate-900">
+                True: <span className="text-cyan-600">32" Height</span>
+              </div>
+              <div className="text-[11px] text-slate-500 leading-snug">
+                Zero-clearance front breathing for tight millwork.
               </div>
             </div>
           </div>
