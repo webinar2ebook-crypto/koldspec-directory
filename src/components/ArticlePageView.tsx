@@ -83,9 +83,12 @@ export const ArticlePageView: React.FC<ArticlePageViewProps> = ({
   const relatedArticles = BLOG_ARTICLES.filter((a) => a.slug !== article.slug).slice(0, 2);
 
   return (
-    <article className="w-full space-y-10 pb-16">
-      {/* Top Breadcrumb & Navigation Bar (Centered with content width) */}
-      <div className="w-full max-w-[800px] mx-auto flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 pb-4">
+    <div
+      className="w-full max-w-[800px] mx-auto space-y-8 pb-16"
+      style={{ maxWidth: '800px', margin: '0 auto' }}
+    >
+      {/* Top Breadcrumb & Share/Print Bar */}
+      <div className="w-full flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 pb-4">
         <button
           type="button"
           onClick={onBackToBlog}
@@ -126,8 +129,8 @@ export const ArticlePageView: React.FC<ArticlePageViewProps> = ({
         </div>
       </div>
 
-      {/* 1. Article Title / Header at Top (Centered Column max-w-[800px]) */}
-      <header className="w-full max-w-[800px] mx-auto space-y-4">
+      {/* 1. Article Title / Header at the Top */}
+      <header className="w-full space-y-4">
         {/* Zero-Pill Unboxed Metadata */}
         <div className="flex flex-wrap items-center gap-2 text-xs text-slate-500 font-medium">
           <span className="text-blue-700 font-semibold">{article.category}</span>
@@ -160,12 +163,12 @@ export const ArticlePageView: React.FC<ArticlePageViewProps> = ({
       </header>
 
       {/* 2. Data Chart / Visualization directly below the title, spanning the full width */}
-      <div className="w-full max-w-5xl mx-auto">
+      <div className="w-full">
         <BlogDataGraphic article={article} variant="full" />
       </div>
 
-      {/* 3. Article text below the chart, in a single centered column (max-width: 800px) */}
-      <div className="w-full max-w-[800px] mx-auto space-y-10">
+      {/* 3. Article text below the chart, in the single centered column (max-width: 800px) */}
+      <div className="w-full space-y-10">
         {/* Quick Jump Table of Contents */}
         <div className="p-5 bg-slate-50 rounded-xl border border-slate-200 text-xs space-y-3">
           <div className="font-bold text-slate-900 uppercase tracking-wider text-[11px] flex items-center gap-2">
@@ -299,17 +302,17 @@ export const ArticlePageView: React.FC<ArticlePageViewProps> = ({
           ))}
         </div>
 
-        {/* Interactive Directory Search & Quote CTA Banner */}
+        {/* Interactive Directory Search & Contact Us / Quote CTA Banner */}
         <div className="p-6 sm:p-8 bg-slate-900 text-white rounded-2xl border border-slate-800 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 my-10 shadow-md">
           <div className="space-y-1.5 max-w-xl">
             <div className="text-xs font-bold uppercase tracking-wider text-blue-400">
-              Commercial Equipment Procurement
+              Commercial Equipment Advisory
             </div>
             <h3 className="text-xl font-extrabold text-white">
-              Need Wholesale Pricing for Your Cafe or Restaurant?
+              Have Questions or Need a Custom Sizing Audit?
             </h3>
             <p className="text-xs text-slate-300 leading-relaxed">
-              Submit a direct quote request on our simple form to receive itemized pricing, freight logistics, and factory warranty details across all 651 ENERGY STAR® certified commercial models.
+              Use our Contact Us form to consult with our commercial equipment engineers. Receive customized sizing recommendations, itemized wholesale pricing, and logistics quotes for your restaurant or cafe.
             </p>
           </div>
 
@@ -320,7 +323,7 @@ export const ArticlePageView: React.FC<ArticlePageViewProps> = ({
                 onClick={() => onOpenQuote(article.title)}
                 className="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded-xl transition-colors whitespace-nowrap shadow-xs cursor-pointer active:scale-[0.99]"
               >
-                Get an Itemized Quote
+                Contact Us for Sizing & Quotes
               </button>
             )}
             <button
@@ -363,6 +366,6 @@ export const ArticlePageView: React.FC<ArticlePageViewProps> = ({
           </div>
         )}
       </div>
-    </article>
+    </div>
   );
 };

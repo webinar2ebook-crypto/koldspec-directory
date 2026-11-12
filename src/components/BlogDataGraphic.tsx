@@ -29,7 +29,10 @@ export const BlogDataGraphic: React.FC<BlogDataGraphicProps> = ({ article, varia
 
   const isBuyingGuide =
     !isCafeArticle &&
-    (article.slug === 'how-to-choose-the-right-commercial-ice-machine-for-your-restaurant' ||
+    (article.slug === 'how-to-size-a-commercial-ice-machine-for-your-restaurant' ||
+      article.slug === 'how-to-choose-the-right-commercial-ice-machine-for-your-restaurant' ||
+      article.title.toLowerCase().includes('size') ||
+      article.title.toLowerCase().includes('sizing') ||
       article.category === 'Buying Guides' ||
       article.title.toLowerCase().includes('choose'));
 
@@ -827,8 +830,107 @@ export const BlogDataGraphic: React.FC<BlogDataGraphicProps> = ({ article, varia
               Standard Daily Ice Consumption Sizing Formulas
             </h3>
             <p className="text-xs text-slate-500 mt-0.5">
-              Industry standard allocation formulas to size equipment for peak August demand.
+              Industry standard allocation formulas to size equipment for peak August demand across concepts.
             </p>
+          </div>
+
+          {/* Comparative Horizontal Bars for Foodservice Sizing Needs */}
+          <div className="space-y-3.5 my-2">
+            <div className="text-xs font-bold text-slate-800 uppercase tracking-wider">
+              Example Daily Peak Sizing Calculation (Base Need vs. Recommended Unit with +20% Buffer)
+            </div>
+
+            {/* Casual Dining */}
+            <div className="space-y-1">
+              <div className="flex flex-wrap items-center justify-between text-xs">
+                <div className="flex items-center gap-2 font-semibold text-slate-900">
+                  <span className="w-5 h-5 rounded bg-blue-600 text-white font-bold text-[10px] flex items-center justify-center font-mono">1</span>
+                  <span>Casual Dining (250 covers/day @ 1.5 lbs)</span>
+                </div>
+                <div className="flex items-center gap-2 font-mono text-xs">
+                  <span className="text-slate-500 font-normal">Base: 375 lbs</span>
+                  <span className="font-bold text-blue-700">Recommend: 450 lbs/day</span>
+                </div>
+              </div>
+              <div className="w-full h-6 bg-slate-200/80 rounded-lg overflow-hidden flex items-center">
+                <div
+                  className="h-full bg-blue-600 rounded-lg flex items-center justify-between px-3 text-[10px] font-mono font-bold text-white transition-all duration-500"
+                  style={{ width: '65%' }}
+                >
+                  <span>375 lbs Base Demand</span>
+                  <span>+20% Buffer = 450 lbs</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Cocktail Bar */}
+            <div className="space-y-1">
+              <div className="flex flex-wrap items-center justify-between text-xs">
+                <div className="flex items-center gap-2 font-semibold text-slate-900">
+                  <span className="w-5 h-5 rounded bg-amber-600 text-white font-bold text-[10px] flex items-center justify-center font-mono">2</span>
+                  <span>Cocktail Bar (80 seats @ 3.0 lbs)</span>
+                </div>
+                <div className="flex items-center gap-2 font-mono text-xs">
+                  <span className="text-slate-500 font-normal">Base: 240 lbs</span>
+                  <span className="font-bold text-amber-700">Recommend: 288 lbs/day</span>
+                </div>
+              </div>
+              <div className="w-full h-6 bg-slate-200/80 rounded-lg overflow-hidden flex items-center">
+                <div
+                  className="h-full bg-amber-600 rounded-lg flex items-center justify-between px-3 text-[10px] font-mono font-bold text-white transition-all duration-500"
+                  style={{ width: '45%' }}
+                >
+                  <span>240 lbs Base Demand</span>
+                  <span>+20% Buffer = 288 lbs</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Coffee Shop */}
+            <div className="space-y-1">
+              <div className="flex flex-wrap items-center justify-between text-xs">
+                <div className="flex items-center gap-2 font-semibold text-slate-900">
+                  <span className="w-5 h-5 rounded bg-emerald-600 text-white font-bold text-[10px] flex items-center justify-center font-mono">3</span>
+                  <span>Specialty Cafe (250 iced drinks @ 1.5 lbs)</span>
+                </div>
+                <div className="flex items-center gap-2 font-mono text-xs">
+                  <span className="text-slate-500 font-normal">Base: 375 lbs</span>
+                  <span className="font-bold text-emerald-700">Recommend: 450 lbs/day</span>
+                </div>
+              </div>
+              <div className="w-full h-6 bg-slate-200/80 rounded-lg overflow-hidden flex items-center">
+                <div
+                  className="h-full bg-emerald-600 rounded-lg flex items-center justify-between px-3 text-[10px] font-mono font-bold text-white transition-all duration-500"
+                  style={{ width: '65%' }}
+                >
+                  <span>375 lbs Base Demand</span>
+                  <span>+20% Buffer = 450 lbs</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Fine Dining */}
+            <div className="space-y-1">
+              <div className="flex flex-wrap items-center justify-between text-xs">
+                <div className="flex items-center gap-2 font-semibold text-slate-900">
+                  <span className="w-5 h-5 rounded bg-indigo-600 text-white font-bold text-[10px] flex items-center justify-center font-mono">4</span>
+                  <span>Fine Dining (180 guests @ 1.5 lbs incl. wine)</span>
+                </div>
+                <div className="flex items-center gap-2 font-mono text-xs">
+                  <span className="text-slate-500 font-normal">Base: 270 lbs</span>
+                  <span className="font-bold text-indigo-700">Recommend: 324 lbs/day</span>
+                </div>
+              </div>
+              <div className="w-full h-6 bg-slate-200/80 rounded-lg overflow-hidden flex items-center">
+                <div
+                  className="h-full bg-indigo-600 rounded-lg flex items-center justify-between px-3 text-[10px] font-mono font-bold text-white transition-all duration-500"
+                  style={{ width: '50%' }}
+                >
+                  <span>270 lbs Base Demand</span>
+                  <span>+20% Buffer = 324 lbs</span>
+                </div>
+              </div>
+            </div>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">

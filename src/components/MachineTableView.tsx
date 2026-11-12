@@ -99,16 +99,16 @@ export const MachineTableView: React.FC<MachineTableViewProps> = ({
       <div className="overflow-x-auto custom-scrollbar">
         <table className="w-full text-left text-xs border-collapse">
           <thead>
-            <tr className="bg-slate-100/80 border-b border-slate-200 text-slate-600 font-semibold uppercase tracking-wider text-[11px]">
-              <th scope="col" className="w-10 px-3 py-3 text-center">
+            <tr className="bg-slate-100/95 border-b border-slate-200 text-slate-600 font-semibold uppercase tracking-wider text-[11px]">
+              <th scope="col" className="w-9 min-w-[36px] px-2 py-2 text-center sticky left-0 z-20 bg-slate-100">
                 <span className="sr-only">Compare</span>
               </th>
               <th
                 scope="col"
                 onClick={() => handleSort('brand')}
-                className="px-4 py-3 cursor-pointer select-none group"
+                className="min-w-[95px] px-2.5 py-2 cursor-pointer select-none group sticky left-[36px] z-20 bg-slate-100"
               >
-                <div className="flex items-center gap-1.5">
+                <div className="flex items-center gap-1">
                   <span>Brand</span>
                   {renderSortIndicator('brand')}
                 </div>
@@ -116,66 +116,66 @@ export const MachineTableView: React.FC<MachineTableViewProps> = ({
               <th
                 scope="col"
                 onClick={() => handleSort('modelNumber')}
-                className="px-4 py-3 cursor-pointer select-none group"
+                className="min-w-[130px] px-2.5 py-2 cursor-pointer select-none group sticky left-[131px] z-20 bg-slate-100 border-r border-slate-200 shadow-[2px_0_4px_-2px_rgba(0,0,0,0.08)]"
               >
-                <div className="flex items-center gap-1.5">
-                  <span>Model Number</span>
+                <div className="flex items-center gap-1">
+                  <span>Model</span>
                   {renderSortIndicator('modelNumber')}
                 </div>
               </th>
               <th
                 scope="col"
                 onClick={() => handleSort('iceType')}
-                className="px-3 py-3 cursor-pointer select-none group"
+                className="px-2 py-2 cursor-pointer select-none group whitespace-nowrap"
               >
-                <div className="flex items-center gap-1.5">
-                  <span>Ice Form</span>
+                <div className="flex items-center gap-1">
+                  <span>Ice</span>
                   {renderSortIndicator('iceType')}
                 </div>
               </th>
-              <th scope="col" className="px-3 py-3">
-                Unit Type
+              <th scope="col" className="px-2 py-2 whitespace-nowrap">
+                Type
               </th>
               <th
                 scope="col"
                 onClick={() => handleSort('harvestRateLbs')}
-                className="px-4 py-3 text-right cursor-pointer select-none group"
+                className="px-2.5 py-2 text-right cursor-pointer select-none group whitespace-nowrap"
               >
-                <div className="flex items-center justify-end gap-1.5">
-                  <span>Harvest Rate (lbs/day)</span>
+                <div className="flex items-center justify-end gap-1">
+                  <span>Harvest (lbs)</span>
                   {renderSortIndicator('harvestRateLbs')}
                 </div>
               </th>
               <th
                 scope="col"
                 onClick={() => handleSort('energyUseRateKwh')}
-                className="px-4 py-3 text-right cursor-pointer select-none group"
+                className="px-2.5 py-2 text-right cursor-pointer select-none group whitespace-nowrap"
               >
-                <div className="flex items-center justify-end gap-1.5">
-                  <span>Energy (kWh/100 lbs)</span>
+                <div className="flex items-center justify-end gap-1">
+                  <span>Energy (kWh)</span>
                   {renderSortIndicator('energyUseRateKwh')}
                 </div>
               </th>
               <th
                 scope="col"
                 onClick={() => handleSort('potableWaterUseGal')}
-                className="px-4 py-3 text-right cursor-pointer select-none group"
+                className="px-2.5 py-2 text-right cursor-pointer select-none group whitespace-nowrap"
               >
-                <div className="flex items-center justify-end gap-1.5">
-                  <span>Water (gal/100 lbs)</span>
+                <div className="flex items-center justify-end gap-1">
+                  <span>Water (gal)</span>
                   {renderSortIndicator('potableWaterUseGal')}
                 </div>
               </th>
-              <th scope="col" className="px-3 py-3">
-                Condenser
+              <th scope="col" className="px-2 py-2 whitespace-nowrap">
+                Cooling
               </th>
-              <th scope="col" className="px-3 py-3">
-                Refrigerant
+              <th scope="col" className="px-2 py-2 whitespace-nowrap">
+                Refrig
               </th>
-              <th scope="col" className="px-3 py-3 text-center">
-                ENERGY STAR®
+              <th scope="col" className="px-2 py-2 text-center whitespace-nowrap">
+                ENERGY STAR
               </th>
-              <th scope="col" className="px-3 py-3 text-right">
+              <th scope="col" className="px-2 py-2 text-right whitespace-nowrap">
                 Actions
               </th>
             </tr>
@@ -197,7 +197,7 @@ export const MachineTableView: React.FC<MachineTableViewProps> = ({
                     </p>
                     <button
                       onClick={onOpenImporter}
-                      className="inline-flex items-center gap-1.5 px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold rounded-lg shadow-xs transition-colors"
+                      className="inline-flex items-center gap-1.5 px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold rounded-lg shadow-xs transition-colors cursor-pointer"
                     >
                       <span>Import ENERGY STAR CSV</span>
                     </button>
@@ -213,10 +213,10 @@ export const MachineTableView: React.FC<MachineTableViewProps> = ({
                     className="hover:bg-blue-50/40 transition-colors group"
                   >
                     {/* Compare */}
-                    <td className="px-3 py-2.5 text-center">
+                    <td className="w-9 min-w-[36px] px-2 py-2 text-center sticky left-0 z-10 bg-white group-hover:bg-blue-50/80">
                       <button
                         onClick={() => onToggleCompare(m)}
-                        className="text-slate-400 hover:text-blue-600 transition-colors p-0.5"
+                        className="text-slate-400 hover:text-blue-600 transition-colors p-0.5 cursor-pointer"
                         title={isCompared ? 'Remove from comparison' : 'Add to comparison'}
                       >
                         {isCompared ? (
@@ -228,72 +228,72 @@ export const MachineTableView: React.FC<MachineTableViewProps> = ({
                     </td>
 
                     {/* Brand */}
-                    <td className="px-4 py-2.5 font-semibold text-slate-900 whitespace-nowrap">
+                    <td className="min-w-[95px] px-2.5 py-2 font-semibold text-slate-900 whitespace-nowrap sticky left-[36px] z-10 bg-white group-hover:bg-blue-50/80">
                       {m.brand}
                     </td>
 
                     {/* Model */}
-                    <td className="px-4 py-2.5 whitespace-nowrap">
+                    <td className="min-w-[130px] px-2.5 py-2 whitespace-nowrap sticky left-[131px] z-10 bg-white group-hover:bg-blue-50/80 border-r border-slate-200 shadow-[2px_0_4px_-2px_rgba(0,0,0,0.06)]">
                       <button
                         onClick={() => onSelectMachine(m)}
-                        className="font-mono font-medium text-blue-600 hover:text-blue-800 hover:underline transition-colors text-left"
+                        className="font-mono font-medium text-blue-600 hover:text-blue-800 hover:underline transition-colors text-left cursor-pointer"
                       >
                         {m.modelNumber}
                       </button>
                       {m.modelName && (
-                        <div className="text-[10px] text-slate-400 max-w-[180px] truncate">
+                        <div className="text-[10px] text-slate-400 max-w-[140px] truncate">
                           {m.modelName}
                         </div>
                       )}
                     </td>
 
                     {/* Ice Type */}
-                    <td className="px-3 py-2.5 whitespace-nowrap text-slate-700">
-                      <div className="flex items-center gap-1.5">
+                    <td className="px-2 py-2 whitespace-nowrap text-slate-700 text-[11px]">
+                      <div className="flex items-center gap-1">
                         {renderIceIcon(m.iceType)}
                         <span>{m.iceType}</span>
                       </div>
                     </td>
 
                     {/* Equipment Type */}
-                    <td className="px-3 py-2.5 whitespace-nowrap font-mono text-[11px] text-slate-600">
+                    <td className="px-2 py-2 whitespace-nowrap font-mono text-[11px] text-slate-600">
                       {m.equipmentType}
                     </td>
 
                     {/* Harvest Rate (lbs/day) */}
-                    <td className="px-4 py-2.5 text-right font-mono font-bold text-slate-900 tabular-nums whitespace-nowrap">
+                    <td className="px-2.5 py-2 text-right font-mono font-bold text-slate-900 tabular-nums whitespace-nowrap text-[11px]">
                       {m.harvestRateLbs.toLocaleString()}
                     </td>
 
                     {/* Energy (kWh/100 lbs) */}
-                    <td className="px-4 py-2.5 text-right font-mono tabular-nums whitespace-nowrap">
+                    <td className="px-2.5 py-2 text-right font-mono tabular-nums whitespace-nowrap text-[11px]">
                       <span className="font-semibold text-slate-800">
                         {m.energyUseRateKwh.toFixed(2)}
                       </span>
                     </td>
 
                     {/* Potable Water (gal/100 lbs) */}
-                    <td className="px-4 py-2.5 text-right font-mono tabular-nums whitespace-nowrap text-slate-700">
+                    <td className="px-2.5 py-2 text-right font-mono tabular-nums whitespace-nowrap text-slate-700 text-[11px]">
                       {m.potableWaterUseGal !== undefined
                         ? m.potableWaterUseGal.toFixed(1)
                         : '—'}
                     </td>
 
                     {/* Condenser */}
-                    <td className="px-3 py-2.5 whitespace-nowrap text-slate-600">
+                    <td className="px-2 py-2 whitespace-nowrap text-slate-600 text-[11px]">
                       {m.condenserCooling}
                     </td>
 
                     {/* Refrigerant */}
-                    <td className="px-3 py-2.5 whitespace-nowrap font-mono text-[11px] text-slate-600">
+                    <td className="px-2 py-2 whitespace-nowrap font-mono text-[11px] text-slate-600">
                       {m.refrigerant || '—'}
                     </td>
 
                     {/* ENERGY STAR */}
-                    <td className="px-3 py-2.5 text-center whitespace-nowrap">
+                    <td className="px-2 py-2 text-center whitespace-nowrap">
                       {m.energyStarCertified ? (
-                        <span className="inline-flex items-center gap-1 text-[11px] font-medium text-blue-700">
-                          <ShieldCheck className="w-3.5 h-3.5 text-blue-600" />
+                        <span className="inline-flex items-center gap-0.5 text-[11px] font-medium text-blue-700">
+                          <ShieldCheck className="w-3.5 h-3.5 text-blue-600 shrink-0" />
                           <span>Yes</span>
                         </span>
                       ) : (
@@ -302,18 +302,18 @@ export const MachineTableView: React.FC<MachineTableViewProps> = ({
                     </td>
 
                     {/* Actions */}
-                    <td className="px-3 py-2.5 text-right whitespace-nowrap">
-                      <div className="flex items-center justify-end gap-1.5">
+                    <td className="px-2 py-2 text-right whitespace-nowrap">
+                      <div className="flex items-center justify-end gap-1">
                         <button
                           onClick={() => onSelectMachine(m)}
-                          className="px-2 py-1 text-[11px] font-semibold text-slate-700 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 rounded transition-colors"
+                          className="px-2 py-1 text-[10px] font-semibold text-slate-700 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 rounded transition-colors cursor-pointer"
                           title="View specification sheet"
                         >
                           Specs
                         </button>
                         <button
                           onClick={() => onOpenQuote?.(m)}
-                          className="px-2 py-1 text-[11px] font-bold text-white bg-blue-600 hover:bg-blue-500 rounded transition-colors cursor-pointer"
+                          className="px-2 py-1 text-[10px] font-bold text-white bg-blue-600 hover:bg-blue-500 rounded transition-colors cursor-pointer"
                           title="Get a commercial quote for this model"
                         >
                           Quote
@@ -321,7 +321,7 @@ export const MachineTableView: React.FC<MachineTableViewProps> = ({
                         {onDeleteMachine && (
                           <button
                             onClick={() => onDeleteMachine(m.id)}
-                            className="p-1 text-slate-400 hover:text-red-600 transition-colors rounded"
+                            className="p-1 text-slate-400 hover:text-red-600 transition-colors rounded cursor-pointer"
                             title="Delete this record"
                           >
                             <Trash2 className="w-3.5 h-3.5" />
