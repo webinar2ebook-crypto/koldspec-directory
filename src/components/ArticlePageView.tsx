@@ -84,11 +84,11 @@ export const ArticlePageView: React.FC<ArticlePageViewProps> = ({
 
   return (
     <div
-      className="w-full max-w-[800px] mx-auto space-y-8 pb-16"
+      className="flex flex-col w-full max-w-[800px] mx-auto space-y-8 pb-16"
       style={{ maxWidth: '800px', margin: '0 auto' }}
     >
       {/* Top Breadcrumb & Share/Print Bar */}
-      <div className="w-full flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 pb-4">
+      <div className="flex items-center justify-between gap-4 border-b border-slate-200 pb-4 w-full">
         <button
           type="button"
           onClick={onBackToBlog}
@@ -113,7 +113,7 @@ export const ArticlePageView: React.FC<ArticlePageViewProps> = ({
             ) : (
               <>
                 <Share2 className="w-3.5 h-3.5 text-slate-500" />
-                <span>Share Guide</span>
+                <span>Share</span>
               </>
             )}
           </button>
@@ -129,30 +129,26 @@ export const ArticlePageView: React.FC<ArticlePageViewProps> = ({
         </div>
       </div>
 
-      {/* 1. Article Title / Header at the Top */}
-      <header className="w-full space-y-4">
-        {/* Zero-Pill Unboxed Metadata */}
+      {/* 1. Title and Date at the top */}
+      <header className="flex flex-col w-full space-y-3">
         <div className="flex flex-wrap items-center gap-2 text-xs text-slate-500 font-medium">
           <span className="text-blue-700 font-semibold">{article.category}</span>
           <span aria-hidden="true">·</span>
           <span>{article.publishDate}</span>
           <span aria-hidden="true">·</span>
           <span>{article.readTime}</span>
-          <span aria-hidden="true">·</span>
-          <span>AHRI Standard 810 Reference</span>
         </div>
 
-        <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-slate-900 tracking-tight leading-tight text-balance">
+        <h1 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight leading-tight">
           {article.title}
         </h1>
 
-        <p className="text-base sm:text-lg text-slate-600 leading-relaxed font-normal">
+        <p className="text-base text-slate-600 leading-relaxed font-normal">
           {article.subtitle}
         </p>
 
-        {/* Author Byline */}
-        <div className="pt-2 flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full bg-slate-900 text-white font-bold text-xs flex items-center justify-center shrink-0 shadow-xs">
+        <div className="pt-1 flex items-center gap-3">
+          <div className="w-9 h-9 rounded-full bg-slate-900 text-white font-bold text-xs flex items-center justify-center shrink-0 shadow-xs">
             {article.author.name.split(' ').map((n) => n[0]).join('').slice(0, 2)}
           </div>
           <div>
@@ -162,13 +158,13 @@ export const ArticlePageView: React.FC<ArticlePageViewProps> = ({
         </div>
       </header>
 
-      {/* 2. Data Chart / Visualization directly below the title, spanning the full width */}
+      {/* 2. The Data Chart directly below the title, spanning the full width of the container */}
       <div className="w-full">
         <BlogDataGraphic article={article} variant="full" />
       </div>
 
-      {/* 3. Article text below the chart, in the single centered column (max-width: 800px) */}
-      <div className="w-full space-y-10">
+      {/* 3. The article text below the chart, in a single centered column (max-width: 800px, margin: 0 auto) */}
+      <div className="flex flex-col w-full space-y-10">
         {/* Quick Jump Table of Contents */}
         <div className="p-5 bg-slate-50 rounded-xl border border-slate-200 text-xs space-y-3">
           <div className="font-bold text-slate-900 uppercase tracking-wider text-[11px] flex items-center gap-2">

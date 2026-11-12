@@ -84,62 +84,60 @@ export const BlogIndexView: React.FC<BlogIndexViewProps> = ({
         </div>
       </div>
 
-      {/* Featured Lead Guide (Hero Card) */}
+      {/* Featured Lead Guide (Hero Card) - Vertical Stack */}
       {selectedCategory === 'All' && searchQuery === '' && featuredArticle && (
-        <article className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-xs hover:border-slate-300 transition-all duration-200 group">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-0 items-stretch">
-            <div className="lg:col-span-7 p-6 sm:p-8 lg:p-10 flex flex-col justify-between">
+        <article className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-xs hover:border-slate-300 transition-all duration-200 group flex flex-col p-6 sm:p-8 space-y-6">
+          {/* Top: Metadata & Title & Excerpt */}
+          <div className="flex flex-col space-y-3">
+            <div className="flex flex-wrap items-center gap-2 text-xs text-slate-500 font-medium">
+              <span className="text-blue-700 font-semibold">{featuredArticle.category}</span>
+              <span aria-hidden="true">·</span>
+              <span>Featured Engineering Guide</span>
+              <span aria-hidden="true">·</span>
+              <span>{featuredArticle.readTime}</span>
+              <span aria-hidden="true">·</span>
+              <span>{featuredArticle.publishDate}</span>
+            </div>
+
+            <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight leading-tight group-hover:text-blue-700 transition-colors">
+              <button
+                onClick={() => onSelectArticle(featuredArticle.slug)}
+                className="text-left cursor-pointer focus:outline-none focus:underline"
+              >
+                {featuredArticle.title}
+              </button>
+            </h2>
+
+            <p className="text-sm text-slate-600 leading-relaxed max-w-3xl">
+              {featuredArticle.excerpt}
+            </p>
+          </div>
+
+          {/* Middle: Full-width Data Graphic directly below title */}
+          <div className="w-full overflow-hidden rounded-xl border border-slate-100">
+            <BlogDataGraphic article={featuredArticle} variant="full" />
+          </div>
+
+          {/* Bottom: Author & Read Complete Guide Button */}
+          <div className="pt-4 border-t border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 rounded-full bg-slate-900 text-white font-bold text-xs flex items-center justify-center">
+                MV
+              </div>
               <div>
-                {/* Zero-Pill Unboxed Metadata */}
-                <div className="flex flex-wrap items-center gap-2 text-xs text-slate-500 mb-3 font-medium">
-                  <span className="text-blue-700 font-semibold">{featuredArticle.category}</span>
-                  <span aria-hidden="true">·</span>
-                  <span>Featured Engineering Guide</span>
-                  <span aria-hidden="true">·</span>
-                  <span>{featuredArticle.readTime}</span>
-                  <span aria-hidden="true">·</span>
-                  <span>{featuredArticle.publishDate}</span>
-                </div>
-
-                <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight leading-tight group-hover:text-blue-700 transition-colors">
-                  <button
-                    onClick={() => onSelectArticle(featuredArticle.slug)}
-                    className="text-left cursor-pointer focus:outline-none focus:underline"
-                  >
-                    {featuredArticle.title}
-                  </button>
-                </h2>
-
-                <p className="mt-4 text-sm text-slate-600 leading-relaxed">
-                  {featuredArticle.excerpt}
-                </p>
-              </div>
-
-              <div className="mt-8 pt-6 border-t border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-full bg-slate-900 text-white font-bold text-xs flex items-center justify-center">
-                    MV
-                  </div>
-                  <div>
-                    <div className="text-xs font-semibold text-slate-900">{featuredArticle.author.name}</div>
-                    <div className="text-[11px] text-slate-500">{featuredArticle.author.role}</div>
-                  </div>
-                </div>
-
-                <button
-                  type="button"
-                  onClick={() => onSelectArticle(featuredArticle.slug)}
-                  className="inline-flex items-center gap-1.5 px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold rounded-lg shadow-xs transition-colors self-start sm:self-auto cursor-pointer"
-                >
-                  <span>Read Complete Guide</span>
-                  <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
-                </button>
+                <div className="text-xs font-semibold text-slate-900">{featuredArticle.author.name}</div>
+                <div className="text-[11px] text-slate-500">{featuredArticle.author.role}</div>
               </div>
             </div>
 
-            <div className="lg:col-span-5 flex flex-col justify-center bg-slate-50 border-t lg:border-t-0 lg:border-l border-slate-200 p-4 sm:p-6 overflow-hidden">
-              <BlogDataGraphic article={featuredArticle} variant="full" />
-            </div>
+            <button
+              type="button"
+              onClick={() => onSelectArticle(featuredArticle.slug)}
+              className="inline-flex items-center gap-1.5 px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold rounded-lg shadow-xs transition-colors self-start sm:self-auto cursor-pointer"
+            >
+              <span>Read Complete Guide</span>
+              <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
+            </button>
           </div>
         </article>
       )}
