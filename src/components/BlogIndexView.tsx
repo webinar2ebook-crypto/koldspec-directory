@@ -16,7 +16,7 @@ export const BlogIndexView: React.FC<BlogIndexViewProps> = ({
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
   const [searchQuery, setSearchQuery] = useState<string>('');
 
-  const categories = ['All', 'Buying Guides', 'Equipment Comparisons', 'Operating Costs', 'Energy Efficiency', 'Equipment Standards'];
+  const categories = ['All', 'Buying Guides', 'Equipment Comparisons', 'Maintenance & Service', 'Operating Costs', 'Energy Efficiency', 'Equipment Standards'];
 
   const filteredArticles = useMemo(() => {
     return BLOG_ARTICLES.filter((article) => {
