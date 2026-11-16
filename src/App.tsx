@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import { Routes, Route, Navigate, useParams, useNavigate, useLocation } from 'react-router-dom';
 import { IceMachine, FilterState, IceType } from './types/iceMachine';
 import {
   getAllIceMachines,
@@ -30,12 +31,70 @@ import {
   DOMAIN,
 } from './utils/sitemapGenerator';
 
+function MachineRouteHandler({
+  machines,
+  isLoading,
+  onSelectMachine,
+}: {
+  machines: IceMachine[];
+  isLoading: boolean;
+  onSelectMachine: (machine: IceMachine | null) => void;
+}) {
+  const { slug } = useParams<{ slug: string }>();
+
+  useEffect(() => {
+    if (isLoading || machines.length === 0) return;
+    if (!slug) {
+      onSelectMachine(null);
+      return;
+    }
+    const found = findMachineBySlug(machines, slug);
+    onSelectMachine(found || null);
+  }, [slug, machines, isLoading, onSelectMachine]);
+
+  return null;
+}
+
+function BlogArticleRoute({
+  onBackToBlog,
+  onSelectArticle,
+  onNavigateToDirectory,
+  onOpenQuote,
+}: {
+  onBackToBlog: () => void;
+  onSelectArticle: (slug: string) => void;
+  onNavigateToDirectory: () => void;
+  onOpenQuote: (prefilled?: string) => void;
+}) {
+  const { slug } = useParams<{ slug: string }>();
+  const article = useMemo(
+    () => BLOG_ARTICLES.find((a) => a.slug === slug) || null,
+    [slug]
+  );
+
+  if (!article) {
+    return <Navigate to="/blog" replace />;
+  }
+
+  return (
+    <ArticlePageView
+      article={article}
+      onBackToBlog={onBackToBlog}
+      onSelectArticle={onSelectArticle}
+      onNavigateToDirectory={onNavigateToDirectory}
+      onOpenQuote={onOpenQuote}
+    />
+  );
+}
+
 export default function App() {
+  const navigate = useNavigate();
+  const location = useLocation();
+
   const [machines, setMachines] = useState<IceMachine[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [viewMode, setViewMode] = useState<'grid' | 'table'>('grid');
-  const [currentView, setCurrentView] = useState<'directory' | 'table' | 'standards' | 'blog' | 'quote'>('directory');
-  const [selectedArticleSlug, setSelectedArticleSlug] = useState<string | null>(null);
+  const [directorySubView, setDirectorySubView] = useState<'directory' | 'table' | 'standards'>('directory');
   const [quotePrefill, setQuotePrefill] = useState<string>('');
   const [isImportModalOpen, setIsImportModalOpen] = useState(false);
   const [isCompareModalOpen, setIsCompareModalOpen] = useState(false);
@@ -44,10 +103,13 @@ export default function App() {
   const [droppedFile, setDroppedFile] = useState<File | null>(null);
   const [notification, setNotification] = useState<string | null>(null);
 
-  const selectedArticle = useMemo(
-    () => BLOG_ARTICLES.find((a) => a.slug === selectedArticleSlug) || null,
-    [selectedArticleSlug]
-  );
+  const slugMap = useMemo(() => buildMachineSlugMap(machines), [machines]);
+
+  const activeNavView: 'directory' | 'table' | 'standards' | 'blog' | 'quote' = useMemo(() => {
+    if (location.pathname.startsWith('/blog')) return 'blog';
+    if (location.pathname.startsWith('/quote')) return 'quote';
+    return directorySubView;
+  }, [location.pathname, directorySubView]);
 
   // Filters State
   const [filters, setFilters] = useState<FilterState>({
@@ -71,7 +133,7 @@ export default function App() {
     }, 4500);
   };
 
-  // Load 651 machines from static ice_machines.json on startup & check for deep link
+  // Load 651 machines from static ice_machines.json on startup
   useEffect(() => {
     async function initDatabase() {
       try {
@@ -79,39 +141,6 @@ export default function App() {
         const list = await getAllIceMachines();
         const safeList = Array.isArray(list) ? list : [];
         setMachines(safeList);
-
-        const path = window.location.pathname;
-        const hash = window.location.hash;
-
-        // Check for quote page route
-        if (path === '/quote' || path === '/quote/' || hash === '#/quote') {
-          setCurrentView('quote');
-          return;
-        }
-
-        // Check for blog URL slug or root blog route
-        const blogMatch = path.match(/^\/blog\/([a-z0-9-]+)/i) || hash.match(/^#\/blog\/([a-z0-9-]+)/i);
-        if (blogMatch && blogMatch[1]) {
-          setCurrentView('blog');
-          setSelectedArticleSlug(blogMatch[1]);
-          return;
-        }
-
-        if (path === '/blog' || path === '/blog/' || hash === '#/blog') {
-          setCurrentView('blog');
-          setSelectedArticleSlug(null);
-          return;
-        }
-
-        // Check for machine URL slug (e.g. /machine/hoshizaki-km-1900saj3 or #/machine/...)
-        const match = path.match(/^\/machine\/([a-z0-9-]+)/i) || hash.match(/^#\/machine\/([a-z0-9-]+)/i);
-        if (match && match[1]) {
-          const targetSlug = match[1];
-          const found = findMachineBySlug(safeList, targetSlug);
-          if (found) {
-            setSelectedMachine(found);
-          }
-        }
       } catch (err) {
         console.error('Failed to load database:', err);
       } finally {
@@ -121,112 +150,49 @@ export default function App() {
     initDatabase();
   }, []);
 
-  // Sync browser URL and document title / canonical tags when view or selection changes
+  // Clear selectedMachine modal state when navigating away from /machine/:slug
   useEffect(() => {
+    if (!location.pathname.startsWith('/machine/')) {
+      setSelectedMachine(null);
+    }
+  }, [location.pathname]);
+
+  // Sync document title and canonical tag with active route & selection
+  useEffect(() => {
+    const canonical = document.querySelector('link[rel="canonical"]');
+
     if (selectedMachine) {
-      const slugMap = buildMachineSlugMap(machines);
       const slug = slugMap.get(selectedMachine.id) || selectedMachine.id;
-      const targetUrl = `/machine/${slug}`;
-
-      if (window.location.pathname !== targetUrl) {
-        window.history.pushState({ machineId: selectedMachine.id }, '', targetUrl);
-      }
-
       document.title = `${selectedMachine.brand} ${selectedMachine.modelNumber} Commercial Ice Maker Specs | KoldSpec`;
-
-      const canonical = document.querySelector('link[rel="canonical"]');
       if (canonical) {
         canonical.setAttribute('href', `${DOMAIN}/machine/${slug}`);
       }
-    } else if (currentView === 'quote') {
-      const targetUrl = '/quote';
-      if (window.location.pathname !== targetUrl) {
-        window.history.pushState(null, '', targetUrl);
-      }
+    } else if (location.pathname.startsWith('/quote')) {
       document.title = 'Get a Commercial Ice Machine Quote | KoldSpec';
-      const canonical = document.querySelector('link[rel="canonical"]');
       if (canonical) {
         canonical.setAttribute('href', `${DOMAIN}/quote`);
       }
-    } else if (currentView === 'blog') {
-      if (selectedArticleSlug && selectedArticle) {
-        const targetUrl = `/blog/${selectedArticleSlug}`;
-        if (window.location.pathname !== targetUrl) {
-          window.history.pushState({ articleSlug: selectedArticleSlug }, '', targetUrl);
-        }
-        document.title = `${selectedArticle.title} | KoldSpec Guides`;
-        const canonical = document.querySelector('link[rel="canonical"]');
+    } else if (location.pathname.startsWith('/blog/')) {
+      const slug = location.pathname.replace(/^\/blog\//, '').replace(/\/$/, '');
+      const article = BLOG_ARTICLES.find((a) => a.slug === slug);
+      if (article) {
+        document.title = `${article.title} | KoldSpec Guides`;
         if (canonical) {
-          canonical.setAttribute('href', `${DOMAIN}/blog/${selectedArticleSlug}`);
+          canonical.setAttribute('href', `${DOMAIN}/blog/${article.slug}`);
         }
-      } else {
-        const targetUrl = '/blog';
-        if (window.location.pathname !== targetUrl) {
-          window.history.pushState(null, '', targetUrl);
-        }
-        document.title = 'Commercial Ice Equipment Buying Guides & Engineering Insights | KoldSpec';
-        const canonical = document.querySelector('link[rel="canonical"]');
-        if (canonical) {
-          canonical.setAttribute('href', `${DOMAIN}/blog`);
-        }
+      }
+    } else if (location.pathname.startsWith('/blog')) {
+      document.title = 'Commercial Ice Equipment Buying Guides & Engineering Insights | KoldSpec';
+      if (canonical) {
+        canonical.setAttribute('href', `${DOMAIN}/blog`);
       }
     } else {
-      if (
-        window.location.pathname.startsWith('/machine/') ||
-        window.location.pathname.startsWith('/blog') ||
-        window.location.pathname.startsWith('/quote')
-      ) {
-        window.history.pushState(null, '', '/');
-      }
-
       document.title = 'KoldSpec Commercial Ice Machine Directory';
-
-      const canonical = document.querySelector('link[rel="canonical"]');
       if (canonical) {
         canonical.setAttribute('href', `${DOMAIN}/`);
       }
     }
-  }, [selectedMachine, machines, currentView, selectedArticleSlug, selectedArticle]);
-
-  // Handle browser back / forward navigation
-  useEffect(() => {
-    const handlePopState = () => {
-      const path = window.location.pathname;
-
-      if (path === '/quote' || path === '/quote/') {
-        setCurrentView('quote');
-        setSelectedArticleSlug(null);
-        setSelectedMachine(null);
-        return;
-      }
-
-      const blogMatch = path.match(/^\/blog\/([a-z0-9-]+)/i);
-      if (blogMatch && blogMatch[1]) {
-        setCurrentView('blog');
-        setSelectedArticleSlug(blogMatch[1]);
-        setSelectedMachine(null);
-        return;
-      }
-
-      if (path === '/blog' || path === '/blog/') {
-        setCurrentView('blog');
-        setSelectedArticleSlug(null);
-        setSelectedMachine(null);
-        return;
-      }
-
-      const match = path.match(/^\/machine\/([a-z0-9-]+)/i);
-      if (match && match[1]) {
-        const found = findMachineBySlug(machines, match[1]);
-        setSelectedMachine(found || null);
-      } else {
-        setSelectedMachine(null);
-      }
-    };
-
-    window.addEventListener('popstate', handlePopState);
-    return () => window.removeEventListener('popstate', handlePopState);
-  }, [machines]);
+  }, [selectedMachine, slugMap, location.pathname]);
 
   // Compute maximum harvest rate in loaded dataset for slider bound
   const maxHarvestRate = useMemo(() => {
@@ -450,6 +416,16 @@ export default function App() {
     notify(`Downloaded dynamic sitemap.xml with ${machines.length + 2 + BLOG_ARTICLES.length} URLs!`);
   };
 
+  const handleSelectMachine = (machine: IceMachine | null) => {
+    setSelectedMachine(machine);
+    if (machine) {
+      const slug = slugMap.get(machine.id) || machine.id;
+      navigate(`/machine/${slug}`);
+    } else if (location.pathname.startsWith('/machine/')) {
+      navigate('/');
+    }
+  };
+
   const handleOpenQuote = (targetMachine?: IceMachine) => {
     const machine = targetMachine || selectedMachine || null;
     if (machine) {
@@ -458,128 +434,34 @@ export default function App() {
       setQuotePrefill('');
     }
     setSelectedMachine(null);
-    setSelectedArticleSlug(null);
-    setCurrentView('quote');
+    navigate('/quote');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col font-sans">
-      {/* Toast Notification */}
-      {notification && (
-        <div className="fixed bottom-6 right-6 z-50 bg-slate-900 text-white px-4 py-3 rounded-xl shadow-xl flex items-center gap-2.5 text-xs font-medium border border-slate-700 animate-in fade-in slide-in-from-bottom-2">
-          <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
-          <span>{notification}</span>
-        </div>
-      )}
+  const handleNavViewChange = (view: 'directory' | 'table' | 'standards' | 'blog' | 'quote') => {
+    setSelectedMachine(null);
+    if (view !== 'quote') {
+      setQuotePrefill('');
+    }
+    if (view === 'blog') {
+      navigate('/blog');
+      return;
+    }
+    if (view === 'quote') {
+      navigate('/quote');
+      return;
+    }
+    setDirectorySubView(view);
+    if (view === 'table') setViewMode('table');
+    if (view === 'directory') setViewMode('grid');
+    if (location.pathname !== '/') {
+      navigate('/');
+    }
+  };
 
-      {/* Top Bar Contract (3 zones) */}
-      <Navbar
-        currentView={currentView}
-        onViewChange={(view) => {
-          setCurrentView(view);
-          setSelectedMachine(null);
-          if (view !== 'quote') {
-            setQuotePrefill('');
-          }
-          if (view !== 'blog') {
-            setSelectedArticleSlug(null);
-          }
-          if (view === 'table') setViewMode('table');
-          if (view === 'directory') setViewMode('grid');
-        }}
-        onOpenImporter={() => {
-          setDroppedFile(null);
-          setIsImportModalOpen(true);
-        }}
-        onOpenCompare={() => setIsCompareModalOpen(true)}
-        compareCount={comparedMachineIds.length}
-        totalMachines={machines.length}
-      />
-
-      {/* Hero Section */}
-      {currentView !== 'standards' && currentView !== 'blog' && currentView !== 'quote' && (
-        <HeroSection
-          searchQuery={filters.searchQuery}
-          onSearchChange={(q) => setFilters({ ...filters, searchQuery: q })}
-          selectedIceTypes={filters.iceTypes}
-          onToggleIceType={toggleIceType}
-          totalCount={machines.length}
-          filteredCount={filteredMachines.length}
-          viewMode={viewMode}
-          onViewModeChange={(m) => {
-            setViewMode(m);
-            if (currentView === 'table' && m === 'grid') setCurrentView('directory');
-            if (currentView === 'directory' && m === 'table') setCurrentView('table');
-          }}
-          onOpenImporter={() => {
-            setDroppedFile(null);
-            setIsImportModalOpen(true);
-          }}
-          onExportCsv={handleExportCsv}
-          onOpenQuote={() => handleOpenQuote()}
-        />
-      )}
-
-      {/* Main View Area */}
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {currentView === 'standards' ? (
-          <StandardsInfoView
-            onBackToDirectory={() => setCurrentView('directory')}
-            onOpenImporter={() => setIsImportModalOpen(true)}
-          />
-        ) : currentView === 'blog' ? (
-          selectedArticle ? (
-            <ArticlePageView
-              article={selectedArticle}
-              onBackToBlog={() => setSelectedArticleSlug(null)}
-              onSelectArticle={(slug) => setSelectedArticleSlug(slug)}
-              onNavigateToDirectory={() => {
-                setCurrentView('directory');
-                setSelectedArticleSlug(null);
-              }}
-              onOpenQuote={(prefilled) => {
-                if (prefilled) {
-                  setQuotePrefill(`Quote inquiry regarding: ${prefilled}`);
-                }
-                setSelectedArticleSlug(null);
-                setCurrentView('quote');
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-              }}
-            />
-          ) : (
-            <BlogIndexView
-              onSelectArticle={(slug) => setSelectedArticleSlug(slug)}
-              onNavigateToDirectory={() => {
-                setCurrentView('directory');
-                setSelectedArticleSlug(null);
-              }}
-            />
-          )
-        ) : currentView === 'quote' ? (
-          <QuotePageView
-            onBackToDirectory={() => {
-              setCurrentView('directory');
-              setQuotePrefill('');
-            }}
-            prefilledMachine={quotePrefill}
-          />
-        ) : machines.length === 0 ? (
-          // Empty State view when no CSV imported yet
-          <EmptyDatabaseView
-            onOpenFileSelect={(file) => {
-              setDroppedFile(file);
-              setIsImportModalOpen(true);
-            }}
-            onOpenImporterModal={() => {
-              setDroppedFile(null);
-              setIsImportModalOpen(true);
-            }}
-            onLoadSampleData={handleLoadSample}
-          />
-        ) : (
-          // Populated View: Sidebar + Main Grid / Table
-          <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 items-start">
+  const populatedDirectoryElement = (
+    // Populated View: Sidebar + Main Grid / Table
+    <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 items-start">
             {/* Filters Sidebar */}
             <div className="lg:col-span-1">
               <FilterSidebar
@@ -698,7 +580,7 @@ export default function App() {
               </div>
 
               {/* View Rendering */}
-              {viewMode === 'grid' && currentView !== 'table' ? (
+              {viewMode === 'grid' && directorySubView !== 'table' ? (
                 filteredMachines.length === 0 ? (
                   <div className="bg-white rounded-xl border border-slate-200 p-12 text-center space-y-3">
                     <div className="w-10 h-10 mx-auto rounded-full bg-slate-100 flex items-center justify-center text-slate-400 font-bold font-mono">
@@ -736,7 +618,7 @@ export default function App() {
                       <MachineCard
                         key={m.id}
                         machine={m}
-                        onSelect={setSelectedMachine}
+                        onSelect={handleSelectMachine}
                         isCompared={comparedMachineIds.includes(m.id)}
                         onToggleCompare={toggleCompare}
                         onOpenQuote={handleOpenQuote}
@@ -747,7 +629,7 @@ export default function App() {
               ) : (
                 <MachineTableView
                   machines={filteredMachines}
-                  onSelectMachine={setSelectedMachine}
+                  onSelectMachine={handleSelectMachine}
                   comparedIds={comparedMachineIds}
                   onToggleCompare={toggleCompare}
                   onDeleteMachine={handleDeleteMachine}
@@ -757,7 +639,146 @@ export default function App() {
               )}
             </div>
           </div>
-        )}
+  );
+
+  const directoryElement =
+    directorySubView === 'standards' ? (
+      <StandardsInfoView
+        onBackToDirectory={() => {
+          setDirectorySubView('directory');
+          navigate('/');
+        }}
+        onOpenImporter={() => setIsImportModalOpen(true)}
+      />
+    ) : machines.length === 0 ? (
+      <EmptyDatabaseView
+        onOpenFileSelect={(file) => {
+          setDroppedFile(file);
+          setIsImportModalOpen(true);
+        }}
+        onOpenImporterModal={() => {
+          setDroppedFile(null);
+          setIsImportModalOpen(true);
+        }}
+        onLoadSampleData={handleLoadSample}
+      />
+    ) : (
+      populatedDirectoryElement
+    );
+
+  return (
+    <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col font-sans">
+      {/* Toast Notification */}
+      {notification && (
+        <div className="fixed bottom-6 right-6 z-50 bg-slate-900 text-white px-4 py-3 rounded-xl shadow-xl flex items-center gap-2.5 text-xs font-medium border border-slate-700 animate-in fade-in slide-in-from-bottom-2">
+          <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+          <span>{notification}</span>
+        </div>
+      )}
+
+      {/* Top Bar Contract (3 zones) */}
+      <Navbar
+        currentView={activeNavView}
+        onViewChange={handleNavViewChange}
+        onOpenImporter={() => {
+          setDroppedFile(null);
+          setIsImportModalOpen(true);
+        }}
+        onOpenCompare={() => setIsCompareModalOpen(true)}
+        compareCount={comparedMachineIds.length}
+        totalMachines={machines.length}
+      />
+
+      {/* Hero Section */}
+      {activeNavView !== 'standards' && activeNavView !== 'blog' && activeNavView !== 'quote' && (
+        <HeroSection
+          searchQuery={filters.searchQuery}
+          onSearchChange={(q) => setFilters({ ...filters, searchQuery: q })}
+          selectedIceTypes={filters.iceTypes}
+          onToggleIceType={toggleIceType}
+          totalCount={machines.length}
+          filteredCount={filteredMachines.length}
+          viewMode={viewMode}
+          onViewModeChange={(m) => {
+            setViewMode(m);
+            if (directorySubView === 'table' && m === 'grid') setDirectorySubView('directory');
+            if (directorySubView === 'directory' && m === 'table') setDirectorySubView('table');
+          }}
+          onOpenImporter={() => {
+            setDroppedFile(null);
+            setIsImportModalOpen(true);
+          }}
+          onExportCsv={handleExportCsv}
+          onOpenQuote={() => handleOpenQuote()}
+        />
+      )}
+
+      {/* Main View Area */}
+      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <Routes>
+          <Route path="/" element={directoryElement} />
+          <Route
+            path="/machine/:slug"
+            element={
+              <>
+                <MachineRouteHandler
+                  machines={machines}
+                  isLoading={isLoading}
+                  onSelectMachine={setSelectedMachine}
+                />
+                {directoryElement}
+              </>
+            }
+          />
+          <Route
+            path="/blog"
+            element={
+              <BlogIndexView
+                onSelectArticle={(slug) => navigate(`/blog/${slug}`)}
+                onNavigateToDirectory={() => {
+                  setDirectorySubView('directory');
+                  navigate('/');
+                }}
+              />
+            }
+          />
+          <Route
+            path="/blog/:slug"
+            element={
+              <BlogArticleRoute
+                onBackToBlog={() => navigate('/blog')}
+                onSelectArticle={(slug) => navigate(`/blog/${slug}`)}
+                onNavigateToDirectory={() => {
+                  setDirectorySubView('directory');
+                  navigate('/');
+                }}
+                onOpenQuote={(prefilled) => {
+                  if (prefilled) {
+                    setQuotePrefill(`Quote inquiry regarding: ${prefilled}`);
+                  } else {
+                    setQuotePrefill('');
+                  }
+                  navigate('/quote');
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                }}
+              />
+            }
+          />
+          <Route
+            path="/quote"
+            element={
+              <QuotePageView
+                onBackToDirectory={() => {
+                  setDirectorySubView('directory');
+                  setQuotePrefill('');
+                  navigate('/');
+                }}
+                prefilledMachine={quotePrefill}
+              />
+            }
+          />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
       </main>
 
       {/* Floating Side-by-Side Comparison Bar */}
@@ -791,7 +812,7 @@ export default function App() {
       {/* Machine Detail Spec Sheet Modal */}
       <MachineDetailModal
         machine={selectedMachine}
-        onClose={() => setSelectedMachine(null)}
+        onClose={() => handleSelectMachine(null)}
         isCompared={selectedMachine ? comparedMachineIds.includes(selectedMachine.id) : false}
         onToggleCompare={toggleCompare}
         onOpenQuote={handleOpenQuote}
@@ -803,7 +824,7 @@ export default function App() {
         onClose={() => setIsCompareModalOpen(false)}
         comparedMachines={comparedMachines}
         onRemoveMachine={removeCompared}
-        onSelectMachine={setSelectedMachine}
+        onSelectMachine={handleSelectMachine}
       />
 
       {/* CSV Importer Modal */}
@@ -822,48 +843,40 @@ export default function App() {
             <span aria-hidden="true">·</span>
             <button
               onClick={() => {
-                setCurrentView('directory');
-                setSelectedArticleSlug(null);
-                setSelectedMachine(null);
+                handleNavViewChange('directory');
                 window.scrollTo({ top: 0, behavior: 'smooth' });
               }}
-              className="hover:text-slate-900 transition-colors"
+              className="hover:text-slate-900 transition-colors cursor-pointer"
             >
               Directory
             </button>
             <span aria-hidden="true">·</span>
             <button
               onClick={() => {
-                setCurrentView('table');
-                setSelectedArticleSlug(null);
-                setSelectedMachine(null);
+                handleNavViewChange('table');
                 window.scrollTo({ top: 0, behavior: 'smooth' });
               }}
-              className="hover:text-slate-900 transition-colors"
+              className="hover:text-slate-900 transition-colors cursor-pointer"
             >
               Specs Table
             </button>
             <span aria-hidden="true">·</span>
             <button
               onClick={() => {
-                setCurrentView('standards');
-                setSelectedArticleSlug(null);
-                setSelectedMachine(null);
+                handleNavViewChange('standards');
                 window.scrollTo({ top: 0, behavior: 'smooth' });
               }}
-              className="hover:text-slate-900 transition-colors"
+              className="hover:text-slate-900 transition-colors cursor-pointer"
             >
               AHRI 810 Standards
             </button>
             <span aria-hidden="true">·</span>
             <button
               onClick={() => {
-                setCurrentView('blog');
-                setSelectedArticleSlug(null);
-                setSelectedMachine(null);
+                handleNavViewChange('blog');
                 window.scrollTo({ top: 0, behavior: 'smooth' });
               }}
-              className="hover:text-slate-900 transition-colors font-medium text-slate-700"
+              className="hover:text-slate-900 transition-colors font-medium text-slate-700 cursor-pointer"
             >
               Guides & Articles
             </button>
