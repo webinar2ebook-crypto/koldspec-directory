@@ -1,11 +1,44 @@
 import tailwindcss from '@tailwindcss/vite';
 import react from '@vitejs/plugin-react';
+import fs from 'fs';
 import path from 'path';
-import { defineConfig } from 'vite';
+import { defineConfig, type Plugin } from 'vite';
+
+function generateCloudflareRoutesPlugin(): Plugin {
+  let rootDir = process.cwd();
+  let outDir = 'dist';
+
+  return {
+    name: 'generate-cloudflare-routes',
+    apply: 'build',
+    configResolved(config) {
+      rootDir = config.root;
+      outDir = config.build.outDir;
+    },
+    closeBundle() {
+      const resolvedOutDir = path.resolve(rootDir, outDir);
+      if (!fs.existsSync(resolvedOutDir)) {
+        fs.mkdirSync(resolvedOutDir, { recursive: true });
+      }
+
+      const routesConfig = {
+        version: 1,
+        include: ['/*'],
+        exclude: [],
+      };
+
+      fs.writeFileSync(
+        path.join(resolvedOutDir, '_routes.json'),
+        JSON.stringify(routesConfig, null, 2) + '\n',
+        'utf-8'
+      );
+    },
+  };
+}
 
 export default defineConfig(() => {
   return {
-    plugins: [react(), tailwindcss()],
+    plugins: [react(), tailwindcss(), generateCloudflareRoutesPlugin()],
     resolve: {
       alias: {
         '@': path.resolve(__dirname, '.'),
