@@ -2,6 +2,269 @@ import { BlogArticle } from '../types/blog';
 
 export const BLOG_ARTICLES: BlogArticle[] = [
   {
+    slug: 'how-to-winterize-commercial-ice-machine-cold-climates',
+    title: 'How to Winterize Your Commercial Ice Machine for Cold Climates',
+    subtitle: 'Prevent burst water lines, cracked sump troughs, oil migration compressor failures, and condenser head-pressure drops in seasonal venues and freezing regions.',
+    excerpt: 'Shutting down a seasonal resort kitchen, outdoor stadium bar, or unheated facility for winter? Or operating year-round in sub-zero northern climates? Follow this step-by-step winterization and cold-ambient protection guide to avoid $3,000+ freeze-damage repairs.',
+    category: 'Maintenance & Service',
+    readTime: '9 min read',
+    publishDate: 'November 18, 2026',
+    author: {
+      name: 'Marcus Vance',
+      role: 'Commercial Foodservice Equipment Consultant & Certified AHRI Specialist',
+    },
+    heroImage: '',
+    tags: ['Winterization', 'Cold Weather Maintenance', 'Seasonal Shutdown', 'Burst Pipes', 'Head Pressure Control', 'Commercial Ice Makers', 'Facility Maintenance'],
+    sections: [
+      {
+        id: 'why-winterizing-matters',
+        heading: 'Why Commercial Ice Machines Fail in Freezing Temperatures',
+        subheading: 'Understanding freeze expansion damage in seasonal shutdowns and low-ambient continuous operation.',
+        paragraphs: [
+          'Commercial ice machines are engineered to freeze water inside an evaporator plate—never inside supply plumbing, circulation pumps, or drainage traps. Every autumn, seasonal hospitality venues—including golf clubhouses, lakeside marinas, baseball stadiums, ski base lodges, and outdoor patio bars—face severe equipment losses when managers simply flip the power switch off before winter without evacuating trapped internal water.',
+          'When temperatures dip below 32°F (0°C) in unheated spaces, trapped water inside the inlet solenoid valve, copper distribution lines, plastic pump housing, and P-trap drains expands by approximately 9%. That expansion force easily fractures brass solenoid bodies, splits evaporator sump troughs, and ruptures water-cooled condenser coils—repairs that routinely exceed $2,000 to $4,500 per machine. Meanwhile, businesses operating year-round in northern regions face a separate cold-weather failure mode: ambient air dropping below 50°F starves air-cooled condensers of thermal pressure, disrupting hot-gas defrost harvest cycles and causing liquid refrigerant floodback to the compressor.',
+        ],
+        callout: {
+          title: 'Warranty Void Alert',
+          text: 'Manufacturer commercial warranties universally exclude freeze damage caused by improper seasonal shutdown or operating equipment below the minimum 50°F ambient room temperature specification.',
+          type: 'warning',
+        },
+      },
+      {
+        id: 'step-by-step-shutdown',
+        heading: 'Step-by-Step Seasonal Winterization Checklist (Long-Term Shutdown)',
+        subheading: 'A complete 6-step procedure to purge, sanitize, and dry out idle ice makers before winter.',
+        paragraphs: [
+          'If your facility is closing for winter or powering down an outdoor patio unit for more than 14 days, execute this complete shutdown protocol before the first hard frost:',
+          '1. Clean and Sanitize Before Shutdown: Never winterize a dirty ice machine. Residual food slime and minerals harden like concrete over a 4-month hibernation. Run a full nickel-safe descaling cycle and EPA-registered sanitizing wash first, then empty every pound of ice from the storage bin.',
+          '2. Shut Off Water Supply & Disconnect Electrical Power: Close the dedicated cold-water isolation ball valve feeding the machine. Turn off the wall disconnect switch or flip the circuit breaker to protect against accidental start-ups.',
+          '3. Drain Water Trough, Dump Valve & Pump Housing: Pull the standpipe drain plug or actuate the manual purge valve to drain the water sump completely. Disconnect the flexible rubber hose at the base of the water circulation pump to evacuate trapped water inside the impeller chamber.',
+          '4. Blow Out Supply Plumbing & Inlet Solenoid Valve: Unscrew the incoming braided stainless steel water line from the machine rear bulkhead. With the water inlet solenoid energized briefly (or by carefully detaching the outlet tube from the solenoid), use low-pressure compressed air (maximum 30 PSI) to blow every remaining droplet out of the solenoid valve body and water distribution manifold.',
+          '5. Winterize Water-Cooled Condensers (If Applicable): If your unit uses a water-cooled condenser rather than air cooling, disconnect both the water-in and water-out condenser lines and blow compressed air through the coaxial copper coil until zero mist exits. Optionally pump RV-grade non-toxic propylene glycol antifreeze through the condenser coil—never use toxic automotive ethylene glycol.',
+          '6. Clear Bin Drains & Prop Bin Doors Open: Flush the storage bin gravity drain line and apply non-toxic RV antifreeze into floor P-traps if the building heat will be shut off completely. Finally, wipe internal walls dry and wedge the ice bin door slightly ajar (or use a breathable dust cover) to allow airflow and prevent stagnant winter mildew.',
+        ],
+        table: {
+          headers: ['Winterization Component', 'Freeze Risk If Ignored', 'Required Evacuation Method', 'Target Spec / Safe Tool'],
+          rows: [
+            ['Water Inlet Solenoid Valve', 'Cracked brass/plastic diaphragm housing', 'Disconnect inlet line; purge with low-pressure air', 'Max 30 PSI compressed air'],
+            ['Water Circulation Pump & Sump', 'Split impeller casing & brittle trough cracks', 'Pull sump standpipe; detach bottom pump hose', 'Wipe dry with clean microfiber'],
+            ['Water-Cooled Condenser Coil', 'Ruptured internal copper tube & refrigerant loss', 'Air-purge coaxial coil or fill with food-safe glycol', 'Propylene glycol (RV-safe) only'],
+            ['Floor P-Trap & Bin Drain Line', 'Frozen PVC burst & spring sewage backup', 'Flush sanitizer; add winterizing trap fluid', 'Prop bin door ajar 1–2 inches'],
+          ],
+          caption: 'Commercial Ice Maker Seasonal Shutdown & Freeze-Protection Reference Matrix',
+        },
+      },
+      {
+        id: 'cold-ambient-year-round-operation',
+        heading: 'Operating Year-Round in Cold Garages, Loading Docks & Rooftops',
+        subheading: 'Managing low-ambient head pressure controls when surrounding air drops below 50°F.',
+        paragraphs: [
+          'What if your commercial ice machine must keep running all winter inside a cold warehouse, unheated beer cooler corridor, or rooftop Remote Condensing Unit (RCU) deck in Minnesota, Maine, or Canada? Most modular air-cooled ice machines are rated strictly for ambient temperatures between 50°F and 110°F.',
+          'When ambient air surrounding the condenser coil plunges below 45°F, refrigerant condenses too rapidly, causing system head pressure to collapse. Without sufficient high-side refrigerant pressure, two failures occur: the thermostatic expansion valve (TXV) starves the evaporator, shrinking harvest rates, and the hot-gas defrost valve lacks enough thermal pressure to melt ice sheets off the evaporator grid—causing severe evaporator freeze-ups.',
+          'To operate safely in freezing winter climates:',
+          '• Remote Rooftop Condensers (RCU): Ensure the outdoor condenser is factory-equipped with a Low-Ambient Head Pressure Control Valve (flooded condenser valve) and fan cycling thermostat, rated down to -20°F outdoor ambient.',
+          '• Self-Contained Units in Cold Rooms: Install thermostatically controlled space heaters or relocate the machine inside a conditioned 55°F–85°F room envelope. For outdoor water feeds running along exterior walls, wrap supply copper or PEX pipes with UL-listed thermostatic heat tape and closed-cell foam insulation.',
+        ],
+      },
+      {
+        id: 'spring-recommissioning',
+        heading: 'Spring Re-Commissioning: Safe Restart Protocol After Winter',
+        subheading: 'Checking solenoid seals, replacing water filters, and flushing stagnant lines.',
+        paragraphs: [
+          'When reopening your kitchen in spring, resist the urge to simply flip the breaker and walk away. Inspect all compression fittings and hoses for dry-rot cracks, install brand-new carbon block water filter cartridges, slowly crack open the water supply valve while watching for leaks, and run one complete sanitizing wash cycle before harvesting and discarding the first three batches of ice.',
+        ],
+        keyTakeaways: [
+          'Always descale and sanitize before winter shutdown so biofilm does not harden inside sumps.',
+          'Evacuate water from inlet solenoids, pump housings, and water-cooled condensers using <= 30 PSI air.',
+          'Never exceed 50°F minimum ambient thresholds on indoor air-cooled units without heated enclosures.',
+          'Ensure outdoor Remote Condensing Units (RCU) have low-ambient head pressure controls rated to -20°F.',
+        ],
+      },
+      {
+        id: 'winterize-contact-cta',
+        heading: 'Need Cold-Climate Remote Condensers or Spring Replacement Units? Contact Us',
+        subheading: 'Get expert engineering recommendations for seasonal and sub-zero commercial installations.',
+        paragraphs: [
+          'Whether you need to replace a freeze-damaged evaporator unit or specify a rugged Remote Condensing Unit engineered with low-ambient head pressure controls for northern rooftop winters, KoldSpec’s commercial refrigeration team can help.',
+          'Please submit your facility location and capacity requirements using our **"Contact Us"** form on this page to request custom sizing guidance, cold-weather spec sheets, and competitive commercial pricing.',
+        ],
+      },
+    ],
+  },
+  {
+    slug: 'best-commercial-ice-machines-hospitals-healthcare-facilities',
+    title: 'The Best Commercial Ice Machines for Hospitals and Healthcare Facilities',
+    subtitle: 'Infection-control design, touchless hands-free dispensing, chewable nugget ice hydration, and audited ENERGY STAR healthcare specifications.',
+    excerpt: 'Hospital and senior living ice systems require strict CDC/Joint Commission infection control, touchless dispensing, quiet ward acoustics, and soft chewable nugget ice. Compare the top certified healthcare models from Follett, Ice-O-Matic, and Scotsman.',
+    category: 'Buying Guides',
+    readTime: '10 min read',
+    publishDate: 'November 18, 2026',
+    author: {
+      name: 'Marcus Vance',
+      role: 'Commercial Foodservice Equipment Consultant & Certified AHRI Specialist',
+    },
+    heroImage: '',
+    tags: ['Hospital Ice Machines', 'Healthcare Facilities', 'Nugget Ice', 'Infection Control', 'Touchless Dispensers', 'Follett', 'Nursing Homes'],
+    sections: [
+      {
+        id: 'healthcare-infection-control',
+        heading: 'Why Healthcare Ice Selection Is a Patient Safety & Infection-Control Priority',
+        subheading: 'Meeting CDC, Joint Commission, and CMS sanitation guidelines across patient care units.',
+        paragraphs: [
+          'In hospitals, outpatient surgical centers, oncology wards, and assisted-living communities, ice is far more than a beverage accompaniment—it is an essential clinical supply used daily for patient hydration, dysphagia therapy, post-operative cold packs, and pharmacy compounding. Because immunocompromised patients are uniquely vulnerable to waterborne bacteria such as Legionella, Pseudomonas, and Stenotrophomonas, healthcare ice equipment faces intense scrutiny from Infection Preventionists and Joint Commission surveyors.',
+          'Open floor-standing ice bins with shared plastic scoops are strictly prohibited on patient care floors due to hand-to-ice cross-contamination risks. Instead, modern hospitals standardize on sealed, touchless ice-and-water dispensers paired with antimicrobial polymers, closed-loop UV or silver-ion sanitation, and soft chewable nugget (Chewblet) ice that melts quickly and minimizes choking hazards for recovering patients.',
+        ],
+        callout: {
+          title: 'Clinical Hydration Advantage',
+          text: 'Soft compressed nugget ice is the preferred clinical standard in healthcare: patients chew it effortlessly without dental trauma, it absorbs liquids for flavor therapy, and continuous auger machines use 35% less potable water than cube makers.',
+          type: 'info',
+        },
+      },
+      {
+        id: 'essential-healthcare-features',
+        heading: '5 Mandatory Engineering Features for Hospital Nurse-Station Ice Makers',
+        subheading: 'Separating clinical-grade equipment from standard restaurant cubers.',
+        paragraphs: [
+          'When specifying equipment for hospital nurse stations, rehabilitation wings, or medical office cafeterias, verify these five non-negotiable engineering criteria:',
+          '1. Touchless Optical / Sensor Dispensing: Infrared optical sensors eliminate physical lever contact, drastically cutting pathogen transmission between nurses, dietary aides, and visitors.',
+          '2. Sealed Internal Ice Storage & Drain Pan Hygiene: Unlike open cubers, continuous auger nugget dispensers seal the ice hopper completely from airborne corridor contaminants while directing meltwater smoothly to enclosed drains.',
+          '3. Quiet Ward Acoustics (< 55 dBA): Nurse-station alcoves sit adjacent to patient recovery rooms. Continuous gear-motor nugget machines eliminate the loud cyclic crash of cube harvest batches dropping into stainless bins at 2:00 AM.',
+          '4. Removable Front-Access Sanitation Zones: Look for tool-free removable drip trays, spouts, and sealed stainless hoppers engineered for rapid weekly hospital infection-control swabbing.',
+          '5. Integrated 0.5-Micron Cyst & Chlorine Filtration: Pair every clinical dispenser with sub-micron cyst, lead, and scale-inhibitor filtration to safeguard patient drinking water.',
+        ],
+      },
+      {
+        id: 'top-certified-healthcare-models',
+        heading: 'Top Database-Verified Commercial Ice Machines for Healthcare Facilities',
+        subheading: 'Auditing top nurse-station and central dietary ENERGY STAR nugget models in our database.',
+        paragraphs: [
+          'Analyzing all certified Nugget ice systems in our 651-model AHRI Standard 810 database highlights clear leaders across both ward-level nurse stations and central hospital dietary kitchens:',
+          '• Follett D714A (Nurse Stations & Patient Wings): Producing **525 lbs/day** of signature Chewblet nugget ice at an impressive **4.36 kWh/100 lbs** and only **12.0 gal/100 lbs** of potable water using eco-friendly **R-290** natural refrigerant. Follett’s Ride remote-ice-delivery architecture also allows the noisy ice-making chassis to sit in a locked utility closet up to 75 feet away while pushing ice silently through insulated tubes to patient pantry dispensers.',
+          '• Ice-O-Matic GEM0650A90 (Ward Pantries & Rehab Centers): Harvesting **538 lbs/day** of soft Pearl Ice at **4.34 kWh/100 lbs** and **12.0 gal/100 lbs** water consumption on **R-290** refrigerant, delivering top-tier energy efficiency for mid-sized medical wings.',
+          '• Scotsman NS0422AX-1A (Compact 22-Inch Medical Alcoves): Delivering **327 lbs/day** of Original Chewable Nugget Ice at **4.82 kWh/100 lbs** and **12.0 gal/100 lbs** on **R-290**, featuring AgION antimicrobial internal surfaces and a slim 22-inch footprint ideal for tight hallway pantries.',
+          '• Follett HCF2110R (Central Hospital Dietary Kitchens): For main hospital cafeterias and tray-line kitchens serving 300+ beds, this remote-condenser powerhouse harvests **1,632 lbs/day** at a database-best **3.21 kWh/100 lbs** and **12.0 gal/100 lbs**.',
+        ],
+        table: {
+          headers: ['Model & Brand', 'Daily Harvest (90/70°F)', 'Energy (kWh/100 lbs)', 'Water (Gal/100 lbs)', 'Refrigerant & Clinical Fit'],
+          rows: [
+            ['Follett D714A', '525 lbs / day', '4.36 kWh', '12.0 gal', 'R-290 · Nurse Stations & Patient Floors'],
+            ['Ice-O-Matic GEM0650A90', '538 lbs / day', '4.34 kWh', '12.0 gal', 'R-290 · Outpatient Clinics & Rehab Pantries'],
+            ['Scotsman NS0422AX-1A', '327 lbs / day', '4.82 kWh', '12.0 gal', 'R-290 · Compact 22" Medical Alcoves'],
+            ['Follett HCF2110R (RCU)', '1,632 lbs / day', '3.21 kWh', '12.0 gal', 'Remote · Central Hospital Dietary Kitchen'],
+          ],
+          caption: 'Audited Healthcare Nugget Ice Machines from the KoldSpec ENERGY STAR / AHRI 810 Database',
+        },
+      },
+      {
+        id: 'water-efficiency-and-maintenance',
+        heading: 'Hospital Water Conservation & Strict Preventive Sanitization Schedules',
+        subheading: 'Why continuous nugget extruders cut potable water waste by up to 40%.',
+        paragraphs: [
+          'Notice a remarkable trend in the database matrix above: every top-ranked nugget machine consumes **12.0 gallons of potable water per 100 lbs of ice**—nearly 35% to 40% less water than traditional cube heads (which average 17–20 gal/100 lbs due to sump-flush cycles). For a 400-bed medical center operating 25 ice dispensers, that water efficiency translates into over 450,000 gallons saved annually.',
+          'To satisfy hospital infection control audits, establish quarterly (90-day) descaling and sanitization protocols for all clinical ice equipment, install lockable UV-C water sanitizers where mandated by water-management plans, and maintain digital temperature/cleaning records for every floor station.',
+        ],
+      },
+      {
+        id: 'healthcare-contact-cta',
+        heading: 'Outfitting a Hospital, Clinic, or Senior Care Facility? Contact Us',
+        subheading: 'Partner with KoldSpec engineers for clinical-grade specs, touchless dispensers, and volume quotes.',
+        paragraphs: [
+          'Upgrading patient pantry dispensers or specifying equipment for a new medical wing? Choosing certified touchless nugget systems protects patient safety while slashing hospital utility and water expenses.',
+          'Please submit your facility specifications through our **"Contact Us"** form on this page. Our healthcare equipment specialists will provide full AHRI cut-sheets, sub-micron filtration pairings, and institutional wholesale quotes.',
+        ],
+      },
+    ],
+  },
+  {
+    slug: 'manitowoc-indigo-nxt-vs-hoshizaki-km-series-comparison',
+    title: 'Manitowoc Indigo NXT vs. Hoshizaki KM Series: A Side-by-Side Comparison',
+    subtitle: 'Comparing 90 certified Manitowoc Indigo models against 23 Hoshizaki KM crescent cubers across exact harvest rates, kWh efficiency, water usage, and refrigerants.',
+    excerpt: 'Which commercial workhorse belongs in your kitchen? We pulled audited AHRI 810 records from our database—comparing 90 Manitowoc Indigo units against 23 Hoshizaki KM models side-by-side across mid-size R-290 cubers and mega-capacity remote condensers.',
+    category: 'Equipment Comparisons',
+    readTime: '10 min read',
+    publishDate: 'November 18, 2026',
+    author: {
+      name: 'Marcus Vance',
+      role: 'Commercial Foodservice Equipment Consultant & Certified AHRI Specialist',
+    },
+    heroImage: '',
+    tags: ['Manitowoc Indigo NXT', 'Hoshizaki KM Series', 'Model Comparison', 'Commercial Ice Makers', 'AHRI 810', 'Crescent Ice', 'Dice Ice'],
+    sections: [
+      {
+        id: 'flagship-series-overview',
+        heading: 'Battle of the Flagships: Manitowoc Indigo NXT vs. Hoshizaki KM Series',
+        subheading: 'Examining the two highest-selling modular ice machine lines in commercial foodservice.',
+        paragraphs: [
+          'When restaurant owners, beverage directors, and facility engineers narrow down a commercial modular ice maker purchase, the decision almost always comes down to two iconic flagship product families: the **Manitowoc Indigo NXT Series** and the **Hoshizaki KM Series**.',
+          'While both series dominate commercial kitchens nationwide, they deliver completely different ice shapes, evaporator designs, and user interfaces. Manitowoc’s Indigo NXT line is built around front-facing nickel-plated copper vertical evaporators producing classic rhomboid Dice or Half-Dice cubes, paired with an interactive EasyTouch diagnostic display and tool-free swing-open front service doors. Hoshizaki’s KM Series relies on double-sided 304 stainless steel evaporators engineered to freeze ultra-hard, slow-melting individual Crescent cubes with minimal moving parts.',
+          'Rather than relying on sales brochures, we audited every matching certified record inside our AHRI Standard 810 database—contrasting **90 Manitowoc Indigo models** directly against **23 Hoshizaki KM Series models** tested under identical 90°F ambient air and 70°F inlet water conditions.',
+        ],
+        callout: {
+          title: 'Database Audit Scope',
+          text: 'Portfolio averages in this article reflect 90 certified Manitowoc Indigo records and 23 certified Hoshizaki KM records currently indexed in the KoldSpec database under AHRI 810 test criteria.',
+          type: 'info',
+        },
+      },
+      {
+        id: 'portfolio-benchmark-metrics',
+        heading: 'Portfolio Averages: Energy Efficiency, Harvest Output & Water Consumption',
+        subheading: 'How the Indigo NXT and KM families compare across fleet-wide laboratory benchmarks.',
+        paragraphs: [
+          'Looking at overall portfolio averages across all matching models in our database reveals remarkably tight competition with clear strengths on each side:',
+          '• **Average Energy Consumption:** The 23 certified Hoshizaki KM models average **4.83 kWh / 100 lbs**, edging out the 90 Manitowoc Indigo models which average **4.90 kWh / 100 lbs**—a nearly identical 1.4% separation driven by Hoshizaki’s high-efficiency remote KM powerhouses.',
+          '• **Average Daily Harvest Output:** Hoshizaki KM units average **964 lbs/day** across the lineup (stretching all the way to 2,580 lbs/day), compared to Manitowoc Indigo’s **773 lbs/day** fleet average (spanning compact 386 lb/day heads up to 1,744 lb/day remote units).',
+          '• **Average Potable Water Consumption:** Overall, Hoshizaki KM models average **17.40 gal / 100 lbs** compared to Indigo’s **18.27 gal / 100 lbs** across the entire portfolio. However, Manitowoc’s newest **R-290 Indigo models** (such as the IYP1000A-261 and IDP0800A-261) slash water usage down to an astonishing **13.7 gallons per 100 lbs**, outperforming comparable R-290 KM models!',
+        ],
+      },
+      {
+        id: 'head-to-head-model-matchups',
+        heading: 'Side-by-Side Specific Model Matchups from Our Database',
+        subheading: 'Comparing compact 400 lb heads, mid-size 700–830 lb cubers, and mega-capacity remote units.',
+        paragraphs: [
+          'To make an apples-to-apples purchasing decision, compare exact models within the same capacity tier from our database:',
+          '1. **Compact 400 lb/day Air-Cooled Tier (Cafes & Small Bars):** Comparing **Hoshizaki KM-322MAK** (400 lbs/day, **4.90 kWh/100 lbs**, 18.0 gal water, **R-290**) against **Manitowoc IDT0500A-161** (400 lbs/day, 5.25 kWh/100 lbs, 19.9 gal water, R-410A): Hoshizaki’s newer R-290 KM-322MAK wins on both electrical efficiency (+6.7%) and climate-friendly propane refrigerant.',
+          '2. **Mid-Size 700–830 lb/day Restaurant Workhorse Tier:** Comparing **Manitowoc IYP1000A-261** (781 lbs/day, **4.30 kWh/100 lbs**, **13.7 gal/100 lbs**, **R-290**) and **IDP0800A-261** (674 lbs/day, 4.59 kWh, 13.7 gal, R-290) against **Hoshizaki KM-901MRJZ3** (830 lbs/day, 4.40 kWh/100 lbs, 15.0 gal, R-404A): Manitowoc’s R-290 Indigo NXT models dominate this tier, delivering superior water efficiency (13.7 gal vs. 15.0 gal), self-contained air-cooled installation without rooftop condenser lines, and ultra-low GWP R-290 compliance.',
+          '3. **High-Volume 1,300+ lb/day & Mega-Capacity Tier:** At the top end, **Hoshizaki KM-1301SAJ3** (1,350 lbs/day, 3.95 kWh/100 lbs, 15.6 gal, IMH) and flagship **KM-2600SRJZ3** (2,580 lbs/day, **3.61 kWh/100 lbs**, 16.0 gal, RCU) tower above Manitowoc Indigo’s largest certified model, the **IYT1900N-261E** (1,744 lbs/day, 4.00 kWh/100 lbs, 20.0 gal, RCU).',
+        ],
+        table: {
+          headers: ['Capacity Tier & Model', 'Brand / Series', 'Daily Harvest (90/70°F)', 'Energy (kWh/100 lbs)', 'Water (Gal/100 lbs)', 'Cooling & Refrigerant'],
+          rows: [
+            ['KM-322MAK', 'Hoshizaki KM', '400 lbs / day', '4.90 kWh', '18.0 gal', 'IMH Air · R-290'],
+            ['IDT0500A-161', 'Manitowoc Indigo', '400 lbs / day', '5.25 kWh', '19.9 gal', 'IMH Air · R-410A'],
+            ['IYP1000A-261', 'Manitowoc Indigo', '781 lbs / day', '4.30 kWh', '13.7 gal', 'IMH Air · R-290'],
+            ['KM-901MRJZ3', 'Hoshizaki KM', '830 lbs / day', '4.40 kWh', '15.0 gal', 'RCU Remote · R-404A'],
+            ['IYT1900N-261E', 'Manitowoc Indigo', '1,744 lbs / day', '4.00 kWh', '20.0 gal', 'RCU Remote · R-410A'],
+            ['KM-2600SRJZ3', 'Hoshizaki KM', '2,580 lbs / day', '3.61 kWh', '16.0 gal', 'RCU Remote · R-404A'],
+          ],
+          caption: 'Exact Side-by-Side Specification Matchups from the KoldSpec AHRI Standard 810 Database',
+        },
+      },
+      {
+        id: 'evaporator-ice-shape-verdict',
+        heading: 'Evaporator Construction, Cleaning & Ice Shape Trade-Offs',
+        subheading: 'Which series fits your beverage menu, water quality, and kitchen staff.',
+        paragraphs: [
+          'Beyond raw numbers, operational fit comes down to ice shape and maintenance style. Choose the **Manitowoc Indigo NXT** if you want fast-cooling half-dice cubes for soda fountains, programmable touchscreen shift scheduling, snap-out tool-free front cleaning access, and top-in-class 13.7 gal/100 lbs water conservation in mid-range R-290 models (670–790 lbs/day).',
+          'Choose the **Hoshizaki KM Series** if you operate in a hard-water region where an all-stainless-steel double-sided evaporator resists aggressive descaling for 15+ years, want splash-free crescent cubes for cocktails and dining glasses, or require unmatched single-head capacity scaling from 1,350 up to 2,580 lbs/day.',
+        ],
+        keyTakeaways: [
+          'Hoshizaki KM leads overall portfolio averages (4.83 kWh, 964 lbs/day) and max single-head output (KM-2600SRJZ3 at 2,580 lbs/day).',
+          'Manitowoc Indigo NXT R-290 mid-size cubers (IYP1000A-261 / IDP0800A-261) achieve an unmatched 13.7 gal/100 lbs water rate.',
+          'Indigo NXT excels in touchscreen diagnostics and tool-free cleaning; KM excels in stainless evaporator longevity.',
+        ],
+      },
+      {
+        id: 'indigo-vs-km-contact-cta',
+        heading: 'Get Side-by-Side Quotes on Indigo NXT & Hoshizaki KM Models: Contact Us',
+        subheading: 'Compare live pricing, bin pairings, and filtration bundles with KoldSpec advisors.',
+        paragraphs: [
+          'Deciding between a Manitowoc Indigo NXT unit like the IYP1000A-261 or a Hoshizaki KM workhorse like the KM-1301SAJ3? You can inspect every specification side-by-side inside our catalog table.',
+          'To receive itemized commercial quotes, factory warranty documentation, and matching storage bin sizing tailored to your kitchen dimensions, please use our **"Contact Us"** form on this page today.',
+        ],
+      },
+    ],
+  },
+  {
     slug: 'commercial-ice-machine-maintenance-checklist-restaurant-managers',
     title: 'Commercial Ice Machine Maintenance Checklist for Restaurant Managers',
     subtitle: 'A daily, weekly, monthly, and semi-annual preventive maintenance SOP to pass health inspections, eliminate slime biofilm, and extend compressor longevity.',
