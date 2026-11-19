@@ -2,6 +2,272 @@ import { BlogArticle } from '../types/blog';
 
 export const BLOG_ARTICLES: BlogArticle[] = [
   {
+    slug: 'why-is-my-commercial-ice-machine-making-loud-noises-diagnostic-guide',
+    title: 'Why Is My Commercial Ice Machine Making Loud Noises? (Diagnostic Guide)',
+    subtitle: 'Decode grinding augers, squealing fan bearings, hammering water valves, and buzzing harvest solenoids before catastrophic compressor burnout occurs.',
+    excerpt: 'Unusual rattling, high-pitched squealing, grinding, or metallic banging from your commercial ice maker signals impending mechanical failure. Use this sound-by-sound diagnostic guide to identify worn bearings, scale-choked pumps, water hammer, and failing compressors.',
+    category: 'Maintenance & Service',
+    readTime: '9 min read',
+    publishDate: 'November 19, 2026',
+    author: {
+      name: 'Marcus Vance',
+      role: 'Commercial Foodservice Equipment Consultant & Certified AHRI Specialist',
+    },
+    heroImage: '',
+    tags: ['Ice Machine Troubleshooting', 'Loud Noises', 'Compressor Failure', 'Water Hammer', 'Auger Bearing', 'Kitchen Maintenance', 'Diagnostic Guide'],
+    sections: [
+      {
+        id: 'normal-vs-abnormal-sounds',
+        heading: 'Normal Operating Sounds vs. Mechanical Warning Alarms',
+        subheading: 'Knowing which hums and harvest clicks are routine versus which sounds demand immediate shutdown.',
+        paragraphs: [
+          'Commercial ice machines are active electromechanical refrigeration systems, so a steady baseline level of sound is completely normal. During routine operation, you should hear a smooth, steady compressor hum, the soft rush of recirculating water cascading across the evaporator plate, a gentle airflow whoosh from the condenser fan, and a brief metallic click followed by the crisp rattle of ice cubes dropping into the stainless storage bin every 12 to 18 minutes.',
+          'However, when an ice maker suddenly erupts into high-pitched squealing, rhythmic banging, screeching metal-on-metal grinding, or loud electrical buzzing, your equipment is broadcasting an early mechanical distress signal. Ignoring abnormal acoustics almost always escalates a minor $150 bearing or solenoid replacement into a $3,000 compressor burnout or seized evaporator assembly.',
+        ],
+        callout: {
+          title: 'Immediate Shutdown Warning',
+          text: 'If you hear loud metallic grinding from a nugget/flake ice auger or harsh compressor knocking accompanied by burnt electrical odors, shut off power at the breaker immediately to prevent permanent shaft seizure.',
+          type: 'warning',
+        },
+      },
+      {
+        id: 'squealing-and-screeching',
+        heading: 'High-Pitch Squealing or Screeching: Failing Fan Motors & Dry Auger Bearings',
+        subheading: 'Diagnosing worn condenser fan bearings, water pump bushings, and scale-damaged nugget augers.',
+        paragraphs: [
+          'A sharp, continuous squeal or high-frequency screech almost always points to dry or worn rotational bearings under mechanical load:',
+          '• Condenser Fan Motor Bearings: Inside air-cooled machines, the condenser fan spins continuously to exhaust heat across aluminum coils. Over 4 to 6 years—especially in kitchens where airborne fryer grease clogs pre-filters—lubrication dries out inside motor sleeve bearings, causing a shrill squeal that worsens when the fan cycles on.',
+          '• Nugget & Flake Auger Top Bearings (Critical): Continuous-extrusion machines (like Follett, Scotsman, and Ice-O-Matic nugget/flake units) rely on a heavy steel auger rotating inside a freezing cylinder. If mineral scale builds up on the cylinder wall or moisture breaches the top bearing seal, the auger squeals loudly against the stainless sleeve. Left unchecked, a dry auger bearing snaps the drive gearbox or ruins the entire evaporator barrel.',
+          '• Water Circulation Pump Bushings: When mineral scale coats the impeller shaft of the sump water pump, it emits a high-pitched whine or chatter while recirculating water.',
+        ],
+      },
+      {
+        id: 'banging-and-water-hammer',
+        heading: 'Loud Banging & Knocking: Water Hammer, Harvest Slabs & Loose Panels',
+        subheading: 'Why pipes thud violently when inlet valves snap shut or thick ice bridges drop.',
+        paragraphs: [
+          'Sudden thuds, pipe bangs, or heavy cabinet clatter trace back to hydraulic pressure shocks or loose structural hardware:',
+          '• Hydraulic Water Hammer: If you hear a sharp single "BANG!" reverberating through your kitchen wall plumbing right as the ice machine finishes filling its sump, the culprit is water hammer. High-velocity municipal water stops instantly when the electric inlet solenoid valve snaps shut, creating a pressure shockwave in unsecured copper pipes. Installing an inline water hammer arrestor and regulating line pressure to 45–50 PSI eliminates the shock.',
+          '• Oversized Ice Bridging & Evaporator Thuds: When mineral scale or dirty condenser coils lengthen freeze cycles, cubes fuse into one giant heavy sheet instead of releasing cleanly. When hot-gas defrost finally breaks the slab loose, it slams violently against the plastic curtain and bin bottom.',
+          '• Vibrating Compressor Mounts & Sheet Metal Panels: Worn rubber compressor grommets allow the running compressor to rattle violently against the steel base pan or exterior side panels.',
+        ],
+        table: {
+          headers: ['Observed Sound Symptom', 'Most Likely Mechanical Cause', 'Severity Level', 'Recommended Corrective Action'],
+          rows: [
+            ['Shrill squealing during cooling', 'Dry condenser fan motor or pump bearing', 'Moderate–High', 'Inspect fan blade spin; replace worn motor'],
+            ['Heavy grinding in nugget/flake unit', 'Failed auger bearing or severe barrel scale', 'Critical (Shut Off)', 'Power down immediately; service auger & descale'],
+            ['Sharp pipe BANG after fill cycle', 'Hydraulic water hammer at inlet solenoid', 'Moderate', 'Install water hammer arrestor & 50 PSI regulator'],
+            ['Loud 60Hz buzzing / humming', 'Failing harvest solenoid coil or stuck contactor', 'High', 'Test coil voltage; replace chattering relay/solenoid'],
+            ['Metallic knocking inside compressor', 'Liquid refrigerant floodback or internal valve failure', 'Critical (Shut Off)', 'Call refrigeration tech; inspect TXV & charge'],
+          ],
+          caption: 'Commercial Ice Machine Acoustic Diagnostic & Action Matrix',
+        },
+      },
+      {
+        id: 'buzzing-clicking-and-compressor-knocks',
+        heading: 'Electrical Buzzing, Clicking & Compressor Knocking',
+        subheading: 'Catching relay chatter, failing start capacitors, and liquid slugging before total failure.',
+        paragraphs: [
+          'Electrical and refrigerant noises require rapid diagnosis to prevent fire hazards or hermetic compressor failure:',
+          '• Loud 60Hz Electrical Buzzing or Chattering: A loud hum coming from the upper electrical box usually indicates a pitted magnetic contactor relay or a failing hot-gas harvest solenoid coil struggling to pull in cleanly.',
+          '• Repetitive Clicking Followed by Silence: If the compressor clicks loudly every two minutes and shuts down without starting, its start relay, overload protector, or start capacitor has failed—or the compressor rotor is mechanically locked.',
+          '• Deep Metallic Compressor Knocking: If a compressor emits heavy internal clanking, cold liquid refrigerant may be flooding back into the suction port due to a failed thermostatic expansion valve (TXV) or low-ambient head pressure issues, washing lubrication oil out of the pistons.',
+        ],
+        keyTakeaways: [
+          'Always verify whether squealing comes from the condenser fan, water pump, or nugget auger bearing.',
+          'Install water hammer arrestors and 45–50 PSI pressure regulators to stop pipe banging at fill valves.',
+          'Descale evaporator grids semi-annually to stop oversized ice slabs from slamming into bins.',
+          'Shut down grinding nugget machines or knocking compressors immediately to prevent total burnout.',
+        ],
+      },
+      {
+        id: 'noise-diagnostic-contact-cta',
+        heading: 'Compressor Knocking or Beyond Repair? Contact Us for Replacement Options',
+        subheading: 'Speak with KoldSpec commercial refrigeration specialists for fast sizing and quote support.',
+        paragraphs: [
+          'If your diagnostic check reveals a seized compressor, a scored nugget evaporator barrel, or an aging unit whose repair bill exceeds 50% of a new machine’s price, upgrading to a quiet, ENERGY STAR certified commercial model restores kitchen peace and cuts utility costs immediately.',
+          'Please submit your current model details and kitchen requirements using our **"Contact Us"** form on this page. Our certified equipment engineers will recommend quiet, reliable replacements with competitive wholesale pricing.',
+        ],
+      },
+    ],
+  },
+  {
+    slug: 'best-commercial-ice-machines-for-schools-and-universities',
+    title: 'The Best Commercial Ice Machines for Schools and Universities',
+    subtitle: 'Sizing high-throughput K-12 dining halls, collegiate athletic training rooms, student union hydration stations, and campus catering kitchens.',
+    excerpt: 'Educational campuses require diverse ice equipment: massive remote cubers for lunch rushes, sanitary nugget dispensers for student hydration, and moldable flake ice for athletic injury recovery. Compare top AHRI-certified models from our database.',
+    category: 'Buying Guides',
+    readTime: '10 min read',
+    publishDate: 'November 19, 2026',
+    author: {
+      name: 'Marcus Vance',
+      role: 'Commercial Foodservice Equipment Consultant & Certified AHRI Specialist',
+    },
+    heroImage: '',
+    tags: ['School Ice Machines', 'University Dining', 'Athletic Training Room', 'Flake Ice', 'Nugget Ice', 'Campus Hydration', 'ENERGY STAR'],
+    sections: [
+      {
+        id: 'campus-multi-department-ice-needs',
+        heading: 'Three Distinct Ice Zones Across K-12 Schools and University Campuses',
+        subheading: 'Why school foodservice directors, athletic trainers, and facilities teams need tailored specs.',
+        paragraphs: [
+          'Purchasing commercial ice machines for a K-12 school district or multi-campus university involves balancing dramatically different operational requirements across three distinct campus departments: high-velocity cafeteria dining halls, self-serve student union beverage stations, and collegiate athletic training rooms.',
+          'In school dining halls, hundreds of students pass through lunch lines within tight 25-minute bell schedules, rapidly draining beverage dispenser hoppers. Meanwhile, student unions and residence halls demand sanitary, touchless hydration dispensers that eliminate bare-hand contamination during flu season. Finally, NCAA and high school athletic training facilities rely on massive volumes of soft, moldable flake ice—not hard cubes—to fill team hydration coolers, pack joint injury wraps, and chill cold-plunge recovery tubs.',
+        ],
+        callout: {
+          title: 'Public Procurement & Rebate Tip',
+          text: 'Public school districts and universities often qualify for state utility rebates and cooperative purchasing discounts when specifying EPA ENERGY STAR certified commercial ice equipment.',
+          type: 'info',
+        },
+      },
+      {
+        id: 'cafeteria-and-hydration-sizing',
+        heading: 'Sizing Cafeterias, Student Unions & Athletic Training Rooms',
+        subheading: 'Practical daily ice formulas for school meal counts and sports rosters.',
+        paragraphs: [
+          'Use these proven institutional benchmarks to calculate daily harvest requirements before soliciting bids:',
+          '• **K-12 & University Dining Halls:** Plan on **0.5 to 0.75 lbs of ice per student meal served**, plus 150 lbs daily for cold salad bars and milk-chilling wells. A high school serving 1,200 lunches daily requires 750 to 1,000 lbs/day, while large university dining commons serving 3,000+ meals require 1,600 to 2,500 lbs/day paired with Remote Condensing Units (RCU).',
+          '• **Student Unions & Campus Coffee Bars:** Pair touchless dispensers with continuous nugget ice makers delivering **400 to 1,600 lbs/day** depending on foot traffic.',
+          '• **Athletic Training Rooms & Stadium Fieldhouses:** Plan on **10 to 15 lbs per varsity athlete** during hot August pre-season practices, plus 250 to 400 lbs per cold-immersion recovery tub. Football and track programs routinely require 800 to 1,800 lbs/day of Flake ice.',
+        ],
+      },
+      {
+        id: 'top-database-models-for-campuses',
+        heading: 'Best Database-Verified Commercial Ice Machines for Schools & Universities',
+        subheading: 'Comparing top ENERGY STAR certified campus performers across Cube, Nugget, and Flake lines.',
+        paragraphs: [
+          'Querying our 651-model AHRI Standard 810 database identifies standout institutional models engineered for peak efficiency, low water bills, and high durability:',
+          '1. **Best for University Dining Halls — ICETRO IM-1700-RC & Hoshizaki KM-1301SRJZ3:** The remote air-cooled **ICETRO IM-1700-RC** delivers **1,575 lbs/day** of classic cubes at just **3.51 kWh/100 lbs** and **13.4 gal/100 lbs** water consumption. For hard-water districts needing all-stainless evaporators, the **Hoshizaki KM-1301SRJZ3** harvests **1,330 lbs/day** of crescent ice at **3.83 kWh/100 lbs** and **14.0 gal/100 lbs**.',
+          '2. **Best for Student Union Hydration — Follett HCF2110R & Follett D714A:** For campus beverage hubs, **Follett HCF2110R** produces **1,632 lbs/day** of Chewblet nugget ice at an industry-best **3.21 kWh/100 lbs** and **12.0 gal/100 lbs**. Smaller residence hall pantries benefit from the R-290 **Follett D714A** (**525 lbs/day**, 4.36 kWh, 12.0 gal).',
+          '3. **Best for Athletic Training Rooms — Ice-O-Matic MFI1506A90 & Scotsman FS1522AX-32A:** Soft flake ice molds smoothly around ankles, knees, and shoulders without bruising tissue. The **Ice-O-Matic MFI1506A90** produces **1,084 lbs/day** of flake ice at **4.23 kWh/100 lbs** and **12.0 gal/100 lbs** on **R-290** refrigerant, while the compact 22-inch **Scotsman FS1522AX-32A** outputs **1,095 lbs/day** at **4.54 kWh/100 lbs** and **12.0 gal/100 lbs** on **R-290**.',
+        ],
+        table: {
+          headers: ['Campus Zone & Model', 'Brand & Ice Type', 'Harvest (90/70°F)', 'Energy (kWh/100 lbs)', 'Water (Gal/100 lbs)', 'Config & Refrigerant'],
+          rows: [
+            ['Dining Hall: IM-1700-RC', 'ICETRO · Cube', '1,575 lbs / day', '3.51 kWh', '13.4 gal', 'RCU Remote · R-410A'],
+            ['Dining Hall: KM-1301SRJZ3', 'Hoshizaki · Crescent', '1,330 lbs / day', '3.83 kWh', '14.0 gal', 'RCU Remote · R-404A'],
+            ['Student Union: HCF2110R', 'Follett · Nugget', '1,632 lbs / day', '3.21 kWh', '12.0 gal', 'RCU Remote · R-404A'],
+            ['Athletics: MFI1506A90', 'Ice-O-Matic · Flake', '1,084 lbs / day', '4.23 kWh', '12.0 gal', 'IMH Air · R-290'],
+            ['Athletics: FS1522AX-32A', 'Scotsman · Flake', '1,095 lbs / day', '4.54 kWh', '12.0 gal', 'IMH Air · R-290'],
+          ],
+          caption: 'Top Institutional School & University Models Audited from the KoldSpec AHRI 810 Database',
+        },
+      },
+      {
+        id: 'campus-sanitation-and-summer-shutdown',
+        heading: 'Campus Health Compliance & Summer Break Management',
+        subheading: 'Protecting students with touchless dispensing, R-290 sustainability, and summer shutdowns.',
+        paragraphs: [
+          'School boards and university sustainability officers increasingly mandate R-290 natural propane equipment to meet campus carbon-reduction goals alongside touchless dispensing to curb campus viral transmission. Additionally, facilities directors at K-12 schools must schedule complete descaling, sanitization, and dry-down shutdowns every June before summer recess so dormant water troughs do not breed black mold prior to August reopening.',
+        ],
+        keyTakeaways: [
+          'Specify Remote Condensing Units (1,330–1,632 lbs/day) for central dining halls to keep cafeterias quiet.',
+          'Equip athletic training rooms with R-290 Flake machines (1,084–1,095 lbs/day) at 12.0 gal/100 lbs water use.',
+          'Use sealed touchless nugget dispensers in student unions and residence halls for maximum sanitation.',
+        ],
+      },
+      {
+        id: 'schools-contact-cta',
+        heading: 'Preparing a School District Bid or Campus Dining Upgrade? Contact Us',
+        subheading: 'Request institutional specifications, ENERGY STAR rebate data, and district quotes.',
+        paragraphs: [
+          'Sourcing commercial ice machines for a public school cafeteria, university dining commons, or athletic complex? Our institutional equipment consultants can help you standardize models across every campus building.',
+          'Please submit your project details through our **"Contact Us"** form on this page to request specification cut-sheets, custom sizing calculations, and institutional commercial pricing.',
+        ],
+      },
+    ],
+  },
+  {
+    slug: 'hoshizaki-km-1900saj3-vs-manitowoc-iyt1900n-261e-comparison',
+    title: 'Hoshizaki KM-1900SAJ3 vs. Manitowoc IYT1900N-261E: Which High-Volume Machine is Better?',
+    subtitle: 'A data-driven engineering comparison contrasting two 1,700-lb-class commercial powerhouses across AHRI 810 output, kWh efficiency, water usage, cooling architecture, and ice shape.',
+    excerpt: 'Comparing two 1,700 lb/day heavyweights in our database? See the exact AHRI 810 differences between the self-contained air-cooled Hoshizaki KM-1900SAJ3 (1,675 lbs, 3.90 kWh) and the remote-condenser Manitowoc IYT1900N-261E (1,744 lbs, 4.00 kWh).',
+    category: 'Equipment Comparisons',
+    readTime: '9 min read',
+    publishDate: 'November 19, 2026',
+    author: {
+      name: 'Marcus Vance',
+      role: 'Commercial Foodservice Equipment Consultant & Certified AHRI Specialist',
+    },
+    heroImage: '',
+    tags: ['Hoshizaki KM-1900SAJ3', 'Manitowoc IYT1900N-261E', 'High-Volume Ice Machines', 'Head-to-Head Comparison', 'AHRI 810', 'IMH vs RCU'],
+    sections: [
+      {
+        id: 'two-1700lb-heavyweights',
+        heading: 'Head-to-Head Overview: Two 1,700-lb-Class Commercial Titans',
+        subheading: 'Why comparing these two similarly sized models reveals a crucial IMH vs. RCU architectural choice.',
+        paragraphs: [
+          'When high-volume steakhouses, busy sports bars, hospital cafeterias, and hotel banquet kitchens shop for an ultra-high-capacity modular ice machine head hovering around 1,700 lbs of daily production, two specific models frequently land on the final shortlist: the **Hoshizaki KM-1900SAJ3** and the **Manitowoc Indigo IYT1900N-261E**.',
+          'At first glance, their rated capacities look nearly identical—both sit right around the 1,700 lb/24-hour class and earn full U.S. EPA ENERGY STAR certification. However, auditing their exact records in our KoldSpec AHRI Standard 810 database exposes a fundamental structural difference that dictates installation costs, kitchen heat load, and beverage performance: the **Hoshizaki KM-1900SAJ3** is a **self-contained Air-Cooled Modular Head (IMH)**, whereas the **Manitowoc IYT1900N-261E** is a **Remote Air-Cooled Condensing Unit (RCU)** designed to reject heat outdoors on a rooftop condenser.',
+        ],
+        callout: {
+          title: 'Audited Database Records',
+          text: 'All specifications below are drawn directly from verified ENERGY STAR / AHRI 810 database entries (Hoshizaki es-2312474 and Manitowoc es-2349874) tested at 90°F air and 70°F water.',
+          type: 'info',
+        },
+      },
+      {
+        id: 'exact-database-spec-comparison',
+        heading: 'Database Specs Compared: Harvest Rate, Energy Efficiency & Water Usage',
+        subheading: 'Analyzing every audited laboratory number side-by-side.',
+        paragraphs: [
+          'Examining the exact audited figures from our database highlights how closely matched yet distinct these two machines are:',
+          '• **Daily Harvest Capacity (90°F Air / 70°F Water):** The **Manitowoc IYT1900N-261E** takes a slight 4.1% capacity edge, harvesting **1,744 lbs/day** compared to **1,675 lbs/day** for the **Hoshizaki KM-1900SAJ3**—a difference of 69 lbs per 24 hours.',
+          '• **Electrical Efficiency (kWh / 100 lbs):** Remarkably, despite carrying an onboard air-cooled condenser rather than relying on an external remote condenser, the **Hoshizaki KM-1900SAJ3** beats the Manitowoc on electrical efficiency: **3.90 kWh/100 lbs** versus **4.00 kWh/100 lbs** for the IYT1900N-261E (a 2.5% power advantage). Over 365 days of full-capacity production, that efficiency edge combined with slightly lower water consumption trims ongoing utility bills.',
+          '• **Potable Water Consumption:** The **Hoshizaki KM-1900SAJ3** also wins on water conservation, requiring **19.0 gallons per 100 lbs** of ice compared to **20.0 gallons per 100 lbs** for the **Manitowoc IYT1900N-261E** (a 5% water savings).',
+          '• **Refrigerant & Cooling Architecture:** The KM-1900SAJ3 runs **R-404A** in a self-contained **IMH Air-Cooled** cabinet, whereas the IYT1900N-261E utilizes **R-410A** refrigerant routed to a **Remote Air-Cooled (RCU)** outdoor condenser.',
+        ],
+        table: {
+          headers: ['Specification Metric', 'Hoshizaki KM-1900SAJ3', 'Manitowoc IYT1900N-261E', 'Category Winner'],
+          rows: [
+            ['Equipment Configuration', 'IMH (Self-Contained Modular Head)', 'RCU (Remote Condensing Unit)', 'Depends on roof access'],
+            ['Condenser Cooling', 'Air-Cooled (Onboard)', 'Remote Air-Cooled (Outdoor)', 'Manitowoc (Zero indoor heat)'],
+            ['Daily Harvest (AHRI 90/70)', '1,675 lbs / 24 hrs', '1,744 lbs / 24 hrs', 'Manitowoc (+69 lbs/day)'],
+            ['Energy Efficiency', '3.90 kWh / 100 lbs', '4.00 kWh / 100 lbs', 'Hoshizaki (+2.5% lower kWh)'],
+            ['Potable Water Use', '19.0 gal / 100 lbs', '20.0 gal / 100 lbs', 'Hoshizaki (-5.0% water use)'],
+            ['Ice Geometry', 'Crescent (Hardness: 100)', 'Half-Dice Cube (Hardness: 100)', 'Cocktail vs. Fountain Fit'],
+            ['Refrigerant Type', 'R-404A', 'R-410A', 'Manitowoc (Lower GWP)'],
+            ['ENERGY STAR Certified', 'Yes (Verified)', 'Yes (Verified)', 'Tie (Both Qualified)'],
+          ],
+          caption: 'Direct Database Comparison: Hoshizaki KM-1900SAJ3 vs. Manitowoc IYT1900N-261E (AHRI 810 Conditions)',
+        },
+      },
+      {
+        id: 'installation-heat-and-kitchen-impact',
+        heading: 'Installation Costs, Kitchen Heat Load & Evaporator Longevity',
+        subheading: 'Why your building layout and mechanical budget decide the real-world winner.',
+        paragraphs: [
+          'The biggest real-world differentiator between these two models is not the 69 lb harvest spread—it is **IMH versus RCU installation logistics**.',
+          'Installing the **Hoshizaki KM-1900SAJ3** is dramatically simpler and cheaper upfront: set the modular head onto a wide storage bin, connect electrical power, cold water, and gravity drain lines, and start making ice. However, because it is an onboard air-cooled unit producing nearly 1,700 lbs daily, it rejects massive amounts of compressor heat and fan noise directly into your kitchen. If your kitchen lacks strong HVAC exhaust or sits near hot fryers, room temperatures can climb rapidly.',
+          'Conversely, the **Manitowoc IYT1900N-261E** requires purchasing a separate remote outdoor condenser, pre-charged copper refrigeration line sets, roof curb penetrations, and certified HVAC technician brazing—adding $2,500 to $5,000+ in upfront installation costs. Yet once installed, it removes 100% of condenser heat and compressor noise from your kitchen, keeps dining staff comfortable, and operates reliably even inside tight back-of-house alcoves. Furthermore, Manitowoc’s Indigo touchscreen simplifies daily diagnostics, while Hoshizaki’s 304 stainless steel double-sided evaporator excels in hard-water durability.',
+        ],
+      },
+      {
+        id: 'final-verdict-1900-class',
+        heading: 'Final Verdict: Should You Buy the KM-1900SAJ3 or the IYT1900N-261E?',
+        subheading: 'Clear buying rules based on facility HVAC, upfront budget, and ice shape.',
+        paragraphs: [
+          '• **Buy the Hoshizaki KM-1900SAJ3** if you have a spacious, well-ventilated mechanical room or kitchen with high ceilings, cannot run copper refrigeration lines to a roof deck (such as leased retail spaces or multi-story basements), want lower electricity (3.90 kWh) and water (19.0 gal) consumption, or prefer hard Crescent ice for upscale bar service.',
+          '• **Buy the Manitowoc IYT1900N-261E** if you own your building or operate a hot QSR/banquet kitchen where removing condenser heat and noise is mandatory, need maximum 1,744 lb/day output paired with Half-Dice fountain cubes, or want Indigo touchscreen diagnostics and R-410A refrigerant.',
+        ],
+        keyTakeaways: [
+          'KM-1900SAJ3 wins on energy efficiency (3.90 vs. 4.00 kWh), water savings (19.0 vs. 20.0 gal), and lower upfront install cost.',
+          'IYT1900N-261E wins on peak harvest output (1,744 vs. 1,675 lbs/day), zero kitchen heat dump (RCU), and R-410A refrigerant.',
+          'Choose Crescent ice (Hoshizaki) for cocktails and hard-water durability; Half-Dice (Manitowoc) for soda dispensers.',
+        ],
+      },
+      {
+        id: 'compare-1900-contact-cta',
+        heading: 'Request Commercial Quotes on KM-1900SAJ3 & IYT1900N-261E: Contact Us',
+        subheading: 'Get exact bin compatibility pairings, remote line-set pricing, and delivery timelines.',
+        paragraphs: [
+          'Evaluating the Hoshizaki KM-1900SAJ3 against the Manitowoc IYT1900N-261E for an upcoming restaurant buildout or banquet kitchen upgrade? Choosing the wrong condenser configuration can unexpectedly add thousands to HVAC installation costs.',
+          'Please reach out through our **"Contact Us"** form on this page to speak with our commercial refrigeration specialists. We will provide side-by-side wholesale quotes, matching stainless storage bin specs, and remote condenser sizing support tailored to your building.',
+        ],
+      },
+    ],
+  },
+  {
     slug: 'how-to-winterize-commercial-ice-machine-cold-climates',
     title: 'How to Winterize Your Commercial Ice Machine for Cold Climates',
     subtitle: 'Prevent burst water lines, cracked sump troughs, oil migration compressor failures, and condenser head-pressure drops in seasonal venues and freezing regions.',
