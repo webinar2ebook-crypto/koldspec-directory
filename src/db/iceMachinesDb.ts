@@ -1,4 +1,5 @@
 import { IceMachine } from '../types/iceMachine';
+import initialMachinesJson from '../data/ice_machines.json';
 
 const DB_NAME = 'KoldSpec_Commercial_Ice_DB';
 const DB_VERSION = 1;
@@ -114,6 +115,10 @@ export async function saveLocalIndexedDb(
   }
 }
 
+export function getInitialIceMachinesSync(): IceMachine[] {
+  return Array.isArray(initialMachinesJson) ? (initialMachinesJson as IceMachine[]) : [];
+}
+
 /**
  * Fetch all 651 machines from static ice_machines.json (ideal for Cloudflare Pages static hosting),
  * with fallback to local browser IndexedDB / LocalStorage cache.
@@ -137,6 +142,11 @@ export async function getAllIceMachines(): Promise<IceMachine[]> {
   const local = await getLocalIndexedDbMachines();
   if (local.length > 0) {
     return local;
+  }
+
+  const bundled = getInitialIceMachinesSync();
+  if (bundled.length > 0) {
+    return bundled;
   }
 
   // Fallback sample if empty

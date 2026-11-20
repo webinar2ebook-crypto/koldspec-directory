@@ -1,8 +1,9 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import { Routes, Route, Navigate, useParams, useNavigate, useLocation } from 'react-router-dom';
+import React, { useState, useEffect, useLayoutEffect, useMemo } from 'react';
+import { Routes, Route, Navigate, useParams, useNavigate, useLocation, matchPath } from 'react-router-dom';
 import { IceMachine, FilterState, IceType } from './types/iceMachine';
 import {
   getAllIceMachines,
+  getInitialIceMachinesSync,
   saveIceMachines,
   deleteIceMachine,
   clearAllIceMachines,
@@ -34,25 +35,39 @@ import {
 function MachineRouteHandler({
   machines,
   isLoading,
+  selectedMachine,
   onSelectMachine,
+  children,
 }: {
   machines: IceMachine[];
   isLoading: boolean;
+  selectedMachine: IceMachine | null;
   onSelectMachine: (machine: IceMachine | null) => void;
+  children: React.ReactNode;
 }) {
   const { slug } = useParams<{ slug: string }>();
 
-  useEffect(() => {
-    if (isLoading || machines.length === 0) return;
-    if (!slug) {
-      onSelectMachine(null);
-      return;
-    }
-    const found = findMachineBySlug(machines, slug);
-    onSelectMachine(found || null);
-  }, [slug, machines, isLoading, onSelectMachine]);
+  const matchedMachine = useMemo(() => {
+    if (!slug || machines.length === 0) return undefined;
+    return findMachineBySlug(machines, slug);
+  }, [machines, slug]);
 
-  return null;
+  useLayoutEffect(() => {
+    if (isLoading || machines.length === 0) return;
+    if (matchedMachine) {
+      if (selectedMachine?.id !== matchedMachine.id) {
+        onSelectMachine(matchedMachine);
+      }
+    } else {
+      onSelectMachine(null);
+    }
+  }, [matchedMachine, isLoading, machines.length, selectedMachine?.id, onSelectMachine]);
+
+  if (!isLoading && machines.length > 0 && !matchedMachine) {
+    return <Navigate to="/" replace />;
+  }
+
+  return <>{children}</>;
 }
 
 function BlogArticleRoute({
@@ -91,14 +106,20 @@ export default function App() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const [machines, setMachines] = useState<IceMachine[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [machines, setMachines] = useState<IceMachine[]>(() => getInitialIceMachinesSync());
+  const [isLoading, setIsLoading] = useState(() => getInitialIceMachinesSync().length === 0);
   const [viewMode, setViewMode] = useState<'grid' | 'table'>('grid');
   const [directorySubView, setDirectorySubView] = useState<'directory' | 'table' | 'standards'>('directory');
   const [quotePrefill, setQuotePrefill] = useState<string>('');
   const [isImportModalOpen, setIsImportModalOpen] = useState(false);
   const [isCompareModalOpen, setIsCompareModalOpen] = useState(false);
-  const [selectedMachine, setSelectedMachine] = useState<IceMachine | null>(null);
+  const [selectedMachine, setSelectedMachine] = useState<IceMachine | null>(() => {
+    const cleanPath = location.pathname.replace(/\/+$/, '') || '/';
+    const match = matchPath('/machine/:slug', cleanPath);
+    if (!match?.params?.slug) return null;
+    const initialList = getInitialIceMachinesSync();
+    return findMachineBySlug(initialList, decodeURIComponent(match.params.slug)) || null;
+  });
   const [comparedMachineIds, setComparedMachineIds] = useState<string[]>([]);
   const [droppedFile, setDroppedFile] = useState<File | null>(null);
   const [notification, setNotification] = useState<string | null>(null);
@@ -133,14 +154,18 @@ export default function App() {
     }, 4500);
   };
 
-  // Load 651 machines from static ice_machines.json on startup
+  // Sync 651 machines cache with IndexedDB / static ice_machines.json on startup
   useEffect(() => {
     async function initDatabase() {
       try {
-        setIsLoading(true);
         const list = await getAllIceMachines();
         const safeList = Array.isArray(list) ? list : [];
-        setMachines(safeList);
+        setMachines((prev) => {
+          if (prev.length === safeList.length && prev.length > 0) {
+            return prev;
+          }
+          return safeList;
+        });
       } catch (err) {
         console.error('Failed to load database:', err);
       } finally {
@@ -151,27 +176,41 @@ export default function App() {
   }, []);
 
   // Clear selectedMachine modal state when navigating away from /machine/:slug
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (!location.pathname.startsWith('/machine/')) {
       setSelectedMachine(null);
     }
   }, [location.pathname]);
 
-  // Sync document title and canonical tag with active route & selection
-  useEffect(() => {
+  // Sync document title, meta description, and canonical tag with active route & selection before paint
+  useLayoutEffect(() => {
+    const defaultTitle = 'KoldSpec Commercial Ice Machine Directory';
+    const defaultDescription = 'Professional B2B specification directory and ENERGY STAR benchmarking database for commercial ice machines.';
     const canonical = document.querySelector('link[rel="canonical"]');
+    const metaDesc = document.querySelector('meta[name="description"]');
+    const ogTitle = document.querySelector('meta[property="og:title"]');
+    const ogDesc = document.querySelector('meta[property="og:description"]');
+    const ogUrl = document.querySelector('meta[property="og:url"]');
 
     if (selectedMachine) {
       const slug = slugMap.get(selectedMachine.id) || selectedMachine.id;
-      document.title = `${selectedMachine.brand} ${selectedMachine.modelNumber} Commercial Ice Maker Specs | KoldSpec`;
-      if (canonical) {
-        canonical.setAttribute('href', `${DOMAIN}/machine/${slug}`);
-      }
+      const machineTitle = `${selectedMachine.brand} ${selectedMachine.modelNumber} Commercial Ice Maker Specs | KoldSpec`;
+      const machineDesc = `${selectedMachine.brand} ${selectedMachine.modelNumber} (${selectedMachine.harvestRateLbs.toLocaleString()} lbs/day, ${selectedMachine.iceType} ice, ${selectedMachine.energyUseRateKwh.toFixed(2)} kWh/100 lbs). View full AHRI 810/820 specifications and operating cost estimates.`;
+      const machineUrl = `${DOMAIN}/machine/${slug}`;
+
+      document.title = machineTitle;
+      if (canonical) canonical.setAttribute('href', machineUrl);
+      if (metaDesc) metaDesc.setAttribute('content', machineDesc);
+      if (ogTitle) ogTitle.setAttribute('content', machineTitle);
+      if (ogDesc) ogDesc.setAttribute('content', machineDesc);
+      if (ogUrl) ogUrl.setAttribute('content', machineUrl);
     } else if (location.pathname.startsWith('/quote')) {
-      document.title = 'Get a Commercial Ice Machine Quote | KoldSpec';
-      if (canonical) {
-        canonical.setAttribute('href', `${DOMAIN}/quote`);
-      }
+      const quoteTitle = 'Get a Commercial Ice Machine Quote | KoldSpec';
+      document.title = quoteTitle;
+      if (canonical) canonical.setAttribute('href', `${DOMAIN}/quote`);
+      if (metaDesc) metaDesc.setAttribute('content', defaultDescription);
+      if (ogTitle) ogTitle.setAttribute('content', quoteTitle);
+      if (ogUrl) ogUrl.setAttribute('content', `${DOMAIN}/quote`);
     } else if (location.pathname.startsWith('/blog/')) {
       const slug = location.pathname.replace(/^\/blog\//, '').replace(/\/$/, '');
       const article = BLOG_ARTICLES.find((a) => a.slug === slug);
@@ -182,15 +221,19 @@ export default function App() {
         }
       }
     } else if (location.pathname.startsWith('/blog')) {
-      document.title = 'Commercial Ice Equipment Buying Guides & Engineering Insights | KoldSpec';
-      if (canonical) {
-        canonical.setAttribute('href', `${DOMAIN}/blog`);
-      }
+      const blogTitle = 'Commercial Ice Equipment Buying Guides & Engineering Insights | KoldSpec';
+      document.title = blogTitle;
+      if (canonical) canonical.setAttribute('href', `${DOMAIN}/blog`);
+      if (metaDesc) metaDesc.setAttribute('content', defaultDescription);
+      if (ogTitle) ogTitle.setAttribute('content', blogTitle);
+      if (ogUrl) ogUrl.setAttribute('content', `${DOMAIN}/blog`);
     } else {
-      document.title = 'KoldSpec Commercial Ice Machine Directory';
-      if (canonical) {
-        canonical.setAttribute('href', `${DOMAIN}/`);
-      }
+      document.title = defaultTitle;
+      if (canonical) canonical.setAttribute('href', `${DOMAIN}/`);
+      if (metaDesc) metaDesc.setAttribute('content', defaultDescription);
+      if (ogTitle) ogTitle.setAttribute('content', defaultTitle);
+      if (ogDesc) ogDesc.setAttribute('content', defaultDescription);
+      if (ogUrl) ogUrl.setAttribute('content', `${DOMAIN}/`);
     }
   }, [selectedMachine, slugMap, location.pathname]);
 
@@ -720,14 +763,14 @@ export default function App() {
           <Route
             path="/machine/:slug"
             element={
-              <>
-                <MachineRouteHandler
-                  machines={machines}
-                  isLoading={isLoading}
-                  onSelectMachine={setSelectedMachine}
-                />
+              <MachineRouteHandler
+                machines={machines}
+                isLoading={isLoading}
+                selectedMachine={selectedMachine}
+                onSelectMachine={setSelectedMachine}
+              >
                 {directoryElement}
-              </>
+              </MachineRouteHandler>
             }
           />
           <Route
