@@ -22,17 +22,28 @@ export const ArticlePageView: React.FC<ArticlePageViewProps> = ({
 }) => {
   const [copied, setCopied] = useState(false);
 
-  // Schema.org Article / BlogPosting structured data injection
+  // Schema.org Article / BlogPosting structured data + meta description injection
   useEffect(() => {
     const articleUrl = `${DOMAIN}/blog/${article.slug}`;
+    const metaDesc = document.querySelector('meta[name="description"]');
+    const ogTitle = document.querySelector('meta[property="og:title"]');
+    const ogDesc = document.querySelector('meta[property="og:description"]');
+    const prevDesc = metaDesc?.getAttribute('content') || '';
+    const prevOgTitle = ogTitle?.getAttribute('content') || '';
+    const prevOgDesc = ogDesc?.getAttribute('content') || '';
+
+    if (metaDesc) metaDesc.setAttribute('content', article.excerpt);
+    if (ogTitle) ogTitle.setAttribute('content', article.title);
+    if (ogDesc) ogDesc.setAttribute('content', article.excerpt);
+
     const schemaData = {
       '@context': 'https://schema.org',
       '@type': 'TechArticle',
       'headline': article.title,
       'description': article.excerpt,
       'image': `${DOMAIN}/og-image.jpg`,
-      'datePublished': '2026-11-09T08:00:00+00:00',
-      'dateModified': '2026-11-09T08:00:00+00:00',
+      'datePublished': '2026-11-20T08:00:00+00:00',
+      'dateModified': '2026-11-20T08:00:00+00:00',
       'author': {
         '@type': 'Person',
         'name': article.author.name,
@@ -53,6 +64,9 @@ export const ArticlePageView: React.FC<ArticlePageViewProps> = ({
       },
     };
 
+    const existingBefore = document.getElementById('article-structured-data');
+    if (existingBefore) existingBefore.remove();
+
     const script = document.createElement('script');
     script.type = 'application/ld+json';
     script.id = 'article-structured-data';
@@ -62,6 +76,9 @@ export const ArticlePageView: React.FC<ArticlePageViewProps> = ({
     return () => {
       const existing = document.getElementById('article-structured-data');
       if (existing) existing.remove();
+      if (metaDesc && prevDesc) metaDesc.setAttribute('content', prevDesc);
+      if (ogTitle && prevOgTitle) ogTitle.setAttribute('content', prevOgTitle);
+      if (ogDesc && prevOgDesc) ogDesc.setAttribute('content', prevOgDesc);
     };
   }, [article]);
 
