@@ -1051,7 +1051,7 @@ export const BLOG_ARTICLES: BlogArticle[] = [
       },
       {
         id: 'required-tools-ppe',
-        heading: 'Tools & Supplies Needed to Clean a Commercial Ice Machine Safely',
+        heading: 'How to Clean a Commercial Ice Machine: Required Tools, Chemicals & PPE',
         subheading: 'Gathering the proper certified supplies before de-energizing the machine.',
         paragraphs: [
           'Before starting your cleaning cycle, gather all necessary tools and safety gear. Working with concentrated acidic delimers and sanitizers inside tight commercial spaces requires personal protective equipment to safeguard your kitchen staff against chemical splash injuries and respiratory irritation.',
@@ -1085,8 +1085,15 @@ export const BLOG_ARTICLES: BlogArticle[] = [
         },
       },
       {
+        id: 'how-often-to-clean',
+        heading: 'How Often Should You Clean a Commercial Ice Machine?',
+        paragraphs: [
+          'Under FDA Food Code 4-602.11 and major manufacturer guidelines, you should descale and sanitize a commercial ice machine at least every 6 months (twice per year). Kitchens exposed to heavy airborne yeast, flour dust, or hard mineral water—such as bakeries, pizzerias, craft breweries, and high-volume bars—should perform full chemical cleaning every 30 to 90 days to stop slime and biofilm buildup. Between deep cleanings, sanitize ice scoops daily, brush off condenser air filters weekly, and replace water filter cartridges every 6 months.',
+        ],
+      },
+      {
         id: 'preventative-maintenance-schedule',
-        heading: 'How Often to Clean a Commercial Ice Machine & Filter Replacement Schedule',
+        heading: 'How to Clean a Commercial Ice Machine Preventatively & Filter Schedule',
         subheading: 'How high-grade carbon and polyphosphate filtration doubles machine operating lifespan.',
         paragraphs: [
           'Preventative maintenance is significantly less expensive than emergency refrigeration service calls. By establishing a proactive schedule for how often to clean a commercial ice machine, commercial kitchens can eliminate 80% of premature machine breakdowns and keep daily harvest volumes at peak factory ratings.',
@@ -1105,7 +1112,7 @@ export const BLOG_ARTICLES: BlogArticle[] = [
       },
       {
         id: 'contact-equipment-team',
-        heading: 'Need Help With Commercial Ice Machine Cleaning or Replacement? Contact Us',
+        heading: 'How to Clean a Commercial Ice Machine vs. Replacing It: Contact Us',
         subheading: 'Consult with KoldSpec certified commercial refrigeration specialists for expert assistance.',
         paragraphs: [
           'Is your current commercial ice machine struggling with chronic limescale buildup, repeated health inspection flags, or failing harvest cycles? Sometimes cleaning an older machine with pitted nickel plating or a compromised compressor is throwing good money after bad.',
