@@ -102,6 +102,14 @@ export function generateSitemapXml(
     <priority>0.9</priority>
   </url>`);
 
+  // 4. Capacity Sizing Hub Page
+  urls.push(`  <url>
+    <loc>${domain}/guides/500-lb-1000-lb-ice-machines</loc>
+    <lastmod>${lastmod}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>`);
+
   // 3. Blog Articles
   for (const article of BLOG_ARTICLES) {
     let articleMod = lastmod;

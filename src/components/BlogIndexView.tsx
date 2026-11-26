@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from 'react';
+import { Link } from 'react-router-dom';
 import { BlogArticle } from '../types/blog';
 import { BLOG_ARTICLES } from '../data/blogArticles';
 import { Search, Clock, ArrowRight, BookOpen, ShieldCheck, Sparkles, Filter } from 'lucide-react';
@@ -82,6 +83,28 @@ export const BlogIndexView: React.FC<BlogIndexViewProps> = ({
             />
           </div>
         </div>
+      </div>
+
+      {/* Capacity Sizing Hub Banner */}
+      <div className="bg-white rounded-xl border border-slate-200 p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-2xs">
+        <div className="space-y-1">
+          <div className="text-[11px] font-bold uppercase tracking-wider text-blue-600">
+            Interactive Sizing Hub
+          </div>
+          <h2 className="text-base font-bold text-slate-900">
+            500 lb vs. 1000 lb Commercial Ice Machine Buyer&apos;s Guide
+          </h2>
+          <p className="text-xs text-slate-600">
+            Compare bar, hotel, and restaurant demand formulas, head-to-bin pairing logic, real catalog models, and 5-year TCO.
+          </p>
+        </div>
+        <Link
+          to="/guides/500-lb-1000-lb-ice-machines"
+          className="inline-flex items-center gap-1.5 px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold rounded-lg transition-colors whitespace-nowrap shrink-0"
+        >
+          <span>Open Sizing Hub</span>
+          <ArrowRight className="w-3.5 h-3.5" />
+        </Link>
       </div>
 
       {/* Featured Lead Guide (Hero Card) - Vertical Stack */}

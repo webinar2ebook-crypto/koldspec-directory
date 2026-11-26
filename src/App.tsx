@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useLayoutEffect, useMemo } from 'react';
-import { Routes, Route, Navigate, useParams, useNavigate, useLocation, matchPath } from 'react-router-dom';
+import { Routes, Route, Navigate, Link, useParams, useNavigate, useLocation, matchPath } from 'react-router-dom';
 import { IceMachine, FilterState, IceType } from './types/iceMachine';
 import {
   getAllIceMachines,
@@ -23,6 +23,7 @@ import { StandardsInfoView } from './components/StandardsInfoView';
 import { BlogIndexView } from './components/BlogIndexView';
 import { ArticlePageView } from './components/ArticlePageView';
 import { QuotePageView } from './components/QuotePageView';
+import { CapacityGuideHubView } from './components/CapacityGuideHubView';
 import { BLOG_ARTICLES } from './data/blogArticles';
 import { BarChart3, Database, Trash2, CheckCircle2, Download, Globe, FileCode } from 'lucide-react';
 import {
@@ -127,7 +128,7 @@ export default function App() {
   const slugMap = useMemo(() => buildMachineSlugMap(machines), [machines]);
 
   const activeNavView: 'directory' | 'table' | 'standards' | 'blog' | 'quote' = useMemo(() => {
-    if (location.pathname.startsWith('/blog')) return 'blog';
+    if (location.pathname.startsWith('/blog') || location.pathname.startsWith('/guides')) return 'blog';
     if (location.pathname.startsWith('/quote')) return 'quote';
     return directorySubView;
   }, [location.pathname, directorySubView]);
@@ -220,6 +221,17 @@ export default function App() {
           canonical.setAttribute('href', `${DOMAIN}/blog/${article.slug}`);
         }
       }
+    } else if (location.pathname.startsWith('/guides/500-lb-1000-lb-ice-machines')) {
+      const guideTitle = '500 lb vs. 1000 lb Commercial Ice Machine Buyer’s Guide | KoldSpec';
+      const guideDesc =
+        'Compare 500 lb commercial ice machine vs. 1000 lb commercial ice machine capacities for bars, hotels, and restaurants, head-to-bin pairing rules, verified models, and 5-year TCO.';
+      const guideUrl = `${DOMAIN}/guides/500-lb-1000-lb-ice-machines`;
+      document.title = guideTitle;
+      if (canonical) canonical.setAttribute('href', guideUrl);
+      if (metaDesc) metaDesc.setAttribute('content', guideDesc);
+      if (ogTitle) ogTitle.setAttribute('content', guideTitle);
+      if (ogDesc) ogDesc.setAttribute('content', guideDesc);
+      if (ogUrl) ogUrl.setAttribute('content', guideUrl);
     } else if (location.pathname.startsWith('/blog')) {
       const blogTitle = 'Commercial Ice Equipment Buying Guides & Engineering Insights | KoldSpec';
       document.title = blogTitle;
@@ -808,6 +820,29 @@ export default function App() {
             }
           />
           <Route
+            path="/guides/500-lb-1000-lb-ice-machines"
+            element={
+              <CapacityGuideHubView
+                machines={machines}
+                slugMap={slugMap}
+                onBackToDirectory={() => {
+                  setDirectorySubView('directory');
+                  navigate('/');
+                }}
+                onBackToGuides={() => navigate('/blog')}
+                onOpenQuote={(prefilled) => {
+                  if (prefilled) {
+                    setQuotePrefill(`Quote inquiry regarding: ${prefilled}`);
+                  } else {
+                    setQuotePrefill('');
+                  }
+                  navigate('/quote');
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                }}
+              />
+            }
+          />
+          <Route
             path="/quote"
             element={
               <QuotePageView
@@ -923,6 +958,14 @@ export default function App() {
             >
               Guides & Articles
             </button>
+            <span aria-hidden="true">·</span>
+            <Link
+              to="/guides/500-lb-1000-lb-ice-machines"
+              onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+              className="hover:text-slate-900 transition-colors font-medium text-slate-700"
+            >
+              500 lb vs. 1000 lb Guide
+            </Link>
             <span aria-hidden="true">·</span>
             <button
               type="button"
